@@ -32,13 +32,13 @@ class RegistrationController
             'pregnant' => 'nullable|boolean',
             'indigenous_community' => 'nullable|boolean',
             'indigenous_details' => 'nullable|string',
-            'document1' => 'file|mimes:pdf|max:10240',
-            'document2' => 'file|mimes:pdf|max:10240',
-            'document3' => 'file|mimes:pdf|max:10240',
-            'document4' => 'file|mimes:pdf|max:10240',
-            'document5' => 'file|mimes:pdf|max:10240',
-            'document6' => 'file|mimes:pdf|max:10240',
-            'document7' => 'file|mimes:pdf|max:10240',
+            'documents.application_letter' => 'required|file|mimes:pdf|max:10240',
+            'documents.personal_data_sheet' => 'required|file|mimes:pdf|max:10240',
+            'documents.performance_rating' => 'required|file|mimes:pdf|max:10240',
+            'documents.eligibility_proof' => 'required|file|mimes:pdf|max:10240',
+            'documents.transcript' => 'required|file|mimes:pdf|max:10240',
+            'documents.employment_proof' => 'required|file|mimes:pdf|max:10240',
+            'documents.training_certificates' => 'required|file|mimes:pdf|max:10240',
         ]);
 
         if ($validator->fails()) {
@@ -49,33 +49,20 @@ class RegistrationController
 
         $validatedData = $validator->validated();
 
-        // Remove document fields from validatedData
-        $documentFields = ['document1', 'document2', 'document3', 'document4', 'document5', 'document6', 'document7'];
-        foreach ($documentFields as $field) {
-            unset($validatedData[$field]);
-        }
+        // Remove documents from validatedData
+        $documents = $validatedData['documents'];
+        unset($validatedData['documents']);
 
-        $registration = new Registration($validatedData);
+        $registration = Registration::create($validatedData);
 
         // Handle file uploads
-        $fileFields = [
-            'document1' => 'application_letter_path',
-            'document2' => 'personal_data_sheet_path',
-            'document3' => 'performance_rating_path',
-            'document4' => 'eligibility_proof_path',
-            'document5' => 'transcript_path',
-            'document6' => 'employment_proof_path',
-            'document7' => 'training_certificates_path'
-        ];
-
-        foreach ($fileFields as $inputField => $dbField) {
-            if ($request->hasFile($inputField)) {
-                $path = $request->file($inputField)->store('registration_documents', 'public');
-                $registration->$dbField = $path;
-            }
+        foreach ($documents as $type => $file) {
+            $path = $file->store('registration_documents', 'public');
+            $registration->documents()->create([
+                'document_type' => $type,
+                'file_path' => $path,
+            ]);
         }
-
-        $registration->save();
 
         return redirect()->back()->with('success', 'Registration submitted successfully');
     }

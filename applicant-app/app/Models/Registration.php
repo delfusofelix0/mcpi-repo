@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Registration extends Model
 {
@@ -25,4 +26,9 @@ class Registration extends Model
         'pregnant' => 'boolean',
         'indigenous_community' => 'boolean',
     ];
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(RegistrationDocument::class);
+    }
 }
