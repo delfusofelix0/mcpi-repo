@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Registration extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'firstname', 'mi', 'lastname', 'suffix', 'email', 'phone', 'religion', 'sogie', 'birthdate',
+        'address', 'highest_education', 'latest_company', 'present_position', 'status_employment',
+        'last_employment_date', 'eligibility', 'person_with_disability', 'disability_details',
+        'pregnant', 'indigenous_community', 'indigenous_details',
+        'application_letter_path', 'personal_data_sheet_path', 'performance_rating_path',
+        'eligibility_proof_path', 'transcript_path', 'employment_proof_path', 'training_certificates_path'
+    ];
+
+    protected $casts = [
+        'birthdate' => 'date',
+        'last_employment_date' => 'date',
+        'person_with_disability' => 'boolean',
+        'pregnant' => 'boolean',
+        'indigenous_community' => 'boolean',
+    ];
+}
