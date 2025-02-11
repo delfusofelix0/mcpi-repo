@@ -6,7 +6,7 @@
 </head>
 <body class="bg-gray-300">
 <div id="app" class="container mx-auto p-4">
-    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" enctype="multipart/form-data">
         <div class="bg-green-600 text-white p-4 mb-6 -mx-8 -mt-6">
             <h1 class="text-2xl font-bold">Registration Form</h1>
         </div>
@@ -123,34 +123,34 @@
         </div>
 
         <h3 class="text-lg text-cyan-500 font-bold mb-2">INSTRUCTION: UPLOAD FILE IN PDF FORMAT. IF THE DOCUMENTS HAVE MULTIPLE PAGES IT SHOULD BE IN ONE (1) PDF FILE.</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ">
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application Letter *Required</label>
                 <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document1" type="File" accept=".pdf">
             </div>
             <div>
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application Letter *Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document1" type="File" accept=".pdf">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="document2">Fully accomplished Personal Data Sheet (PDS) with recent passport-sized picture.*Required</label>
+                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document2" type="File" accept=".pdf">
             </div>
             <div>
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application Letter *Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document1" type="File" accept=".pdf">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="document3">Performance rating in the present position for one(1) year (if applicable).</label>
+                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document3" type="File" accept=".pdf">
             </div>
             <div>
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application Letter *Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document1" type="File" accept=".pdf">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="document4">Certificate of Eligibility/Rating or Professional License as proof of eligibility.*Required</label>
+                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document4" type="File" accept=".pdf">
             </div>
             <div>
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application Letter *Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document1" type="File" accept=".pdf">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="document5">Transcript of Records, including Diploma as proof of highest education attained.*Required</label>
+                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document5" type="File" accept=".pdf">
             </div>
             <div>
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application Letter *Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document1" type="File" accept=".pdf">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="document6">Certificate of Employment/Service Contract/Work Experience Sheet as proof of experience..*Required</label>
+                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document6" type="File" accept=".pdf">
             </div>
             <div>
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application Letter *Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document1" type="File" accept=".pdf">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="document7">Certificate/s of Training/Seminar/Conferences as proof.*Required</label>
+                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document7" type="File" accept=".pdf">
             </div>
         </div>
 
@@ -161,5 +161,33 @@
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Create a FormData object
+            const formData = new FormData(form);
+
+            // You can now use fetch or axios to send this data to your server
+            fetch('/submit-form', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success!');
+                    console.table(data)
+                    // Handle successful submission (e.g., show a success message)
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    // Handle errors (e.g., show an error message)
+                });
+        });
+    });
+</script>
 </body>
 </html>
