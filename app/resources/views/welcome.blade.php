@@ -166,25 +166,39 @@
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
         form.addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent the default form submission
+            e.preventDefault();
 
-            // Create a FormData object
             const formData = new FormData(form);
 
-            // You can now use fetch or axios to send this data to your server
             fetch('/submit-form', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text(); // Get the response as text first
+                })
+                .then(text => {
+                    try {
+                        return JSON.parse(text); // Try to parse it as JSON
+                    } catch (e) {
+                        throw new Error('The server response was not valid JSON');
+                    }
+                })
                 .then(data => {
-                    console.log('Success!');
-                    console.table(data)
-                    // Handle successful submission (e.g., show a success message)
+                    console.log('Success:');
+                    console.table(data);
+                    alert('Registration submitted successfully!');
+                    form.reset();
                 })
                 .catch((error) => {
                     console.error('Error:', error);
-                    // Handle errors (e.g., show an error message)
+                    alert(`An error occurred: ${error.message}. Please try again.`);
                 });
         });
     });
