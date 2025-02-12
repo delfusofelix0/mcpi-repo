@@ -102,24 +102,24 @@
         </div>
 
         <div class="mt-6">
-            <h3 class="text-lg text-cyan-500 font-bold mb-2">Instruction: Kindly checked if you belong to any of the following:</h3>
+            <h3 class="text-lg text-cyan-500 font-bold mb-2">Instruction: Kindly check if you belong to any of the following:</h3>
             <div>
                 <label class="inline-flex items-center">
-                    <input type="checkbox" class="form-checkbox" name="person_with_disability">
+                    <input type="checkbox" class="form-checkbox" name="person_with_disability" value="1">
                     <span class="ml-2">Person with Disability - if yes, specify:</span>
                 </label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full mt-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Please specify..">
+                <input class="shadow appearance-none border border-gray-400 rounded w-full mt-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="disability_details" placeholder="Please specify..">
                 <div class="flex flex-col mt-2">
                     <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox" name="pregnant">
+                        <input type="checkbox" class="form-checkbox" name="pregnant" value="1">
                         <span class="ml-2">Pregnant</span>
                     </label>
                     <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox" name="indigenous_community">
-                        <span class="ml-2">Person with Disability - if yes, specify:</span>
+                        <input type="checkbox" class="form-checkbox" name="indigenous_community" value="1">
+                        <span class="ml-2">Indigenous Community - if yes, specify:</span>
                     </label>
                 </div>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full mt-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Please specify..">
+                <input class="shadow appearance-none border border-gray-400 rounded w-full mt-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="indigenous_details" placeholder="Please specify..">
             </div>
         </div>
 
