@@ -9,7 +9,7 @@
     <form method="POST" action="/submit-form" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" enctype="multipart/form-data">
         @csrf
         <div class="bg-green-600 text-white p-4 mb-6 -mx-8 -mt-6">
-            <h1 class="text-2xl font-bold">Registration Form</h1>
+            <h1 class="text-2xl font-bold">Application Form</h1>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
