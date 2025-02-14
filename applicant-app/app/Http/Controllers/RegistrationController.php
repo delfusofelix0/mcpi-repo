@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\WorkPosition;
 use Illuminate\Http\Request;
-use App\Models\Registration;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+
 class RegistrationController
 {
+    public function viewPosition()
+    {
+        $positions = WorkPosition::all();
+        return view('applicant-form', compact('positions'));
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'position' => 'required|exists:work_positions,id',
             'firstname' => 'required|string|max:255',
             'mi' => 'nullable|string|max:1',
             'lastname' => 'required|string|max:255',
@@ -40,7 +48,8 @@ class RegistrationController
             'documents.employment_proof' => 'required|file|mimes:pdf|max:10240',
             'documents.training_certificates' => 'required|file|mimes:pdf|max:10240',
             'cf-turnstile-response' => ['required', Rule::turnstile()],
-        ],[
+        ], [
+            'position.required' => 'Position is required.',
             'firstname.required' => 'First name is required.',
             'firstname.max' => 'First name must not exceed 255 characters.',
             'mi.max' => 'Middle initial must not exceed 1 character.',
@@ -97,7 +106,9 @@ class RegistrationController
         $documents = $validatedData['documents'];
         unset($validatedData['documents']);
 
-        $registration = Registration::create($validatedData);
+        // Create registration with position
+        $registration = WorkPosition::find($validatedData['position'])
+            ->registrations()->create($validatedData);
 
         // Handle file uploads
         foreach ($documents as $type => $file) {

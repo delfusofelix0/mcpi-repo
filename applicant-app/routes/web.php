@@ -19,6 +19,7 @@ Route::get('/applicant-form', function () {
 })->name('applicant.form');
 
 Route::post('/applicant-form', [RegistrationController::class, 'store'])->name('applicant.store');
+Route::get('/applicant-form', [RegistrationController::class, 'viewPosition'])->name('applicant.viewPosition');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

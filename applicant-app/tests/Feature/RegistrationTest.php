@@ -66,7 +66,7 @@ class RegistrationTest extends TestCase
         ]);
 
         // Get the latest registration
-        $registration = \App\Models\Registration::latest()->first();
+        $registration = \App\Models\Position::latest()->first();
 
         // Check if documents were saved in the registration_documents table
         foreach ($formData['documents'] as $documentType => $file) {

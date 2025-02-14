@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Registration;
+use App\Models\Position;
 use App\Models\Applicant;
+use App\Models\Registration;
 use Illuminate\Http\Request;
 
 class ApplicantController extends Controller

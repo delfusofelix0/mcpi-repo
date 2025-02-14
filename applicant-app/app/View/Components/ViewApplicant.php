@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use App\Models\Registration;
+use App\Models\Position;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -12,7 +12,7 @@ class ViewApplicant extends Component
 
     public function __construct($id)
     {
-        $this->applicant = Registration::findOrFail($id);
+        $this->applicant = Position::findOrFail($id);
     }
 
     public function render(): View

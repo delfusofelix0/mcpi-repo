@@ -20,18 +20,38 @@
 
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="position">Positions</label>
-            <select name="position" class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="present_position">
-                <option value="">Please choose..</option>
-                <option value="Software Engineer">Software Engineer</option>
-                <option value="Web Developer">Web Developer</option>
-                <option value="Data Analyst">Data Analyst</option>
-                <option value="Product Manager">Product Manager</option>
-                <option value="UX/UI Designer">UX/UI Designer</option>
-                <option value="QA Engineer">QA Engineer</option>
-                <option value="DevOps Engineer">DevOps Engineer</option>
-                <option value="Other">Other</option>
+            <select name="position" class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="position">
+                <option value="" data-description="" {{ old('position') ? '' : 'selected' }}>Please choose..</option>
+                @foreach($positions as $position)
+                    <option value="{{ $position->id }}" data-description="{{ $position->description }}" {{ old('position') == $position->id ? 'selected' : '' }}>
+                        {{ $position->name }}
+                    </option>
+                @endforeach
             </select>
         </div>
+
+        <div id="position-description" class="mt-2 text-gray-700">
+            <!-- Description will be displayed here -->
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const positionSelect = document.getElementById('position');
+                const descriptionDiv = document.getElementById('position-description');
+
+                // Set the description on page load if a position is already selected
+                const selectedOption = positionSelect.options[positionSelect.selectedIndex];
+                const initialDescription = selectedOption.getAttribute('data-description');
+                descriptionDiv.textContent = initialDescription || 'No description available.';
+
+                positionSelect.addEventListener('change', function () {
+                    const selectedOption = positionSelect.options[positionSelect.selectedIndex];
+                    const description = selectedOption.getAttribute('data-description');
+                    descriptionDiv.textContent = description || 'No description available.';
+                });
+            });
+        </script>
+        </script>
 
         <hr class="mb-6 border-t-2 border-gray-300">
 

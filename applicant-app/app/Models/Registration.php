@@ -31,4 +31,9 @@ class Registration extends Model
     {
         return $this->hasMany(RegistrationDocument::class);
     }
+
+    public function position()
+    {
+        return $this->belongsTo(WorkPosition::class);
+    }
 }
