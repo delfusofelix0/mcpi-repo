@@ -14,9 +14,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/applicant-form', function () {
-    return view('applicant-form');
-})->name('applicant.form');
+//Route::get('/applicant-form', function () {
+//    return view('applicant-form');
+//})->name('applicant.form');
 
 Route::post('/applicant-form', [RegistrationController::class, 'store'])->name('applicant.store');
 Route::get('/applicant-form', [RegistrationController::class, 'viewPosition'])->name('applicant.viewPosition');
