@@ -18,6 +18,23 @@
             <h1 class="text-2xl font-bold">Application Form</h1>
         </div>
 
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="position">Positions</label>
+            <select name="position" class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="present_position">
+                <option value="">Please choose..</option>
+                <option value="Software Engineer">Software Engineer</option>
+                <option value="Web Developer">Web Developer</option>
+                <option value="Data Analyst">Data Analyst</option>
+                <option value="Product Manager">Product Manager</option>
+                <option value="UX/UI Designer">UX/UI Designer</option>
+                <option value="QA Engineer">QA Engineer</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <hr class="mb-6 border-t-2 border-gray-300">
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="firstname">Firstname</label>

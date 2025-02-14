@@ -2,19 +2,17 @@
 
 namespace App\View\Components;
 
-use Illuminate\View\Component;
 use App\Models\Registration;
+use Illuminate\View\Component;
 use Illuminate\View\View;
 
 class ViewApplicant extends Component
 {
     public $applicant;
 
-    public function __construct()
+    public function __construct($id)
     {
-        // Assuming you want to show the logged-in user's application
-        // You might need to adjust this logic based on your requirements
-//        $this->applicant = Registration::where('user_id', auth()->id())->first();
+        $this->applicant = Registration::findOrFail($id);
     }
 
     public function render(): View
