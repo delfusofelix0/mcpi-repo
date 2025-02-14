@@ -27,17 +27,10 @@ return new class extends Migration
             $table->date('last_employment_date')->nullable();
             $table->string('eligibility')->nullable();
             $table->boolean('person_with_disability')->default(false);
-            $table->string('disability_details')->nullable();
+            $table->text('disability_details')->nullable();
             $table->boolean('pregnant')->default(false);
             $table->boolean('indigenous_community')->default(false);
-            $table->string('indigenous_details')->nullable();
-            $table->string('application_letter_path');
-            $table->string('personal_data_sheet_path');
-            $table->string('performance_rating_path')->nullable();
-            $table->string('eligibility_proof_path');
-            $table->string('transcript_path');
-            $table->string('employment_proof_path');
-            $table->string('training_certificates_path');
+            $table->text('indigenous_details')->nullable();
             $table->timestamps();
         });
     }
