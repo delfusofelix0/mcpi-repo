@@ -51,7 +51,6 @@
                 });
             });
         </script>
-        </script>
 
         <hr class="mb-6 border-t-2 border-gray-300">
 

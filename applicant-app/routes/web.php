@@ -1,34 +1,31 @@
 <?php
 
-use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\ApplicantRegistrationController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RegistrationController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use App\View\Components\ViewApplicant;
-
-Route::get('/applicant/{id}', function($id) {
-    return view('view-applicant', ['id' => $id]);
-})->name('applicant.view');
+use Inertia\Inertia;
 
 Route::get('/', function () {
-    return view('welcome');
+    return Inertia::render('Welcome', [
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
 });
 
-//Route::get('/applicant-form', function () {
-//    return view('applicant-form');
-//})->name('applicant.form');
+//add route for post registration
+Route::post('/applicant-form', [ApplicantRegistrationController::class, 'store'])->name('applicant-form.store');
 
-Route::post('/applicant-form', [RegistrationController::class, 'store'])->name('applicant.store');
-Route::get('/applicant-form', [RegistrationController::class, 'viewPosition'])->name('applicant.viewPosition');
+//route applicantForm view with name
+Route::get('/applicant-form', function () {
+    return Inertia::render('ApplicantForm');
+})->name('applicant-form');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/applicant/{id}', [ApplicantController::class, 'view'])
-    ->middleware(['auth', 'verified'])->name('applicant.view');
-Route::get('/dashboard', [ApplicantController::class, 'index'])
-    ->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -37,3 +34,17 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+//Route::middleware(['role:HR|Admin'])->group(function () {
+//    Route::get('/applicants', [ApplicantController::class, 'index']);
+//});
+
+//Route::middleware(['role:Admin'])->group(function () {
+//    Route::get('/users', [UserController::class, 'index']);
+//});
+
+//Route::middleware(['auth', 'role:Admin'])->group(function () {
+//    Route::get('/admin-dashboard', function () {
+//        return Inertia::render('AdminDashboard');
+//    });
+//});

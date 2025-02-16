@@ -1,7 +1,34 @@
+import '../css/app.css';
+import '../css/style.css'
 import './bootstrap';
 
-import Alpine from 'alpinejs';
+import {createInertiaApp} from '@inertiajs/vue3';
+import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
+import {createApp, h} from 'vue';
+import {ZiggyVue} from '../../vendor/tightenco/ziggy';
 
-window.Alpine = Alpine;
+import PrimeVue from 'primevue/config';
 
-Alpine.start();
+const appName = import.meta.env.VITE_APP_NAME || 'MCPI';
+
+createInertiaApp({
+    title: (title) => `${title} - ${appName}`,
+    resolve: (name) =>
+        resolvePageComponent(
+            `./Pages/${name}.vue`,
+            import.meta.glob('./Pages/**/*.vue'),
+        ),
+    setup({el, App, props, plugin}) {
+        return createApp({render: () => h(App, props)})
+            .use(plugin)
+            .use(ZiggyVue)
+            .use(PrimeVue, {
+                theme: 'none',
+                ripple: true,
+            })
+            .mount(el);
+    },
+    progress: {
+        color: '#3b82f6',
+    },
+});

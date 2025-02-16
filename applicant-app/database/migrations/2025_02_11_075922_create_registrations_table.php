@@ -6,19 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
-            $table->string('firstname');
-            $table->string('mi')->nullable();
-            $table->string('lastname');
+            $table->string('first_name');
+            $table->string('middle_initial')->nullable();
+            $table->string('last_name');
             $table->string('suffix')->nullable();
             $table->string('email');
             $table->string('phone');
             $table->string('religion')->nullable();
             $table->string('sogie');
-            $table->date('birthdate');
+            $table->date('birth_date');
             $table->text('address');
             $table->string('highest_education');
             $table->string('latest_company')->nullable();
@@ -35,7 +35,7 @@ return new class extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('registrations');
     }
