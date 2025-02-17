@@ -5,10 +5,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 use App\View\Components\ViewApplicant;
+use App\Http\Controllers\WorkPositionController;
+
+Route::resource('work-position', WorkPositionController::class);
 
 Route::get('/applicant/{id}', function($id) {
     return view('view-applicant', ['id' => $id]);
-})->name('applicant.view');
+})->middleware(['auth','verified'])->name('applicant.view');
+
+Route::delete('/applicant/{registration}', [RegistrationController::class, 'destroy'])
+    ->middleware(['auth', 'verified'])->name('applicant.destroy');
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,8 +24,18 @@ Route::get('/', function () {
 //    return view('applicant-form');
 //})->name('applicant.form');
 
-Route::post('/applicant-form', [RegistrationController::class, 'store'])->name('applicant.store');
-Route::get('/applicant-form', [RegistrationController::class, 'viewPosition'])->name('applicant.viewPosition');
+Route::middleware(['role:HR'])->group(function () {
+    // HR routes
+});
+
+Route::middleware(['role:Admin'])->group(function () {
+    // Admin routes
+});
+
+Route::post('/applicant-form', [RegistrationController::class, 'store'])
+    ->name('applicant.store');
+Route::get('/applicant-form', [RegistrationController::class, 'viewPosition'])
+    ->name('applicant.viewPosition');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -27,6 +43,8 @@ Route::get('/dashboard', function () {
 
 Route::get('/applicant/{id}', [ApplicantController::class, 'view'])
     ->middleware(['auth', 'verified'])->name('applicant.view');
+Route::get('/applicant-form', [RegistrationController::class, 'viewPosition'])
+    ->middleware(['auth', 'verified'])->name('applicant.viewPosition');
 Route::get('/dashboard', [ApplicantController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 

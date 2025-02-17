@@ -9,8 +9,11 @@ class AddPositionIdToRegistrationsTable extends Migration
     public function up()
     {
         Schema::table('registrations', function (Blueprint $table) {
-            $table->unsignedBigInteger('work_position_id')->after('id');
-            $table->foreign('work_position_id')->references('id')->on('work_positions')->onDelete('cascade');
+            $table->unsignedBigInteger('work_position_id')->nullable()->after('id');
+            $table->foreign('work_position_id')
+                  ->references('id')
+                  ->on('work_positions')
+                  ->onDelete('set null');
         });
     }
 
@@ -21,4 +24,4 @@ class AddPositionIdToRegistrationsTable extends Migration
             $table->dropColumn('work_position_id');
         });
     }
-};
+}

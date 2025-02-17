@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Registration;
 use App\Models\WorkPosition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,6 +14,32 @@ class RegistrationController
     {
         $positions = WorkPosition::all();
         return view('applicant-form', compact('positions'));
+    }
+
+    public function destroy(Registration $registration): \Illuminate\Http\JsonResponse
+    {
+        try {
+            // Delete associated documents
+            foreach ($registration->documents as $document) {
+                // Delete the file from storage
+                \Storage::disk('public')->delete($document->file_path);
+                // Delete the document record
+                $document->delete();
+            }
+
+            // Delete the registration
+            $registration->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete registration. ' . $e->getMessage()
+            ],  500);
+        }
     }
 
     public function store(Request $request)
@@ -118,6 +145,8 @@ class RegistrationController
                 'file_path' => $path,
             ]);
         }
+
+        session()->flash('success', 'Your application has been submitted successfully.');
 
         return redirect()->back()->with('success', 'Registration submitted successfully');
     }

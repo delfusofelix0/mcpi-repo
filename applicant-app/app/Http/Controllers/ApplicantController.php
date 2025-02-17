@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Position;
-use App\Models\Applicant;
 use App\Models\Registration;
+use App\Models\WorkPosition;
 use Illuminate\Http\Request;
 
 class ApplicantController extends Controller
@@ -12,7 +12,8 @@ class ApplicantController extends Controller
     public function index()
     {
         $registrations = Registration::latest()->get();
-        return view('dashboard', compact('registrations'));
+        $workPositions = WorkPosition::latest()->get();
+        return view('dashboard', compact('registrations', 'workPositions'));
     }
 
     public function view($id)
