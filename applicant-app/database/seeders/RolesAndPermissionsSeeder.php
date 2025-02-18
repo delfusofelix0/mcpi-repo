@@ -26,7 +26,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create roles and assign existing permissions
         $roleHR = Role::create(['name' => 'HR']);
-        $roleHR->givePermissionTo(['create work position', 'view work position', 'edit work position', 'delete work position', 'view table']);
+        $roleHR->givePermissionTo(['create work position', 'view work position', 'edit work position', 'delete work position','edit applicant', 'view applicant', 'view table']);
 
         $roleAdmin = Role::create(['name' => 'Admin']);
         $roleAdmin->givePermissionTo(Permission::all());
