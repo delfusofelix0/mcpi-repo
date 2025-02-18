@@ -24,14 +24,24 @@ class WorkPositionController extends Controller
         return view('work-position.edit', compact('workPosition'));
     }
 
-    public function update(Request $request, WorkPosition $workPosition)
+    public function update(Request $request, $id)
     {
-        $request->validate([
+        $position = WorkPosition::findOrFail($id);
+
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
 
-        $workPosition->update($request->only('name', 'description'));
+        $position->update($validated);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Position updated successfully',
+                'position' => $position
+            ]);
+        }
 
         return redirect()->route('dashboard')->with('success', 'Work position updated successfully.');
     }
@@ -40,9 +50,9 @@ class WorkPositionController extends Controller
     {
         try {
             $workPosition->delete();
-            return redirect()->route('dashboard')->with('success', 'Work position deleted successfully.');
+            return response()->json(['success' => true, 'message' => 'Position deleted successfully']);
         } catch (\Exception $e) {
-            return redirect()->route('dashboard')->with('error', 'Failed to delete work position: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'An error occurred while deleting the position'], 500);
         }
     }
 }

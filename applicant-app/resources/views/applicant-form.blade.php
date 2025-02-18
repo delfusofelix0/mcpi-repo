@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    <title>Applicant Form</title>
     <!-- ... other head elements ... -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @turnstileScripts()

@@ -14,8 +14,8 @@
             </div>
 
             <!-- Include the applicant list -->
-            @include('applicant-list', ['registrations' => $registrations]);
-            @include('work-position', ['workPositions' => $workPositions]);
+            @include('applicant-list', ['registrations' => $registrations])
+            @include('work-position', ['workPositions' => $workPositions])
         </div>
     </div>
     @stack('scripts')

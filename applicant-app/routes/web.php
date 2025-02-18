@@ -16,13 +16,16 @@ Route::get('/applicant/{id}', function($id) {
 Route::delete('/applicant/{registration}', [RegistrationController::class, 'destroy'])
     ->middleware(['auth', 'verified'])->name('applicant.destroy');
 
+Route::post('/registration/status', [RegistrationController::class, 'statusStore'])
+    ->middleware(['auth','verified'])->name('registration.status.store');
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-//Route::get('/applicant-form', function () {
-//    return view('applicant-form');
-//})->name('applicant.form');
+Route::get('/applicant-form', function () {
+    return view('applicant-form');
+})->name('applicant.form');
 
 Route::middleware(['role:HR'])->group(function () {
     // HR routes
@@ -43,8 +46,6 @@ Route::get('/dashboard', function () {
 
 Route::get('/applicant/{id}', [ApplicantController::class, 'view'])
     ->middleware(['auth', 'verified'])->name('applicant.view');
-Route::get('/applicant-form', [RegistrationController::class, 'viewPosition'])
-    ->middleware(['auth', 'verified'])->name('applicant.viewPosition');
 Route::get('/dashboard', [ApplicantController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 

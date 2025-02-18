@@ -1,137 +1,262 @@
 <div class="work-position-manager">
-    @if (session('success'))
-        <div id="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div id="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
-    @endif
-    <div class="flex justify-between items-center mb-4" >
+    <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold">Manage Work Positions</h2>
         <button
-            class="btn btn-info btn-sm mx-10">
+            class="btn btn-info btn-sm">
             Add New Position
         </button>
     </div>
     <!-- List of Work Positions -->
+    @if($workPositions->isEmpty())
+        <div class="bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 rounded relative" role="alert">
+            <p class="font-bold">No applicants found</p>
+            <p class="text-sm">There are currently no registered applicants in the system.</p>
+        </div>
     <ul class="overflow-x-auto">
-                <div class="overflow-x-auto">
-                    <table class="table table-xs min-w-full bg-white">
-                        <thead>
-                        <tr>
-                            <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Position Name
-                            </th>
-                            <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Position Description
-                            </th>
-                            <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Action
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($workPositions as $position)
-                        <tr data-id="{{ $position->id }}">
-                            <td class="py-2 px-4 border-b border-gray-200">{{ $position->name }}</td>
-                            <td class="py-2 px-4 border-b border-gray-200">{{ $position->description }}</td>
-                            <td class="py-2 px-4 border-b border-gray-200">
-                                <div>
-                                    <a href="{{ route('work-position.edit', $position->id) }}" class="text-blue-500 hover:underline">Edit</a>
-                                    <form method="POST" action="{{ route('work-position.destroy', $position->id) }}" class="inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="text-red-500 hover:underline delete-btn" data-id="{{ $position->id }}">Delete</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                </div>
+        <div class="overflow-x-auto">
+            @else
+            <table class="table table-xs min-w-full bg-white">
+                <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Position Name
+                    </th>
+                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Position Description
+                    </th>
+                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Action
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($workPositions as $position)
+                    <tr data-id="{{ $position->id }}">
+                        <td class="py-2 px-4 border-b border-gray-200">{{ $position->name }}</td>
+                        <td class="py-2 px-4 border-b border-gray-200">{{ $position->description }}</td>
+                        <td class="py-2 px-4 border-b border-gray-200">
+                            <div class="flex items-center space-x-2">
+                                <button
+                                    onclick="openEditModal({{ $position->id }}, '{{ $position->name }}', '{{ $position->description }}')"
+                                    class="text-blue-500 hover:underline edit-btn">Edit
+                                </button>
+
+                                <form method="POST" action="{{ route('work-position.destroy', $position->id) }}"
+                                      class="inline delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="text-red-500 hover:underline delete-btn"
+                                            data-id="{{ $position->id }}">Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+            @endif
+        </div>
     </ul>
 
-    <!-- Confirmation Modal -->
-    <div id="deleteModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                Confirm Deletion
-                            </h3>
-                            <div class="mt-2">
-                                <p class="text-sm text-gray-500">
-                                    Are you sure you want to delete this position? This action cannot be undone.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" id="confirmDelete" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Delete
-                    </button>
-                    <button type="button" id="cancelDelete" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Cancel
-                    </button>
-                </div>
+    <!-- Daisy UI Confirmation Modal -->
+    <dialog id="deleteModal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">Confirm Deletion</h3>
+            <p class="py-4">Are you sure you want to delete this position? This action cannot be undone.</p>
+            <div class="modal-action">
+                <form method="dialog">
+                    <button id="confirmDelete" class="btn btn-error">Delete</button>
+                    <button id="cancelDelete" class="btn">Cancel</button>
+                </form>
             </div>
         </div>
-    </div>
+    </dialog>
+
+    <!-- Edit Modal -->
+    <dialog id="editModal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">Edit Position</h3>
+            <form id="editForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="form-control">
+                    <label class="label" for="editName">
+                        <span class="label-text">Position Name</span>
+                    </label>
+                    <input type="text" id="editName" name="name" class="input input-bordered" required>
+                </div>
+                <div class="form-control">
+                    <label class="label" for="editDescription">
+                        <span class="label-text">Description</span>
+                    </label>
+                    <textarea id="editDescription" name="description" class="textarea textarea-bordered"
+                              required></textarea>
+                </div>
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button id="cancelEdit" class="btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const deleteButtons = document.querySelectorAll('.delete-btn');
             const modal = document.getElementById('deleteModal');
             const confirmDeleteBtn = document.getElementById('confirmDelete');
             const cancelDeleteBtn = document.getElementById('cancelDelete');
-            let currentForm;
+            let currentDeleteId;
+
+            // Check for session messages and show toasts
+            @if(session('success'))
+            showToast('success', "{{ session('success') }}");
+            @endif
+
+            @if(session('error'))
+            showToast('error', "{{ session('error') }}");
+            @endif
 
             deleteButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     e.preventDefault();
-                    currentForm = this.closest('form');
-                    modal.classList.remove('hidden');
+                    currentDeleteId = this.dataset.id;
+                    modal.showModal();
                 });
             });
 
-            confirmDeleteBtn.addEventListener('click', function() {
-                if (currentForm) {
-                    currentForm.submit();
+            confirmDeleteBtn.addEventListener('click', function () {
+                if (currentDeleteId) {
+                    deletePosition(currentDeleteId);
                 }
-                modal.classList.add('hidden');
+                modal.close();
             });
 
-            cancelDeleteBtn.addEventListener('click', function() {
-                modal.classList.add('hidden');
+            cancelDeleteBtn.addEventListener('click', function () {
+                modal.close();
             });
 
-            // New code for auto-hiding messages
-            function hideMessage(elementId) {
-                const element = document.getElementById(elementId);
-                if (element) {
-                    setTimeout(() => {
-                        element.style.transition = 'opacity 1s';
-                        element.style.opacity = '0';
-                        setTimeout(() => {
-                            element.style.display = 'none';
-                        }, 1000);
-                    }, 3000);
+            function deletePosition(id) {
+                fetch(`{{ route('work-position.destroy', '') }}/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        removeTableRow(id);
+                        showToast('success', data.message || 'Position deleted successfully');
+                    } else {
+                        showToast('error', data.message || 'An error occurred while deleting the position');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('error', 'An error occurred. Please try again.');
+                });
+            }
+
+            function removeTableRow(id) {
+                const row = document.querySelector(`tr[data-id="${id}"]`);
+                if (row) {
+                    row.remove();
                 }
             }
 
-            hideMessage('successMessage');
-            hideMessage('errorMessage');
+            // Edit modal functionality
+            const modalEdit = document.getElementById('editModal');
+            const form = document.getElementById('editForm');
+            const nameInput = document.getElementById('editName');
+            const descriptionInput = document.getElementById('editDescription');
+            const cancelEditBtn = document.getElementById('cancelEdit');
+
+            function openEditModal(id, name, description) {
+                form.action = `{{ route('work-position.update', '') }}/${id}`;
+                nameInput.value = name;
+                descriptionInput.value = description;
+
+                modalEdit.showModal();
+            }
+
+            function closeEditModal() {
+                modalEdit.close();
+            }
+
+            cancelEditBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeEditModal();
+            });
+
+            // Form submission
+            document.getElementById('editForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Position updated successfully:', data.position);
+                            showToast('success', data.message || 'Position updated successfully');
+                            // Update the table row with new data
+                            updateTableRow(data.position);
+                            closeEditModal();
+                        } else {
+                            showToast('error', data.message || 'An error occurred. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('error', 'An error occurred. Please try again.');
+                    })
+                    .finally(() => {
+                        closeEditModal();
+                    });
+            });
+
+            function updateTableRow(position) {
+                const row = document.querySelector(`tr[data-id="${position.id}"]`);
+                if (row) {
+                    row.querySelector('td:nth-child(1)').textContent = position.name;
+                    row.querySelector('td:nth-child(2)').textContent = position.description;
+                }
+            }
+
+            function showToast(type, message) {
+                Toastify({
+                    text: message,
+                    duration: 2500,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    style: {
+                        background: type === 'success'
+                            ? 'linear-gradient(135deg, #4CAF50, #8BC34A, #2E7D32)'
+                            : 'linear-gradient(135deg, #F44336, #FF9800, #B71C1C)',
+                    },
+                    stopOnFocus: true,
+                }).showToast();
+            }
+
+            // Make openEditModal globally accessible
+            window.openEditModal = openEditModal;
         });
     </script>
 
-    </div>
+</div>

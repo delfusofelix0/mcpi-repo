@@ -150,4 +150,29 @@ class RegistrationController
 
         return redirect()->back()->with('success', 'Registration submitted successfully');
     }
+
+    public function statusStore(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'registration_id' => 'required|exists:registrations,id',
+            'status' => 'required|in:Hired,Option,Viewed,Rejected',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $registration = Registration::findOrFail($request->registration_id);
+        $registration->status = $request->status;
+        $registration->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated successfully',
+            'status' => $registration->status
+        ]);
+    }
 }
