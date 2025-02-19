@@ -38,7 +38,7 @@ class RegistrationSeeder extends Seeder
                 'sogie' => $faker->randomElement(['Male', 'Female', 'Non-binary', 'Prefer not to say']),
                 'birthdate' => $faker->date('Y-m-d', '-18 years'),
                 'address' => $faker->address,
-                'highest_education' => $faker->randomElement(['High School', 'Associate\'s Degree', 'Bachelor\'s Degree', 'Master\'s Degree', 'Doctorate']),
+                'highest_education' => $faker->randomElement(['Elementary Level', 'Elementary Graduate', 'High School level', 'High School Graduate', 'Vocational', 'College Level', 'College Graduate', 'Post Graduate']),
                 'latest_company' => $faker->company,
                 'present_position' => $faker->jobTitle,
                 'status_employment' => $faker->randomElement(['Employed', 'Unemployed', 'Self-employed', 'Student']),

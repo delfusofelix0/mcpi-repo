@@ -1,5 +1,5 @@
 <div class="applicant-list-manager">
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center my-4">
         <h2 class="text-xl font-bold">Applicant List</h2>
         <input type="text" id="general-search" placeholder="Search..." class="input input-bordered w-full max-w-xs">
     </div>
@@ -37,11 +37,14 @@
                     <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         <select id="education-filter" class="select select-bordered w-full max-w-xs">
                             <option value="">All Education</option>
-                            <option value="High School">High School</option>
-                            <option value="Associate">Associate</option>
-                            <option value="Bachelor">Bachelor</option>
-                            <option value="Master">Master</option>
-                            <option value="Doctorate">Doctorate</option>
+                            <option value="Elementary Level">Elementary Level</option>
+                            <option value="Elementary Graduate">Elementary Graduate</option>
+                            <option value="High School level">High School level</option>
+                            <option value="High School Graduate">High School Graduate</option>
+                            <option value="Vocational">Vocational</option>
+                            <option value="College Level">College Level</option>
+                            <option value="College Graduate">College Graduate</option>
+                            <option value="Post Graduate">Post Graduate</option>
                         </select>
                     </th>
                     <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -50,6 +53,7 @@
                     <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         <select id="status-filter" class="select select-bordered w-full max-w-xs">
                             <option value="">All Status</option>
+                            <option value="Pending">Pending</option>
                             <option value="Viewed">Viewed</option>
                             <option value="Hired">Hired</option>
                             <option value="Option">Option</option>
@@ -136,7 +140,7 @@
                 </div>
             @endforeach
         </div>
-        <div class="mt-4">
+        <div class="my-4">
             {{ $registrations->links() }}
         </div>
     @endif

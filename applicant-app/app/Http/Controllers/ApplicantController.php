@@ -12,8 +12,8 @@ class ApplicantController extends Controller
     public function index(Request $request)
     {
 //        $registrations = Registration::latest()->get();
-        $workPositions = WorkPosition::latest()->get();
-        $registrations = Registration::paginate(3);
+        $workPositions = WorkPosition::latest()->paginate(5);
+        $registrations = Registration::paginate(5);
         return view('dashboard', compact('registrations', 'workPositions'));
     }
 

@@ -16,7 +16,18 @@ class WorkPositionController extends Controller
 
         WorkPosition::create($request->only('name', 'description'));
 
-        return redirect()->route('dashboard')->with('success', 'Work position created successfully.');
+        if ($request->ajax()) {
+            return response()->json([
+               'success' => true,
+               'message' => 'Work position created successfully',
+                'position' => WorkPosition::latest()->first()
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create work position'
+            ]);
+        }
     }
 
     public function edit(WorkPosition $workPosition)
