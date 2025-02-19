@@ -240,8 +240,7 @@
 
         @foreach($registrations as $registration)
         // Status update form submission
-        document.getElementById('statusForm-{{ $registration->id }}').addEventListener('submit', function(e) {
-            e.preventDefault();
+        document.getElementById('statusForm-{{ $registration->id }}').addEventListener('submit', function(e) {            e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
             formData.append('registration_id', '{{ $registration->id }}');
