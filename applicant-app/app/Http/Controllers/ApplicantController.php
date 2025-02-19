@@ -13,7 +13,7 @@ class ApplicantController extends Controller
     {
 //        $registrations = Registration::latest()->get();
         $workPositions = WorkPosition::latest()->paginate(5);
-        $registrations = Registration::paginate(5);
+        $registrations = Registration::latest()->paginate(5);
         return view('dashboard', compact('registrations', 'workPositions'));
     }
 
