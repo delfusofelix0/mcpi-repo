@@ -21,8 +21,8 @@ class RegistrationSeeder extends Seeder
         // Ensure we have at least one WorkPosition
         $position = WorkPosition::first() ?? WorkPosition::factory()->create();
 
-        // Create 10 sample registrations
-        for ($i = 0; $i < 10; $i++) {
+        // Create 15 sample registrations
+        for ($i = 0; $i < 15; $i++) {
             $personWithDisability = $faker->boolean(10);
             $indigenousCommunity = $faker->boolean(10);
 
