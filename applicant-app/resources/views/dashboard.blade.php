@@ -15,6 +15,8 @@
 
             <!-- Include the applicant list -->
             @include('applicant-list', ['registrations' => $registrations])
+            @include('work-position', ['workPositions' => $workPositions])
         </div>
     </div>
+    @stack('scripts')
 </x-app-layout>

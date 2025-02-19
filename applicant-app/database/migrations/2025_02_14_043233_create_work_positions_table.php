@@ -6,17 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateWorkPositionsTable extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('work_positions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('description')->nullable(); // Add this line for the description
             $table->timestamps();
+            $table->softDeletes(); // Add this line for soft deletion
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('work_positions');
     }
