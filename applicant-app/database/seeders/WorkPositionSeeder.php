@@ -9,7 +9,7 @@ use Illuminate\Database\Seeder;
 
 class WorkPositionSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         $positions = [
             ['name' => 'Software Engineer', 'description' => 'Responsible for developing software solutions.'],

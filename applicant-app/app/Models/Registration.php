@@ -12,7 +12,7 @@ class Registration extends Model
     use HasFactory;
 
     protected $fillable = [
-        'firstname', 'mi', 'lastname', 'suffix', 'email', 'phone', 'religion', 'sogie', 'birthdate',
+        'firstname', 'image_path', 'mi', 'lastname', 'suffix', 'email', 'phone', 'religion', 'sogie', 'birthdate',
         'address', 'highest_education', 'latest_company', 'present_position', 'status_employment',
         'last_employment_date', 'eligibility', 'person_with_disability', 'disability_details',
         'pregnant', 'indigenous_community', 'indigenous_details',

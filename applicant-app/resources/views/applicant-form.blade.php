@@ -64,7 +64,20 @@
         </script>
 
         <hr class="mb-6 border-t-2 border-gray-300">
-
+        <div class="my-4">
+            <div class="grid grid-cols-2 items-center space-x-4">
+                <div class="space-y-2">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="photo">Photo (2x2)</label>
+                    <input type="file" id="photo" name="photo" accept="image/*"
+                           class="file-input file-input-bordered file-input-sm w-full max-w-xs" onchange="previewImage(event)">
+                    <button type="button" class="btn btn-primary btn-sm font-bold" onclick="window.my_modal_5.showModal()">Photo Instructions</button>
+                    <x-input-error :messages="$errors->get('photo')" class="mt-2" />
+                </div>
+                <div id="photo-preview" class="hidden">
+                    <img id="uploaded-photo" src="" alt="Uploaded photo" class="w-24 h-24 object-cover">
+                </div>
+            </div>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="firstname">Firstname</label>
@@ -196,37 +209,37 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ">
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application Letter</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document1" type="file" name="documents[application_letter]" accept=".pdf">
+                <input class="file-input file-input-bordered file-input-sm w-full max-w-xs" id="document1" type="file" name="documents[application_letter]" accept=".pdf">
                 <x-input-error :messages="$errors->get('documents.application_letter')" class="mt-2" />
             </div>
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document2">Fully accomplished Personal Data Sheet (PDS) with recent passport-sized picture.*Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document2" type="file" name="documents[personal_data_sheet]" accept=".pdf">
+                <input class="file-input file-input-bordered file-input-sm w-full max-w-xs" id="document2" type="file" name="documents[personal_data_sheet]" accept=".pdf">
                 <x-input-error :messages="$errors->get('documents.personal_data_sheet')" class="mt-2" />
             </div>
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document3">Performance rating in the present position for one(1) year (if applicable).</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document3" type="file" name="documents[performance_rating]" accept=".pdf">
+                <input class="file-input file-input-bordered file-input-sm w-full max-w-xs" id="document3" type="file" name="documents[performance_rating]" accept=".pdf">
                 <x-input-error :messages="$errors->get('documents.performance_rating')" class="mt-2" />
             </div>
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document4">Certificate of Eligibility/Rating or Professional License as proof of eligibility.*Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document4" type="file" name="documents[eligibility_proof]" accept=".pdf">
+                <input class="file-input file-input-bordered file-input-sm w-full max-w-xs" id="document4" type="file" name="documents[eligibility_proof]" accept=".pdf">
                 <x-input-error :messages="$errors->get('documents.eligibility_proof')" class="mt-2" />
             </div>
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document5">Transcript of Records, including Diploma as proof of highest education attained.*Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document5" type="file" name="documents[transcript]" accept=".pdf">
+                <input class="file-input file-input-bordered file-input-sm w-full max-w-xs" id="document5" type="file" name="documents[transcript]" accept=".pdf">
                 <x-input-error :messages="$errors->get('documents.transcript')" class="mt-2" />
             </div>
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document6">Certificate of Employment/Service Contract/Work Experience Sheet as proof of experience..*Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document6" type="file" name="documents[employment_proof]" accept=".pdf">
+                <input class="file-input file-input-bordered file-input-sm w-full max-w-xs" id="document6" type="file" name="documents[employment_proof]" accept=".pdf">
                 <x-input-error :messages="$errors->get('documents.employment_proof')" class="mt-2" />
             </div>
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document7">Certificate/s of Training/Seminar/Conferences as proof.*Required</label>
-                <input class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500" id="document7" type="file" name="documents[training_certificates]" accept=".pdf">
+                <input class="file-input file-input-bordered file-input-sm w-full max-w-xs" id="document7" type="file" name="documents[training_certificates]" accept=".pdf">
                 <x-input-error :messages="$errors->get('documents.training_certificates')" class="mt-2" />
             </div>
         </div>
@@ -244,8 +257,63 @@
         </div>
     </form>
 
+    <dialog id="my_modal_5" class="modal overflow-y-auto py-10 modal-bottom sm:modal-middle">
+        <form method="dialog" class="modal-box max-h-max m-auto">
+            <div class="">
+                <div class="">
+                    <h2 class="mb-4 text-cyan-500 font-bold text-2xl">PLEASE READ!</h2>
+                    <h4 class="uppercase font-bold">To avoid application disapproval, Please follow the photo requirements below:</h4>
+                    <hr class="my-6 border-t-2 border-gray-300">
+
+                    <h2 class="mb-4 uppercase font-bold">Below are sample of acceptable photo,</h2>
+                    <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                        <div class="flex justify-center">
+                            <img src="{{ asset('images/female-2x2.jpg') }}" alt="Photo Sample 1" class="w-64 h-[320px] object-cover">
+                        </div>
+                        <div class="h-[320px] border-l-2 border-dashed border-gray-300 hidden md:block"></div>
+                        <div class="flex justify-center">
+                            <img src="{{ asset('images/male-2x2.jpeg') }}" alt="Photo Sample 2" class="w-64 h-[320px] object-cover">
+                        </div>
+                    </div>
+
+                    <hr class="my-6 border-t-2 border-gray-300">
+
+                    <h4 class="font-bold">NOTE: Application will NOT be processed if</h4>
+                    <ol class="list-decimal list-inside">
+                        <li>Photo does not resemble applicant.</li>
+                        <li>Applicant wears eyeglasses.</li>
+                        <li>Background is not plain white.</li>
+                        <li>Photo has shadows.</li>
+                        <li>Ears are covered.</li>
+                    </ol>
+                </div>
+
+                <div class="mt-6">
+                    <div class="modal-action">
+                        <button class="btn" onclick="closePhotoModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </dialog>
+
     <script>
-        console.log()
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('uploaded-photo').src = e.target.result;
+                    document.getElementById('photo-preview').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function closePhotoModal() {
+            window.my_modal_5.close();
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const checkbox = document.getElementById('disability-checkbox');
             const detailsInput = document.getElementById('disability-details');

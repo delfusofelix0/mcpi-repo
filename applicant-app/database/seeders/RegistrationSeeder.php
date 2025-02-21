@@ -55,6 +55,25 @@ class RegistrationSeeder extends Seeder
         }
     }
 
+    private function generateFakeImage(): string
+    {
+        $faker = Faker::create();
+
+        // Generate a fake image URL (you can adjust width and height as needed)
+        $imageUrl = $faker->imageUrl(200, 200, 'people', true, 'Faker');
+
+        // Get the image content
+        $imageContent = file_get_contents($imageUrl);
+
+        // Generate a unique filename
+        $filename = 'photo_' . uniqid() . '.jpg';
+
+        // Store the image
+        Storage::disk('public')->put('photos/' . $filename, $imageContent);
+
+        return 'photos/' . $filename;
+    }
+
     /**
      * Create sample documents for a registration.
      */

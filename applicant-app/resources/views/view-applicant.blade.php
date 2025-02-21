@@ -5,102 +5,88 @@
         </h2>
     </x-slot>
 
-    <section>
-        <div class="flex flex-wrap justify-evenly items-start gap-4 text-black bg-white">
-
-            <!-- Left Card (Personal Information) -->
-            <div class="card w-72 bg-gray-300" style="border-radius: 0.5rem; box-shadow: 0 0 4px 6px rgba(0, 0, 0, 0.1);">
-                <div class="text-center mb-4 p-2 font-semibold">
-                    <h3>Personal Information</h3>
-                </div>
-                <div class="col-span-1 p-2">Firstname:
-                    <span id="info">{{ $applicant->firstname }}</span>
-                </div>
-                <div class="col-span-1 p-2">M.I:
-                    <span id="info">{{ $applicant->mi }}</span>
-                </div>
-                <div class="col-span-1 p-2">Lastname:
-                    <span id="info">{{ $applicant->lastname }}</span>
-                </div>
-                <div class="col-span-1 p-2">Suffix:
-                    <span id="info">{{ $applicant->suffix }}</span>
-                </div>
-
-                <div class="col-span-1 p-2">Email:
-                    <span id="info">{{ $applicant->email }}</span>
-                </div>
-                <div class="col-span-1 p-2">Phone Number:
-                    <span id="info">{{ $applicant->phone }}</span>
-                </div>
-
-                <div class="col-span-1 p-2">Religion:
-                    <span id="info">{{ $applicant->religion }}</span>
-                </div>
-                <div class="col-span-1 p-2">Birth Date:
-                    <span id="info">{{ $applicant->birthdate->format('m/d/Y') }}</span>
-                </div>
-                <div class="col-span-1 p-2">Gender:
-                    <span id="info">{{ $applicant->sogie }}</span>
-                </div>
-
-                <div class="col-span-1 p-2">Address:
-                    <span id="info">{{ $applicant->address }}</span>
-                </div>
-            </div>
-
-            <!-- Right Card (Employment and Education Details) -->
-            <div class="card w-72 bg-gray-300" style="border-radius: 0.5rem; box-shadow: 0 0 4px 6px rgba(0, 0, 0, 0.1);">
-                <div class="text-center mb-4 p-2 font-semibold">
-                    <h3>Education/Others</h3>
-                </div>
-                <div class="col-span-1 p-2">Highest Educational Attainment:
-                    <span id="info">{{ $applicant->highest_education }}</span>
-                </div>
-
-                <div class="col-span-1 p-2">Latest Company/Agency:
-                    <span id="info">{{ $applicant->latest_company }}</span>
-                </div>
-                <div class="col-span-1 p-2">Present/Latest Position:
-                    <span id="info">{{ $applicant->present_position }}</span>
-                </div>
-                <div class="col-span-1 p-2">Status of Employment:
-                    <span id="info">{{ $applicant->status_employment }}</span>
-                </div>
-                <div class="col-span-1 p-2">Last Date of Employment:
-                    <span id="info">{{ $applicant->last_employment_date ?? 'N/A' }}</span>
-                </div>
-
-                <div class="col-span-1 p-2">Civil Service Eligible:
-                    <span id="info">{{ $applicant->civil_service_eligible ? 'Yes' : 'No' }}</span>
-                </div>
-
-                <div class="col-span-1 p-2">Person with Disability:
-                    <span id="info">{{ $applicant->disability ?? 'None' }}</span>
-                </div>
-
-                <div class="col-span-1 p-2">Pregnant:
-                    <span id="info">{{ $applicant->is_pregnant ? 'Yes' : 'No' }}</span>
-                </div>
-            </div>
-
-            <!-- Bottom-left Card (Document Information) -->
-            <!-- Bottom-left Card (Document Information) -->
-            <div class="card w-72 bg-gray-300" style="border-radius: 0.5rem; box-shadow: 0 0 4px 6px rgba(0, 0, 0, 0.1);">
-                <div class="col-span-1 p-2">
-                    <div class="text-center">
-                        <h3 class="font-bold text-lg mb-4">Documents</h3>
+    <section class="p-4">
+        <div class="flex flex-wrap justify-center gap-4">
+            <!-- Personal Information Card -->
+            <div class="card w-96 bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title">Personal Information</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-1">Firstname:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->firstname }}</div>
+                        <div class="col-span-1">M.I:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->mi }}</div>
+                        <div class="col-span-1">Lastname:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->lastname }}</div>
+                        <div class="col-span-1">Suffix:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->suffix }}</div>
+                        <div class="col-span-1">Email:</div>
+                        <div class="col-span-1 font-semibold break-words">{{ $applicant->email }}</div>
+                        <div class="col-span-1">Phone Number:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->phone }}</div>
+                        <div class="col-span-1">Religion:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->religion }}</div>
+                        <div class="col-span-1">Birth Date:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->birthdate->format('m/d/Y') }}</div>
+                        <div class="col-span-1">Gender:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->sogie }}</div>
+                        <div class="col-span-1">Address:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->address }}</div>
                     </div>
+                </div>
+            </div>
 
-                    @forelse($applicant->documents as $document)
-                        <div class="mb-4">
-                            <div class="col-span-1 p-2 flex justify-between items-center">
-                                <h4 class="font-semibold document-type" data-type="{{ $document->document_type }}">{{ $document->document_type }}</h4>
-                                <a href="{{ asset('storage/' . $document->file_path) }}"
-                                   target="_blank"
-                                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-xs">
-                                    Open
-                                </a>
+            <!-- Education/Others Card -->
+            <div class="card w-96 bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title">Education/Others</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-1">Highest Education:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->highest_education }}</div>
+                        <div class="col-span-1">Latest Company:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->latest_company }}</div>
+                        <div class="col-span-1">Present Position:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->present_position }}</div>
+                        <div class="col-span-1">Employment Status:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->status_employment }}</div>
+                        <div class="col-span-1">Last Employment Date:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->last_employment_date ?? 'N/A' }}</div>
+                        <div class="col-span-1">Civil Service Eligible:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->civil_service_eligible ? 'Yes' : 'No' }}</div>
+                        <div class="col-span-1">Disability:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->disability ?? 'None' }}</div>
+                        <div class="col-span-1">Pregnant:</div>
+                        <div class="col-span-1 font-semibold">{{ $applicant->is_pregnant ? 'Yes' : 'No' }}</div>
+                        <!-- Applicant Image -->
+                        @if($applicant->image_path)
+                            <div class="mb-4">
+                                <h3 class="font-semibold mb-2">Applicant Image:</h3>
+                                <img src="{{ asset('storage/' . $applicant->image_path) }}"
+                                     alt="Applicant Image"
+                                     class="w-full h-auto rounded-lg shadow-md">
                             </div>
+                        @else
+                            <p class="text-gray-600 mb-4">No applicant image uploaded.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Card -->
+            <div class="card w-96 bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title">Documents</h2>
+                    <!-- Documents -->
+                    @forelse($applicant->documents as $document)
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="document-type font-semibold" data-type="{{ $document->document_type }}">
+                                {{ $document->document_type }}
+                            </span>
+                            <a href="{{ asset('storage/' . $document->file_path) }}"
+                               target="_blank"
+                               class="btn btn-primary btn-sm">
+                                Open
+                            </a>
                         </div>
                     @empty
                         <p class="text-gray-600">No documents uploaded.</p>

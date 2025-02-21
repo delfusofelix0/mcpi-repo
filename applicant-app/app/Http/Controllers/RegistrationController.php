@@ -46,6 +46,7 @@ class RegistrationController
     {
         $validator = Validator::make($request->all(), [
             'position' => 'required|exists:work_positions,id',
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'firstname' => 'required|string|max:255',
             'mi' => 'nullable|string|max:1',
             'lastname' => 'required|string|max:255',
@@ -77,6 +78,10 @@ class RegistrationController
             'cf-turnstile-response' => ['required', Rule::turnstile()],
         ], [
             'position.required' => 'Position is required.',
+            'photo.required' => 'Photo is required.',
+            'photo.image' => 'Photo must be an image file.',
+            'photo.mimes' => 'Photo must be a JPEG, PNG, or JPG file.',
+            'photo.max' => 'Photo must not exceed 2MB.',
             'firstname.required' => 'First name is required.',
             'firstname.max' => 'First name must not exceed 255 characters.',
             'mi.max' => 'Middle initial must not exceed 1 character.',
@@ -132,6 +137,12 @@ class RegistrationController
         // Remove documents from validatedData
         $documents = $validatedData['documents'];
         unset($validatedData['documents']);
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('applicant_photos', 'public');
+            $validatedData['image_path'] = $photoPath;
+        }
 
         // Create registration with position
         $registration = WorkPosition::find($validatedData['position'])
