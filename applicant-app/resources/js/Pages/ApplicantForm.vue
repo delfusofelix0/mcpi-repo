@@ -3,11 +3,17 @@ import {ref} from 'vue';
 import {Head, useForm} from '@inertiajs/vue3';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import Message from 'primevue/message';
 import InputMask from 'primevue/inputmask';
+import InputText from 'primevue/inputtext';
 import { useToast } from 'primevue/usetoast';
 
 const props = defineProps(['positions']);
+
+const visible = ref(false);
+const photoPreview = ref(null);
 
 const form = useForm({
     position: null,
@@ -62,6 +68,21 @@ const educationOptions = ref([
 
 const toast = useToast();
 
+const handlePhotoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        form.photo = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            photoPreview.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        form.photo = null;
+        photoPreview.value = null;
+    }
+};
+
 const submit = () => {
     form.phone = form.phone.replace(/\D/g, '');
     form.post(route('applicant-form.store'), {
@@ -76,6 +97,8 @@ const submit = () => {
         onError: (error) => {
             console.error('Form submission failed');
             toast.add({severity: 'error', summary: 'Error', detail: 'Form submission failed', life: 5000});
+            form.photo = null;
+            photoPreview.value = null;
             console.table(error);
         },
     });
@@ -126,10 +149,36 @@ const submit = () => {
                         <div class="col-12 md:col-6">
                             <div class="p-field">
                                 <label for="photo2x2" class="block mb-2">Upload Photo (2x2)</label>
-                                <input
-                                    class="w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                    id="photo2x2" type="file" accept="image/*"
-                                    @input="handlePhotoUpload" @focus="form.clearErrors('photo')"/>
+                                <div class="flex items-center gap-2">
+                                    <Button label="Show" size="small" @click="visible = true" />
+                                    <label for="photo2x2" class="file-input-button">
+                                        <span class="p-button-label">Choose File</span>
+                                        <input
+                                            class="hidden"
+                                            id="photo2x2"
+                                            type="file"
+                                            accept="image/*"
+                                            @input="handlePhotoUpload"
+                                            @focus="form.clearErrors('photo')"
+                                        />
+                                    </label>
+                                </div>
+
+                                <Dialog v-model:visible="visible" modal header="Edit Profile" :style="{ width: '25rem' }">
+                                    <span class="text-surface-500 dark:text-surface-400 block mb-8">Update your information.</span>
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <label for="username" class="font-semibold w-24">Username</label>
+                                        <InputText id="username" class="flex-auto" autocomplete="off" />
+                                    </div>
+                                    <div class="flex items-center gap-4 mb-8">
+                                        <label for="email" class="font-semibold w-24">Email</label>
+                                        <InputText id="email" class="flex-auto" autocomplete="off" />
+                                    </div>
+                                    <div class="flex justify-end gap-2">
+                                        <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                                        <Button type="button" label="Save" @click="visible = false"></Button>
+                                    </div>
+                                </Dialog>
                                 <Message v-if="form.errors.application_letter" severity="error" variant="simple" size="small">{{ form.errors.photo }}</Message>
                             </div>
                         </div>
@@ -137,7 +186,7 @@ const submit = () => {
                             <div class="p-field">
                                 <label class="block mb-2">Photo Preview</label>
                                 <div v-if="photoPreview" class="mt-2">
-                                    <img :src="photoPreview" alt="Photo preview" class="max-w-full h-auto max-h-48 rounded-lg shadow-md"/>
+                                    <img :src="photoPreview" alt="Photo preview" class="max-w-full h-auto max-h-32 rounded-lg shadow-md"/>
                                 </div>
                                 <div v-else class="mt-2 bg-gray-100 border border-gray-300 rounded-lg p-4 text-center text-gray-500">
                                     No photo uploaded
@@ -327,7 +376,7 @@ const submit = () => {
                                 Letter</label>
                             <input
                                 class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                id="document1" type="file" accept=".pdf"
+                                id="document1" type="file" accept=".pdf" v-on:change="form.application_letter"
                                 @input="form.application_letter = $event.target.files[0]" @focus="form.clearErrors('application_letter')"/>
                             <Message v-if="form.errors.application_letter" severity="error" variant="simple" size="small">{{ form.errors.application_letter }}</Message>
                         </div>
@@ -400,5 +449,26 @@ const submit = () => {
 <style scoped>
 .p-field {
     margin-bottom: 1rem;
+}
+input[type='file'][accept^="image/"]  {
+    color: rgba(0, 0, 0, 0)
+}
+.file-input-button {
+    @apply inline-flex cursor-pointer select-none items-center justify-center overflow-hidden relative
+    bg-surface-0 hover:bg-surface-50 text-surface-700
+    border border-surface-300 hover:border-surface-400
+    focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring-2 focus-visible:ring-primary-500
+    transition-all duration-200 rounded-md
+    text-sm px-[0.625rem] py-[0.375rem] font-semibold;
+}
+
+.file-input-button:active {
+    @apply bg-surface-100 border-surface-500 transform scale-95;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Ensure the label has the same height as the button */
+.file-input-button {
+    height: 2.2rem;
 }
 </style>
