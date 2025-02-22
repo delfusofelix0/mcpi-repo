@@ -6,19 +6,23 @@ use App\Models\WorkPosition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class ApplicantRegistrationController
 {
     public function viewPosition()
     {
-        $positions = WorkPosition::all();
-        return view('applicant-form', compact('positions'));
+        $positions = WorkPosition::select('id', 'name', 'description')->get();
+        return Inertia::render('ApplicantForm', [
+            'positions' => $positions
+        ]);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'position' => 'required|exists:work_positions,id',
+//            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'first_name' => 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:1',
             'last_name' => 'required|string|max:255',
@@ -50,6 +54,10 @@ class ApplicantRegistrationController
 //            'cf-turnstile-response' => ['required', Rule::turnstile()],
         ], [
             'position.required' => 'Position is required.',
+            'photo.required' => 'Photo is required.',
+            'photo.image' => 'Photo must be an image file.',
+            'photo.mimes' => 'Photo must be a JPEG, PNG, or JPG file.',
+            'photo.max' => 'Photo must not exceed 2MB.',
             'first_name.required' => 'First name is required.',
             'first_name.max' => 'First name must not exceed 255 characters.',
             'middle_initial.max' => 'Middle initial must not exceed 1 character.',
@@ -102,26 +110,44 @@ class ApplicantRegistrationController
 
         $validatedData = $validator->validated();
 
+        // Remove documents from validatedData
+//        $documents = $validatedData['documents'];
+//        unset($validatedData['documents']);
+
+        // Handle photo upload
+//        if ($request->hasFile('photo')) {
+//            $photoPath = $request->file('photo')->store('applicant_photos', 'public');
+//            $validatedData['image_path'] = $photoPath;
+//        }
+
         // Create registration with position
-        $registration = WorkPosition::find($validatedData['position'])
+        $registration = WorkPosition::findOrFail($validatedData['position'])
             ->registrations()->create($validatedData);
 
         // Handle file uploads
-        $fileFields = [
-            'application_letter', 'personal_data_sheet', 'performance_rating',
-            'eligibility_proof', 'transcript', 'employment_proof', 'training_certificates'
+        $documentTypes = [
+            'application_letter',
+            'personal_data_sheet',
+            'performance_rating',
+            'eligibility_proof',
+            'transcript',
+            'employment_proof',
+            'training_certificates'
         ];
 
-        foreach ($fileFields as $field) {
-            if ($request->hasFile($field)) {
-                $path = $request->file($field)->store('registration_documents', 'public');
+        foreach ($documentTypes as $type) {
+            if ($request->hasFile($type)) {
+                $file = $request->file($type);
+                $path = $file->store('registration_documents', 'public');
                 $registration->documents()->create([
-                    'document_type' => $field,
+                    'document_type' => $type,
                     'file_path' => $path,
                 ]);
             }
         }
 
-        return redirect()->back()->with('success', 'Registration submitted successfully');
+        return Inertia::render('ApplicantForm', [
+            'submitted' => true
+        ]);
     }
 }

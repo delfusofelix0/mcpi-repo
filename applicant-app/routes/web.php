@@ -13,13 +13,15 @@ Route::get('/', function () {
     ]);
 });
 
-//add route for post registration
-Route::post('/applicant-form', [ApplicantRegistrationController::class, 'store'])->name('applicant-form.store');
+Route::prefix('applicant-form')->group(function () {
+    Route::get('/', [ApplicantRegistrationController::class, 'viewPosition'])->name('applicant-form.viewPosition');
+    Route::post('/', [ApplicantRegistrationController::class, 'store'])->name('applicant-form.store');
+});
 
-//route applicantForm view with name
-Route::get('/applicant-form', function () {
-    return Inertia::render('ApplicantForm');
-})->name('applicant-form');
+////route applicantForm view with name
+//Route::get('/applicant-form', function () {
+//    return Inertia::render('ApplicantForm');
+//})->name('applicant-form');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
