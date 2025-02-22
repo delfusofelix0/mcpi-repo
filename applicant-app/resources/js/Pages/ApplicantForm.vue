@@ -11,6 +11,7 @@ const props = defineProps(['positions']);
 
 const form = useForm({
     position: null,
+    photo: null,
     first_name: '',
     middle_initial: null,
     last_name: '',
@@ -60,10 +61,9 @@ const educationOptions = ref([
 ]);
 
 const toast = useToast();
+
 const submit = () => {
     form.phone = form.phone.replace(/\D/g, '');
-    const dataform = form.data();
-    console.log('Processed form data:', dataform);
     form.post(route('applicant-form.store'), {
         preserveScroll: true,
         preserveState: true,
@@ -121,7 +121,29 @@ const submit = () => {
                         </div>
                     </div>
                     <hr class="my-4"/>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-20">
+                        <div class="col-12 md:col-6">
+                            <div class="p-field">
+                                <label for="photo2x2" class="block mb-2">Upload Photo (2x2)</label>
+                                <input
+                                    class="w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                                    id="photo2x2" type="file" accept="image/*"
+                                    @input="handlePhotoUpload" @focus="form.clearErrors('photo')"/>
+                                <Message v-if="form.errors.application_letter" severity="error" variant="simple" size="small">{{ form.errors.photo }}</Message>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="p-field">
+                                <label class="block mb-2">Photo Preview</label>
+                                <div v-if="photoPreview" class="mt-2">
+                                    <img :src="photoPreview" alt="Photo preview" class="max-w-full h-auto max-h-48 rounded-lg shadow-md"/>
+                                </div>
+                                <div v-else class="mt-2 bg-gray-100 border border-gray-300 rounded-lg p-4 text-center text-gray-500">
+                                    No photo uploaded
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-12 md:col-6">
                             <div class="p-field">
                                 <label for="firstname" class="block mb-2">First name</label>

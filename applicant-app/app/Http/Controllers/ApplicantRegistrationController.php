@@ -22,7 +22,7 @@ class ApplicantRegistrationController
     {
         $validator = Validator::make($request->all(), [
             'position' => 'required|exists:work_positions,id',
-//            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'first_name' => 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:1',
             'last_name' => 'required|string|max:255',
@@ -115,10 +115,10 @@ class ApplicantRegistrationController
 //        unset($validatedData['documents']);
 
         // Handle photo upload
-//        if ($request->hasFile('photo')) {
-//            $photoPath = $request->file('photo')->store('applicant_photos', 'public');
-//            $validatedData['image_path'] = $photoPath;
-//        }
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('applicant_photos', 'public');
+            $validatedData['image_path'] = $photoPath;
+        }
 
         // Create registration with position
         $registration = WorkPosition::findOrFail($validatedData['position'])
