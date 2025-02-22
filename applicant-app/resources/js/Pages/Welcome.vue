@@ -23,7 +23,7 @@ const loading = ref(false);
 
 const goToApplicantForm = () => {
     loading.value = true;
-    router.visit(route('applicant-form'), {
+    router.visit(route('applicant-form.index'), {
         preserveState: true,
         preserveScroll: true,
         onFinish: () => {
@@ -44,9 +44,9 @@ const goToApplicantForm = () => {
         >
             <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
                 <header
-                    class="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3"
+                    class="grid grid-cols-1 items-center gap-2 py-10"
                 >
-                    <div class="flex lg:col-start-2 lg:justify-center">
+                    <div class="flex justify-center">
                         <ApplicationLogo class="max-h-52"/>
                     </div>
 <!--                    <nav v-if="canLogin" class="-mx-3 flex flex-1 justify-end">-->

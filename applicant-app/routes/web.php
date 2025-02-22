@@ -14,7 +14,7 @@ Route::get('/', function () {
 });
 
 Route::prefix('applicant-form')->group(function () {
-    Route::get('/', [ApplicantRegistrationController::class, 'viewPosition'])->name('applicant-form.viewPosition');
+    Route::get('/', [ApplicantRegistrationController::class, 'index'])->name('applicant-form.index');
     Route::post('/', [ApplicantRegistrationController::class, 'store'])->name('applicant-form.store');
 });
 

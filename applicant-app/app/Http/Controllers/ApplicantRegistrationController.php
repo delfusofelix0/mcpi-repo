@@ -10,8 +10,9 @@ use Inertia\Inertia;
 
 class ApplicantRegistrationController
 {
-    public function viewPosition()
+    public function index()
     {
+        // return an inertia response with the positions
         $positions = WorkPosition::select('id', 'name', 'description')->get();
         return Inertia::render('ApplicantForm', [
             'positions' => $positions
