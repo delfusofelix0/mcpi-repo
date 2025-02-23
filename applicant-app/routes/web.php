@@ -16,7 +16,7 @@ Route::get('/', function () {
 });
 
 Route::prefix('applicant-form')->group(function () {
-    Route::get('/', [ApplicantRegistrationController::class, 'index'])->name('applicant-form.index');
+    Route::get('/', [ApplicantRegistrationController::class, 'workPosition'])->name('applicant-form.workPosition');
     Route::post('/', [ApplicantRegistrationController::class, 'store'])->name('applicant-form.store');
 });
 
@@ -28,10 +28,15 @@ Route::prefix('applicant-form')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('dashboard')->group(function () {
         Route::get('/', [ApplicantController::class, 'index'])->name('dashboard');
-        // Add other dashboard routes here if needed
-    Route::get('/', [PositionController::class, 'index']);
+        Route::post('/{id}', [ApplicantController::class, 'statusStore'])->name('applicant.statusStore');
+        Route::delete('/{id}', [ApplicantController::class, 'destroy'])->name('applicant.destroy');
     });
 });
+
+Route::get('/applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show')
+    ->middleware(['auth', 'verified']);
+
+
 
 //Route::prefix('dashboard')->group(function () {
 //    Route::get('/', function() {
