@@ -6,6 +6,8 @@ import ApplicantTable from "@/Pages/ApplicantTable.vue";
 const props = defineProps([
     'registrations'
 ]);
+
+console.table(props.registrations);
 </script>
 
 <template>
@@ -30,7 +32,7 @@ const props = defineProps([
                     </div>
                 </div>
                 <div class="mt-6">
-                    <ApplicantTable />
+                    <ApplicantTable :registrations="registrations"/>
                 </div>
             </div>
         </div>
