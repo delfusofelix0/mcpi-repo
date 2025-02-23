@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Registration;
 use App\Models\WorkPosition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -10,7 +11,7 @@ use Inertia\Inertia;
 
 class ApplicantRegistrationController
 {
-    public function index()
+    public function workPosition()
     {
         // return an inertia response with the positions
         $positions = WorkPosition::select('id', 'name', 'description')->get();
