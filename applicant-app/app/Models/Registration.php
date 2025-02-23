@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Registration extends Model
@@ -60,8 +61,8 @@ class Registration extends Model
         return $this->hasMany(RegistrationDocument::class);
     }
 
-    public function position()
+    public function position(): BelongsTo
     {
-        return $this->belongsTo(WorkPosition::class);
+        return $this->belongsTo(Position::class);
     }
 }
