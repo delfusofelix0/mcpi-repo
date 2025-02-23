@@ -28,7 +28,7 @@ class ApplicantRegistrationController
             'middle_initial' => 'nullable|string|max:1',
             'last_name' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:3',
-            'email' => 'required|email|max:255',
+            'email' => 'required|email:rfc,dns|max:255',
             'phone' => 'required|string|max:20',
             'religion' => 'nullable|string|max:255',
             'sogie' => 'required|string|max:255',
