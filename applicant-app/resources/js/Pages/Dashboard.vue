@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import ApplicantTable from "@/Pages/ApplicantTable.vue";
+import PositionTable from "@/Pages/PositionTable.vue";
 
 const props = defineProps([
     'registrations'
@@ -33,6 +34,9 @@ console.table(props.registrations);
                 </div>
                 <div class="mt-6">
                     <ApplicantTable :registrations="registrations"/>
+                </div>
+                <div class="mt-6">
+                    <PositionTable/>
                 </div>
             </div>
         </div>
