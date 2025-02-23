@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use App\Models\Position;
+use App\Models\WorkPosition;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -12,7 +12,7 @@ class ViewApplicant extends Component
 
     public function __construct($id)
     {
-        $this->applicant = Position::findOrFail($id);
+        $this->applicant = WorkPosition::findOrFail($id);
     }
 
     public function render(): View

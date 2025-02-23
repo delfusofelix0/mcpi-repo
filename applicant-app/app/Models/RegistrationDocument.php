@@ -13,6 +13,6 @@ class RegistrationDocument extends Model
 
     public function registration()
     {
-        return $this->belongsTo(Position::class);
+        return $this->belongsTo(WorkPosition::class);
     }
 }

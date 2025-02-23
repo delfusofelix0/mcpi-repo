@@ -42,6 +42,7 @@ class Registration extends Model
         'transcript_path',
         'employment_proof_path',
         'training_certificates_path',
+        'status'
     ];
 
     protected $casts = [
@@ -63,6 +64,6 @@ class Registration extends Model
 
     public function position(): BelongsTo
     {
-        return $this->belongsTo(Position::class);
+        return $this->belongsTo(WorkPosition::class, 'work_position_id');
     }
 }
