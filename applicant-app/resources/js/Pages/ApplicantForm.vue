@@ -74,6 +74,7 @@ const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
         form.photo = file;
+        form.clearErrors('photo');
         const reader = new FileReader();
         reader.onload = (e) => {
             photoPreview.value = e.target.result;
