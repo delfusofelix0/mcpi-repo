@@ -6,7 +6,7 @@ import Row from 'primevue/row';                   // optional
 
 </script>
 
-<template>p
+<template>
 
 </template>
 
