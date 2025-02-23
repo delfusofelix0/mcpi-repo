@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicantRegistrationController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -22,11 +24,22 @@ Route::prefix('applicant-form')->group(function () {
 //Route::get('/applicant-form', function () {
 //    return Inertia::render('ApplicantForm');
 //})->name('applicant-form');
+//
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/', [ApplicantController::class, 'index'])->name('dashboard');
+        // Add other dashboard routes here if needed
+    Route::get('/', [PositionController::class, 'index']);
+    });
+});
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+//Route::prefix('dashboard')->group(function () {
+//    Route::get('/', function() {
+//        return Inertia::render('Dashboard');
+//    });
+//    Route::get('/', [ApplicantController::class, 'index']);
+////    Route::get('/', [PositionController::class, 'index'])->name('dashboard.positions');
+//})->middleware(['auth', 'verified']);
 
 
 Route::middleware('auth')->group(function () {
