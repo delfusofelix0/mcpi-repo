@@ -134,6 +134,7 @@ const submit = () => {
                                         optionValue="id"
                                         placeholder="Please choose.."
                                         class="w-full"
+                                        :class="{ 'p-invalid': form.errors.position }"
                                         @change="form.clearErrors('position')"
                                 >
                                     <template #option="slotProps">
@@ -200,7 +201,7 @@ const submit = () => {
                         <div class="col-12 md:col-6">
                             <div class="p-field">
                                 <label for="firstname" class="block mb-2">First name</label>
-                                <InputText id="firstname" class="w-full" v-model="form.first_name" :invalid="form.errors.first_name"
+                                <InputText id="firstname" class="w-full" v-model="form.first_name" :class="{ 'p-invalid': form.errors.first_name }"
                                            placeholder="Firstname" @input="form.clearErrors('first_name')"/>
                                 <Message v-if="form.errors.first_name" severity="error" variant="simple" size="small">{{ form.errors.first_name }}</Message>
                             </div>
@@ -216,7 +217,7 @@ const submit = () => {
                         <div class="col-12 md:col-6">
                             <div class="p-field">
                                 <label for="lastname" class="block mb-2">Last name</label>
-                                <InputText id="lastname" class="w-full" v-model="form.last_name" :invalid="form.errors.last_name"
+                                <InputText id="lastname" class="w-full" v-model="form.last_name" :class="{ 'p-invalid': form.errors.last_name }"
                                            placeholder="Lastname" @input="form.clearErrors('last_name')"/>
                                 <Message v-if="form.errors.last_name" severity="error" variant="simple" size="small">{{ form.errors.last_name }}</Message>
                             </div>
@@ -232,7 +233,7 @@ const submit = () => {
                         <div class="col-12 md:col-6">
                             <div class="p-field">
                                 <label for="email" class="block mb-2">Email</label>
-                                <InputText id="email" class="w-full" v-model="form.email" type="email" :invalid="form.errors.email"
+                                <InputText id="email" class="w-full" v-model="form.email" type="email" :class="{ 'p-invalid': form.errors.email }"
                                            placeholder="Email" @input="form.clearErrors('email')"/>
                                 <Message v-if="form.errors.email" severity="error" variant="simple" size="small">{{ form.errors.email }}</Message>
                             </div>
@@ -240,7 +241,7 @@ const submit = () => {
                         <div class="col-12 md:col-6">
                             <div class="p-field">
                                 <label for="phone" class="block mb-2">Phone Number</label>
-                                <InputMask id="phone" class="w-full" v-model="form.phone" mask="+63 9999999999"
+                                <InputMask id="phone" class="w-full" v-model="form.phone" :class="{ 'p-invalid': form.errors.phone }" mask="+63 9999999999"
                                            placeholder="+63 9XXXXXXXXX" @update:modelValue="() => form.clearErrors('phone')"/>
                                 <Message v-if="form.errors.phone" severity="error" variant="simple" size="small">{{ form.errors.phone }}</Message>
                             </div>
@@ -264,6 +265,7 @@ const submit = () => {
                                         optionValue="code"
                                         placeholder="Please choose.."
                                         class="w-full"
+                                        :class="{ 'p-invalid': form.errors.sogie }"
                                         @change="form.clearErrors('sogie')"/>
                                 <Message v-if="form.errors.sogie" severity="error" variant="simple" size="small">{{ form.errors.sogie }}</Message>
                             </div>
@@ -272,15 +274,15 @@ const submit = () => {
                             <div class="p-field">
                                 <label for="birthdate" class="block mb-2">Birth Date</label>
                                 <DatePicker id="birthdate" class="w-full" v-model="form.birth_date"
-                                            showIcon fluid :showOnFocus="false"
-                                            dateFormat="mm-dd-yy" placeholder="MM-DD-YYYY" @update:modelValue="() => form.clearErrors('birth_date')"/>
+                                            dateFormat="mm-dd-yy" placeholder="MM-DD-YYYY" :invalid="form.errors.birth_date"
+                                            @update:modelValue="() => form.clearErrors('birth_date')"/>
                                 <Message v-if="form.errors.birth_date" severity="error" variant="simple" size="small">{{ form.errors.birth_date }}</Message>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="p-field">
                                 <label for="address" class="block mb-2">Address</label>
-                                <InputText id="address" class="w-full" v-model="form.address"
+                                <InputText id="address" class="w-full" v-model="form.address" :class="{ 'p-invalid': form.errors.address }"
                                            placeholder="Prk./Brgy./City/Municipality" @input="form.clearErrors('address')"/>
                                 <Message v-if="form.errors.address" severity="error" variant="simple" size="small">{{ form.errors.address }}</Message>
                             </div>
@@ -295,6 +297,7 @@ const submit = () => {
                                         optionValue="code"
                                         placeholder="Please choose.."
                                         class="w-full"
+                                        :class="{ 'p-invalid': form.errors.highest_education }"
                                         @change="form.clearErrors('highest_education')"/>
                                 <Message v-if="form.errors.highest_education" severity="error" variant="simple" size="small">{{ form.errors.highest_education }}</Message>
                             </div>
@@ -328,7 +331,6 @@ const submit = () => {
                             <div class="p-field">
                                 <label for="still_employed" class="block mb-2">Last Date of Employment</label>
                                 <DatePicker id="still_employed" class="w-full" v-model="form.last_employment_date"
-                                            showIcon fluid :showOnFocus="false"
                                             dateFormat="mm-dd-yy" placeholder="MM-DD-YYYY"/>
                                 <Message v-if="form.errors.last_employment_date" severity="error" variant="simple" size="small">{{ form.errors.last_employment_date }}</Message>
                             </div>
