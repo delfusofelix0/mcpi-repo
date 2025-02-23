@@ -8,12 +8,14 @@ import Dialog from 'primevue/dialog';
 import Message from 'primevue/message';
 import InputMask from 'primevue/inputmask';
 import InputText from 'primevue/inputtext';
+import Checkbox from 'primevue/checkbox';
 import { useToast } from 'primevue/usetoast';
 
 const props = defineProps(['positions']);
 
 const visible = ref(false);
 const photoPreview = ref(null);
+const resetKey = ref(0);
 
 const form = useForm({
     position: null,
@@ -92,13 +94,14 @@ const submit = () => {
         onSuccess: () => {
             console.log('Form submitted successfully');
             toast.add({severity: 'success', summary: 'Success', detail: 'Form submitted successfully', life: 5000});
+            form.photo = null;
+            photoPreview.value = null;
+            resetKey.value++;
             form.reset();
         },
         onError: (error) => {
             console.error('Form submission failed');
             toast.add({severity: 'error', summary: 'Error', detail: 'Form submission failed', life: 5000});
-            form.photo = null;
-            photoPreview.value = null;
             console.table(error);
         },
     });
@@ -196,7 +199,7 @@ const submit = () => {
                         <div class="col-12 md:col-6">
                             <div class="p-field">
                                 <label for="firstname" class="block mb-2">First name</label>
-                                <InputText id="firstname" class="w-full" v-model="form.first_name"
+                                <InputText id="firstname" class="w-full" v-model="form.first_name" :invalid="form.errors.first_name"
                                            placeholder="Firstname" @input="form.clearErrors('first_name')"/>
                                 <Message v-if="form.errors.first_name" severity="error" variant="simple" size="small">{{ form.errors.first_name }}</Message>
                             </div>
@@ -212,7 +215,7 @@ const submit = () => {
                         <div class="col-12 md:col-6">
                             <div class="p-field">
                                 <label for="lastname" class="block mb-2">Last name</label>
-                                <InputText id="lastname" class="w-full" v-model="form.last_name"
+                                <InputText id="lastname" class="w-full" v-model="form.last_name" :invalid="form.errors.last_name"
                                            placeholder="Lastname" @input="form.clearErrors('last_name')"/>
                                 <Message v-if="form.errors.last_name" severity="error" variant="simple" size="small">{{ form.errors.last_name }}</Message>
                             </div>
@@ -228,7 +231,7 @@ const submit = () => {
                         <div class="col-12 md:col-6">
                             <div class="p-field">
                                 <label for="email" class="block mb-2">Email</label>
-                                <InputText id="email" class="w-full" v-model="form.email" type="email"
+                                <InputText id="email" class="w-full" v-model="form.email" type="email" :invalid="form.errors.email"
                                            placeholder="Email" @input="form.clearErrors('email')"/>
                                 <Message v-if="form.errors.email" severity="error" variant="simple" size="small">{{ form.errors.email }}</Message>
                             </div>
@@ -376,7 +379,7 @@ const submit = () => {
                                 Letter</label>
                             <input
                                 class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                id="document1" type="file" accept=".pdf" v-on:change="form.application_letter"
+                                id="document1" type="file" accept=".pdf" :key="resetKey"
                                 @input="form.application_letter = $event.target.files[0]" @focus="form.clearErrors('application_letter')"/>
                             <Message v-if="form.errors.application_letter" severity="error" variant="simple" size="small">{{ form.errors.application_letter }}</Message>
                         </div>
@@ -385,7 +388,7 @@ const submit = () => {
                                 Personal Data Sheet (PDS) with recent passport-sized picture.*Required</label>
                             <input
                                 class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                id="document2" type="file" accept=".pdf"
+                                id="document2" type="file" accept=".pdf" :key="resetKey"
                                 @input="form.personal_data_sheet = $event.target.files[0]" @focus="form.clearErrors('personal_data_sheet')"/>
                             <Message v-if="form.errors.personal_data_sheet" severity="error" variant="simple" size="small">{{ form.errors.personal_data_sheet }}</Message>
                         </div>
@@ -394,7 +397,7 @@ const submit = () => {
                                 in the present position for one(1) year (if applicable).</label>
                             <input
                                 class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                id="document3" type="file" accept=".pdf"
+                                id="document3" type="file" accept=".pdf" :key="resetKey"
                                 @input="form.performance_rating = $event.target.files[0]" @focus="form.clearErrors('performance_rating')"/>
                             <Message v-if="form.errors.performance_rating" severity="error" variant="simple" size="small">{{ form.errors.performance_rating }}</Message>
                         </div>
@@ -403,7 +406,7 @@ const submit = () => {
                                 Eligibility/Rating or Professional License as proof of eligibility.*Required</label>
                             <input
                                 class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                id="document4" type="file" accept=".pdf"
+                                id="document4" type="file" accept=".pdf" :key="resetKey"
                                 @input="form.eligibility_proof = $event.target.files[0]" @focus="form.clearErrors('eligibility_proof')"/>
                             <Message v-if="form.errors.eligibility_proof" severity="error" variant="simple" size="small">{{ form.errors.eligibility_proof }}</Message>
                         </div>
@@ -412,7 +415,7 @@ const submit = () => {
                                 Records, including Diploma as proof of highest education attained.*Required</label>
                             <input
                                 class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                id="document5" type="file" accept=".pdf"
+                                id="document5" type="file" accept=".pdf" :key="resetKey"
                                 @input="form.transcript = $event.target.files[0]" @focus="form.clearErrors('transcript')"/>
                             <Message v-if="form.errors.transcript" severity="error" variant="simple" size="small">{{ form.errors.transcript }}</Message>
                         </div>
@@ -422,7 +425,7 @@ const submit = () => {
                                 experience.*Required</label>
                             <input
                                 class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                id="document6" type="file" accept=".pdf"
+                                id="document6" type="file" accept=".pdf" :key="resetKey"
                                 @input="form.employment_proof = $event.target.files[0]" @focus="form.clearErrors('employment_proof')"/>
                             <Message v-if="form.errors.employment_proof" severity="error" variant="simple" size="small">{{ form.errors.employment_proof }}</Message>
                         </div>
@@ -431,7 +434,7 @@ const submit = () => {
                                 Training/Seminar/Conferences as proof.*Required</label>
                             <input
                                 class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                id="document7" type="file" accept=".pdf"
+                                id="document7" type="file" accept=".pdf" :key="resetKey"
                                 @input="form.training_certificates = $event.target.files[0]" @focus="form.clearErrors('training_certificates')"/>
                             <Message v-if="form.errors.training_certificates" severity="error" variant="simple" size="small">{{ form.errors.training_certificates }}</Message>
                         </div>
