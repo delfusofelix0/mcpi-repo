@@ -6,18 +6,26 @@ use App\Models\Position;
 use App\Models\Applicant;
 use App\Models\Registration;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ApplicantController extends Controller
 {
     public function index()
     {
-        $registrations = Registration::latest()->get();
-        return view('dashboard', compact('registrations'));
+        $query = Registration::latest();
+
+        $registrations = $query->get();
+
+        return Inertia::render('Dashboard', [
+            'registrations' => $registrations
+        ]);
     }
 
     public function view($id)
     {
         $applicant = Registration::findOrFail($id);
-        return view('view-applicant', compact('applicant'));
+        return Inertia::render('Dashboard', [
+            'applicant' => $applicant
+        ]);
     }
 }
