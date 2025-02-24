@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateWorkPositionsTable extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('work_positions', function (Blueprint $table) {
             $table->id();
@@ -16,7 +16,7 @@ class CreateWorkPositionsTable extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('work_positions');
     }

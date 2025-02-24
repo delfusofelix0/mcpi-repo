@@ -5,10 +5,10 @@ import ApplicantTable from "@/Pages/ApplicantTable.vue";
 import PositionTable from "@/Pages/PositionTable.vue";
 
 const props = defineProps([
-    'registrations'
+    'registrations', 'positions'
 ]);
 
-console.table(props.registrations);
+console.table(props);
 </script>
 
 <template>
@@ -36,7 +36,7 @@ console.table(props.registrations);
                     <ApplicantTable :registrations="registrations"/>
                 </div>
                 <div class="mt-6">
-                    <PositionTable/>
+                    <PositionTable :positions="positions"/>
                 </div>
             </div>
         </div>

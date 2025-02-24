@@ -9,26 +9,6 @@ use Inertia\Inertia;
 
 class ApplicantController extends Controller
 {
-    public function index()
-    {
-        $query = Registration::select([
-            'id',
-            'first_name',
-            'last_name',
-            'email',
-            'highest_education',
-            'work_position_id',
-            'created_at',
-            'status'
-        ])->with('position:id,name')->latest();
-
-        $registrations = $query->get();
-
-        return Inertia::render('Dashboard', [
-            'registrations' => $registrations
-        ]);
-    }
-
     public function view($id)
     {
         $applicant = Registration::findOrFail($id);
@@ -61,7 +41,7 @@ class ApplicantController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroyApplicant($id)
     {
         try {
             $registration = Registration::findOrFail($id);

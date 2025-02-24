@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicantRegistrationController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -27,9 +28,13 @@ Route::prefix('applicant-form')->group(function () {
 //
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('dashboard')->group(function () {
-        Route::get('/', [ApplicantController::class, 'index'])->name('dashboard');
-        Route::post('/{id}', [ApplicantController::class, 'statusStore'])->name('applicant.statusStore');
-        Route::delete('/{id}', [ApplicantController::class, 'destroy'])->name('applicant.destroy');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard'); //registrations and position list
+        Route::post('/applicant/{id}', [ApplicantController::class, 'statusStore'])->name('applicant.statusStore');
+        Route::delete('/applicant/{id}', [ApplicantController::class, 'destroyApplicant'])->name('applicant.destroyApplicant')
+            ->middleware('role:Admin');
+        Route::post('/', [PositionController::class, 'store'])->name('positions.store');
+        Route::put('/position/{id}', [PositionController::class, 'update'])->name('positions.update');
+        Route::delete('/position/{id}', [PositionController::class, 'destroy'])->name('positions.destroy');
     });
 });
 

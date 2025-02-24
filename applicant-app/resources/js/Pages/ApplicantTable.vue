@@ -6,10 +6,11 @@ import Row from 'primevue/row';                   // optional
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Select from 'primevue/select';
-import { useToast } from "primevue/usetoast";
-import { ref } from 'vue';
+import {FilterMatchMode,FilterOperator} from '@primevue/core/api';
+import {useToast} from "primevue/usetoast";
+import {ref} from 'vue';
 import {useForm} from "@inertiajs/vue3";
-import { router } from '@inertiajs/vue3'
+import {router} from '@inertiajs/vue3'
 
 const props = defineProps([
     'registrations'
@@ -24,11 +25,11 @@ const deleteDialogVisible = ref(false);
 const applicantToDelete = ref(null);
 
 const statusOptions = [
-    { label: 'Pending', value: 'Pending' },
-    { label: 'Hired', value: 'Hired' },
-    { label: 'Option', value: 'Option' },
-    { label: 'Viewed', value: 'Viewed' },
-    { label: 'Rejected', value: 'Rejected' },
+    {label: 'Pending', value: 'Pending'},
+    {label: 'Hired', value: 'Hired'},
+    {label: 'Option', value: 'Option'},
+    {label: 'Viewed', value: 'Viewed'},
+    {label: 'Rejected', value: 'Rejected'},
 ];
 
 const statusForm = useForm({
@@ -38,14 +39,11 @@ const statusForm = useForm({
 const deleteForm = useForm({});
 
 const formatDate = (value) => {
-    if (value) {
-        return new Date(value).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-    }
-    return '';
+    return new Date(value).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
 };
 
 const openStatusDialog = (applicant) => {
@@ -60,47 +58,97 @@ const openDeleteDialog = (applicant) => {
 };
 
 const updateStatus = () => {
-    statusForm.post(route('applicant.statusStore', { id: selectedApplicant.value.id }), {
+    statusForm.post(route('applicant.statusStore', {id: selectedApplicant.value.id}), {
         preserveScroll: true,
         onSuccess: () => {
-            toast.add({ severity: 'success', summary: 'Success!', detail: 'Status changed.', group: 'tl', life: 3000 });
+            toast.add({severity: 'success', summary: 'Success!', detail: 'Status changed.', group: 'tl', life: 3000});
             console.log('Status updated successfully');
             dialogVisible.value = false;
             selectedApplicant.value = null;
         },
         onError: (error) => {
-            toast.add({ severity: 'error', summary: 'Error!', detail: 'Status not changed.', group: 'tl', life: 3000 });
+            toast.add({severity: 'error', summary: 'Error!', detail: 'Status not changed.', group: 'tl', life: 3000});
             console.error('Error updating status', error);
         },
     });
 };
 
 const viewApplicant = (id) => {
-    router.visit(route('applicant.show', { id: id }));
+    router.visit(route('applicant.show', {id: id}));
 };
 
 const deleteApplicant = () => {
     if (applicantToDelete.value) {
-        deleteForm.delete(route('applicant.destroy', { id: applicantToDelete.value.id }), {
+        deleteForm.delete(route('applicant.destroyApplicant', {id: applicantToDelete.value.id}), {
             preserveScroll: true,
             onSuccess: () => {
-                toast.add({ severity: 'success', summary: 'Success!', detail: 'Applicant deleted successfully', group: 'tl', life: 3000 });
+                toast.add({
+                    severity: 'success',
+                    summary: 'Success!',
+                    detail: 'Applicant deleted successfully',
+                    group: 'tl',
+                    life: 3000
+                });
                 deleteDialogVisible.value = false;
                 applicantToDelete.value = null;
             },
             onError: () => {
-                toast.add({ severity: 'error', summary: 'Error!', detail: 'Failed to delete applicant', group: 'tl', life: 3000 });
+                toast.add({
+                    severity: 'error',
+                    summary: 'Error!',
+                    detail: 'Failed to delete applicant',
+                    group: 'tl',
+                    life: 3000
+                });
             },
         });
+    }
+};
+
+const filters = ref();
+
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        'first_name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+        'last_name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+        'email': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+        'position.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+        'status': { value: null, matchMode: FilterMatchMode.EQUALS },
+        'created_at': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] }
+    };
+};
+
+initFilters();
+
+const clearFilter = () => {
+    initFilters();
+};
+const statuses = ref(['Pending','Hired', 'Option', 'Viewed', 'Rejected']);
+const getSeverity = (status) => {
+    switch (status) {
+        case 'Pending':
+            return 'info';
+        case 'Hired':
+            return 'success';
+        case 'Option':
+            return 'warning';
+        case 'Viewed':
+            return 'primary';
+        case 'Rejected':
+            return 'danger';
+        default:
+            return 'info';
     }
 };
 </script>
 
 
 <template>
-    <Toast position="top-left" group="tl" />
+    <Toast position="top-left" group="tl"/>
     <div class="bg-white p-4 rounded-lg shadow-md">
-        <DataTable :value="props.registrations"
+        <DataTable v-model:filters="filters"
+                   :value="props.registrations"
                    showGridlines
                    stripedRows
                    paginator
@@ -108,7 +156,25 @@ const deleteApplicant = () => {
                    :rowsPerPageOptions="[5, 10, 20, 50]"
                    tableStyle="min-width: 25rem"
                    class="p-datatable-sm"
-                   responsiveLayout="scroll">
+                   responsiveLayout="scroll"
+                   filterDisplay="menu"
+                   :globalFilterFields="['first_name', 'last_name', 'email', 'position.name', 'created_at']">
+            <template #header>
+                <div class="flex justify-between">
+                    <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()"/>
+                    <IconField>
+                        <InputIcon>
+                            <i class="pi pi-search"/>
+                        </InputIcon>
+                        <InputText v-model="filters['global'].value" placeholder="Keyword Search"/>
+                    </IconField>
+                </div>
+            </template>
+            <template #empty>
+                <div class="p-4 text-center">
+                    <p>No applicants found.</p>
+                </div>
+            </template>
             <Column header="Name" class="text-left">
                 <template #body="slotProps">
                     {{ slotProps.data.first_name }} {{ slotProps.data.last_name }}
@@ -116,7 +182,18 @@ const deleteApplicant = () => {
             </Column>
             <Column field="email" header="Email" class="text-left"></Column>
             <Column field="position.name" header="Position" class="text-left"></Column>
-            <Column field="status" header="Status" class="text-left"></Column>
+            <Column field="status" header="Status" :showFilterMatchModes="false"  class="text-left">
+                <template #body="{ data }">
+                    <Tag :value="data.status" :severity="getSeverity(data.status)" />
+                </template>
+                <template #filter="{ filterModel }">
+                    <Select v-model="filterModel.value" :options="statuses" placeholder="Select One" showClear>
+                        <template #option="slotProps">
+                            <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+                        </template>
+                    </Select>
+                </template>
+            </Column>
             <Column field="created_at" header="Applied At" class="text-left">
                 <template #body="slotProps">
                     {{ formatDate(slotProps.data.created_at) }}
@@ -125,27 +202,24 @@ const deleteApplicant = () => {
             <Column header="Action" class="text-center">
                 <template #body="slotProps">
                     <div class="flex justify-center gap-2">
-                        <Button icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-info" @click="openStatusDialog(slotProps.data)" />
-                        <Button icon="pi pi-eye" class="p-button-text p-button-rounded p-button-success" @click="viewApplicant(slotProps.data.id)" />
-                        <Button icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" @click="openDeleteDialog(slotProps.data)" />
+                        <Button icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-info" @click="openStatusDialog(slotProps.data)" aria-label="Edit status" />
+                        <Button icon="pi pi-eye" class="p-button-text p-button-rounded p-button-success" @click="viewApplicant(slotProps.data.id)" aria-label="View applicant" />
+                        <Button icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" @click="openDeleteDialog(slotProps.data)" aria-label="Delete applicant" />
                     </div>
                 </template>
             </Column>
-            <template #empty>
-                <div class="p-4 text-center">
-                    <p>No applicants found.</p>
-                </div>
-            </template>
         </DataTable>
 
         <!-- Status Update Dialog -->
         <Dialog v-model:visible="dialogVisible" modal header="Update Applicant Status" :style="{ width: '350px' }">
             <div class="flex flex-col gap-4">
-                <Select v-model="statusForm.status" :options="statusOptions" optionLabel="label" optionValue="value" placeholder="Select Status" class="w-full" />
+                <Select v-model="statusForm.status" :options="statusOptions" optionLabel="label" optionValue="value"
+                        placeholder="Select Status" class="w-full"/>
             </div>
             <template #footer>
-                <Button label="Cancel" icon="pi pi-times" @click="dialogVisible = false" class="p-button-text" text />
-                <Button label="Save" icon="pi pi-check" @click="updateStatus" class="p-button-text p-button-danger" :disabled="statusForm.processing" autofocus />
+                <Button label="Cancel" icon="pi pi-times" @click="dialogVisible = false" class="p-button-text" text/>
+                <Button label="Save" icon="pi pi-check" @click="updateStatus" class="p-button-text p-button-danger"
+                        :disabled="statusForm.processing" autofocus/>
             </template>
         </Dialog>
 
@@ -154,7 +228,8 @@ const deleteApplicant = () => {
             <p>Are you sure you want to delete this applicant?</p>
             <template #footer>
                 <Button label="No" icon="pi pi-times" @click="deleteDialogVisible = false" class="p-button-text"/>
-                <Button label="Yes" icon="pi pi-check" @click="deleteApplicant" class="p-button-text p-button-danger" :disabled="deleteForm.processing" autofocus />
+                <Button label="Yes" icon="pi pi-check" @click="deleteApplicant" class="p-button-text p-button-danger"
+                        :disabled="deleteForm.processing" autofocus/>
             </template>
         </Dialog>
     </div>

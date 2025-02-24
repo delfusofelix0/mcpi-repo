@@ -14,7 +14,10 @@ class ApplicantRegistrationController
     public function workPosition()
     {
         // return an inertia response with the positions
-        $positions = WorkPosition::select('id', 'name', 'description')->get();
+        $query = WorkPosition::select('id', 'name', 'description')->latest();
+
+        $positions = $query->get();
+
         return Inertia::render('ApplicantForm', [
             'positions' => $positions
         ]);
@@ -71,7 +74,7 @@ class ApplicantRegistrationController
             'email.max' => 'Email must not exceed 255 characters.',
             'phone.required' => 'Phone number is required.',
             'phone.max' => 'Phone number must not exceed 20 characters.',
-            'sogie.required' => 'SOGIE information is required.',
+            'sogie.required' => 'Gender is required.',
             'sogie.max' => 'SOGIE information must not exceed 255 characters.',
             'birth_date.required' => 'Birthdate is required.',
             'birth_date.date' => 'Please enter a valid date for birthdate.',

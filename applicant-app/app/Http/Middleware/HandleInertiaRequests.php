@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'roles' => $request->user()->getRoleNames(),
                     'isAdmin' => $request->user()->hasRole('Admin'),
+                    'isHR' => $request->user()->hasRole('HR'),
                 ] : null,
             ],
             'ziggy' => fn () => [

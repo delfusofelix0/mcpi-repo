@@ -24,6 +24,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@primevue/core": "^4.2.5",
         "@primevue/themes": "^4.2.5",
         "esbuild": "^0.25.0",
         "primeicons": "^7.0.0",
