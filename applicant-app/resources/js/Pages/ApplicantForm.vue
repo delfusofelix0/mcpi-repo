@@ -49,11 +49,13 @@ const form = useForm({
     indigenous_details: '',
     application_letter: null,
     personal_data_sheet: null,
-    performance_rating: null,
     eligibility_proof: null,
     transcript: null,
-    employment_proof: null,
     training_certificates: null,
+    skip_performance_rating: false,
+    skip_employment_proof: false,
+    performance_rating: null,
+    employment_proof: null,
 });
 
 const sogieOptions = ref([
@@ -433,12 +435,12 @@ const submit = () => {
                         <h3 class="text-lg text-cyan-600 font-bold mb-4 mt-4">INSTRUCTION: UPLOAD FILE IN PDF FORMAT. IF
                             THE
                             DOCUMENTS HAVE MULTIPLE PAGES IT SHOULD BE IN ONE (1) PDF FILE.</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4">
                             <div>
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application
                                     Letter</label>
                                 <input
-                                    class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                                    class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                                     id="document1" type="file" accept=".pdf" :key="resetKey"
                                     @input="form.application_letter = $event.target.files[0]"
                                     @focus="form.clearErrors('application_letter')"/>
@@ -451,7 +453,7 @@ const submit = () => {
                                     accomplished
                                     Personal Data Sheet (PDS) with recent passport-sized picture.*Required</label>
                                 <input
-                                    class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                                    class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                                     id="document2" type="file" accept=".pdf" :key="resetKey"
                                     @input="form.personal_data_sheet = $event.target.files[0]"
                                     @focus="form.clearErrors('personal_data_sheet')"/>
@@ -460,14 +462,19 @@ const submit = () => {
                                 </Message>
                             </div>
                             <div>
-                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document3">Performance
-                                    rating
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document3">Performance rating
                                     in the present position for one(1) year (if applicable).</label>
+                                <div class="flex items-center mb-2">
+                                    <Checkbox v-model="form.skip_performance_rating" :binary="true" inputId="skip_performance_rating" />
+                                    <label for="skip_performance_rating" class="ml-2 text-sm text-gray-700">Skip this document</label>
+                                </div>
                                 <input
-                                    class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                                    class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                                     id="document3" type="file" accept=".pdf" :key="resetKey"
                                     @input="form.performance_rating = $event.target.files[0]"
-                                    @focus="form.clearErrors('performance_rating')"/>
+                                    @focus="form.clearErrors('performance_rating')"
+                                    :disabled="form.skip_performance_rating"
+                                />
                                 <Message v-if="form.errors.performance_rating" severity="error" variant="simple"
                                          size="small">{{ form.errors.performance_rating }}
                                 </Message>
@@ -476,7 +483,7 @@ const submit = () => {
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document4">Certificate of
                                     Eligibility/Rating or Professional License as proof of eligibility.*Required</label>
                                 <input
-                                    class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                                    class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                                     id="document4" type="file" accept=".pdf" :key="resetKey"
                                     @input="form.eligibility_proof = $event.target.files[0]"
                                     @focus="form.clearErrors('eligibility_proof')"/>
@@ -488,7 +495,7 @@ const submit = () => {
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document5">Transcript of
                                     Records, including Diploma as proof of highest education attained.*Required</label>
                                 <input
-                                    class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                                    class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                                     id="document5" type="file" accept=".pdf" :key="resetKey"
                                     @input="form.transcript = $event.target.files[0]"
                                     @focus="form.clearErrors('transcript')"/>
@@ -497,14 +504,18 @@ const submit = () => {
                                 </Message>
                             </div>
                             <div>
-                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document6">Certificate of
-                                    Employment/Service Contract/Work Experience Sheet as proof of
-                                    experience.*Required</label>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document4">Proof of Employment</label>
+                                <div class="flex items-center mb-2">
+                                    <Checkbox v-model="form.skip_employment_proof" :binary="true" inputId="skip_employment_proof" />
+                                    <label for="skip_employment_proof" class="ml-2 text-sm text-gray-700">Skip this document</label>
+                                </div>
                                 <input
-                                    class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
-                                    id="document6" type="file" accept=".pdf" :key="resetKey"
+                                    class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                                    id="document4" type="file" accept=".pdf" :key="resetKey"
                                     @input="form.employment_proof = $event.target.files[0]"
-                                    @focus="form.clearErrors('employment_proof')"/>
+                                    @focus="form.clearErrors('employment_proof')"
+                                    :disabled="form.skip_employment_proof"
+                                />
                                 <Message v-if="form.errors.employment_proof" severity="error" variant="simple"
                                          size="small">{{ form.errors.employment_proof }}
                                 </Message>
@@ -514,7 +525,7 @@ const submit = () => {
                                     of
                                     Training/Seminar/Conferences as proof.*Required</label>
                                 <input
-                                    class="shadow appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                                    class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                                     id="document7" type="file" accept=".pdf" :key="resetKey"
                                     @input="form.training_certificates = $event.target.files[0]"
                                     @focus="form.clearErrors('training_certificates')"/>

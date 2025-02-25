@@ -42,7 +42,9 @@ class Registration extends Model
         'transcript_path',
         'employment_proof_path',
         'training_certificates_path',
-        'status'
+        'status',
+        'performance_rating_skipped',
+        'employment_proof_skipped',
     ];
 
     protected $casts = [
@@ -57,6 +59,7 @@ class Registration extends Model
     {
         $this->attributes['birth_date'] = Carbon::parse($value)->format('Y-m-d');
     }
+
     public function documents(): HasMany
     {
         return $this->hasMany(RegistrationDocument::class);

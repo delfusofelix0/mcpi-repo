@@ -51,11 +51,13 @@ class ApplicantRegistrationController
             'indigenous_details' => 'nullable|string',
             'application_letter' => 'required|file|mimes:pdf|max:10240',
             'personal_data_sheet' => 'required|file|mimes:pdf|max:10240',
-            'performance_rating' => 'required|file|mimes:pdf|max:10240',
             'eligibility_proof' => 'required|file|mimes:pdf|max:10240',
             'transcript' => 'required|file|mimes:pdf|max:10240',
-            'employment_proof' => 'required|file|mimes:pdf|max:10240',
             'training_certificates' => 'required|file|mimes:pdf|max:10240',
+            'skip_performance_rating' => 'required|boolean',
+            'skip_employment_proof' => 'required|boolean',
+            'performance_rating' => 'nullable|required_if:skip_performance_rating,false|file|mimes:pdf|max:10240',
+            'employment_proof' => 'nullable|required_if:skip_employment_proof,false|file|mimes:pdf|max:10240',
 //            'cf-turnstile-response' => ['required', Rule::turnstile()],
         ], [
             'position.required' => 'Position is required.',
@@ -88,21 +90,23 @@ class ApplicantRegistrationController
             'personal_data_sheet.required' => 'Personal data sheet is required.',
             'personal_data_sheet.mimes' => 'Personal data sheet must be a PDF file.',
             'personal_data_sheet.max' => 'Personal data sheet must not exceed 10MB.',
-            'performance_rating.required' => 'Performance rating is required.',
-            'performance_rating.mimes' => 'Performance rating must be a PDF file.',
-            'performance_rating.max' => 'Performance rating must not exceed 10MB.',
             'eligibility_proof.required' => 'Eligibility proof is required.',
             'eligibility_proof.mimes' => 'Eligibility proof must be a PDF file.',
             'eligibility_proof.max' => 'Eligibility proof must not exceed 10MB.',
             'transcript.required' => 'Transcript is required.',
             'transcript.mimes' => 'Transcript must be a PDF file.',
             'transcript.max' => 'Transcript must not exceed 10MB.',
-            'employment_proof.required' => 'Employment proof is required.',
-            'employment_proof.mimes' => 'Employment proof must be a PDF file.',
-            'employment_proof.max' => 'Employment proof must not exceed 10MB.',
             'training_certificates.required' => 'Training certificates are required.',
             'training_certificates.mimes' => 'Training certificates must be a PDF file.',
             'training_certificates.max' => 'Training certificates must not exceed 10MB.',
+            'skip_performance_rating.required' => 'Please indicate whether you want to skip the performance rating.',
+            'skip_employment_proof.required' => 'Please indicate whether you want to skip the employment proof.',
+            'performance_rating.required_if' => 'Performance rating is required when not skipped.',
+            'employment_proof.required_if' => 'Employment proof is required when not skipped.',
+            'performance_rating.mimes' => 'Performance rating must be a PDF file.',
+            'performance_rating.max' => 'Performance rating must not exceed 10MB.',
+            'employment_proof.mimes' => 'Employment proof must be a PDF file.',
+            'employment_proof.max' => 'Employment proof must not exceed 10MB.',
 //            'cf-turnstile-response.required' => 'Please complete the CAPTCHA verification.',
 //            'cf-turnstile-response.turnstile' => 'CAPTCHA verification failed. Please try again.',
         ]);
@@ -127,18 +131,28 @@ class ApplicantRegistrationController
 
         // Create registration with position
         $registration = WorkPosition::findOrFail($validatedData['position'])
-            ->registrations()->create($validatedData);
+            ->registrations()->create(array_merge($validatedData, [
+                'performance_rating_skipped' => $validatedData['skip_performance_rating'],
+                'employment_proof_skipped' => $validatedData['skip_employment_proof'],
+            ]));
+
 
         // Handle file uploads
         $documentTypes = [
             'application_letter',
             'personal_data_sheet',
-            'performance_rating',
             'eligibility_proof',
             'transcript',
-            'employment_proof',
             'training_certificates'
         ];
+
+        if (!$validatedData['skip_performance_rating']) {
+            $documentTypes[] = 'performance_rating';
+        }
+
+        if (!$validatedData['skip_employment_proof']) {
+            $documentTypes[] = 'employment_proof';
+        }
 
         foreach ($documentTypes as $type) {
             if ($request->hasFile($type)) {
