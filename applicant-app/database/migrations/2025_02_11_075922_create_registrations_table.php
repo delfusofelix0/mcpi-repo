@@ -32,6 +32,8 @@ return new class extends Migration
             $table->boolean('indigenous_community')->default(false);
             $table->text('indigenous_details')->nullable();
             $table->timestamps();
+            $table->boolean('performance_rating_skipped')->default(false);
+            $table->boolean('employment_proof_skipped')->default(false);
         });
     }
 
