@@ -81,6 +81,9 @@ const goToApplicantForm = () => {
 <style scoped>
 .welcome-background {
     background-image: url('/images/bg.webp'); /* Light blue background */
-    min-height: 100vh; /* Ensure it covers the full viewport height */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* This makes the background fixed while scrolling */
+    min-height: 100vh;
 }
 </style>
