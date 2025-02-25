@@ -13,6 +13,7 @@ class CreateWorkPositionsTable extends Migration
             $table->string('name');
             $table->text('description')->nullable(); // Add this line for the description
             $table->timestamps();
+            $table->softDeletes(); // Add this line for soft deletion
         });
     }
 
