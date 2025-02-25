@@ -49,23 +49,27 @@ console.table(props.applicant);
                         <img :src="getImageUrl(applicant.image_path)" alt="Applicant Photo"
                              class="w-32 h-32 object-cover rounded-full mr-4">
                         <div>
-                            <p class="font-medium text-lg text-indigo-600">{{ applicant.first_name }}
-                                {{ applicant.middle_initial }} {{ applicant.last_name }} {{ applicant.suffix }}</p>
-                            <p class="text-gray-600">{{ applicant.email }}</p>
+                            <p class="font-medium text-lg text-indigo-600">
+                                {{ applicant.first_name || 'N/A' }}
+                                {{ applicant.middle_initial+'.' || '' }}
+                                {{ applicant.last_name || 'N/A' }}
+                                {{ applicant.suffix || '' }}
+                            </p>
+                            <p class="text-gray-600">{{ applicant.email || 'N/A' }}</p>
                         </div>
                     </div>
                     <div class="space-y-2">
                         <p><span class="font-medium text-gray-700">Phone:</span> <span
-                            class="text-indigo-600">{{ applicant.phone }}</span></p>
+                            class="text-indigo-600">{{ '+'+applicant.phone || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Religion:</span> <span
-                            class="text-indigo-600">{{ applicant.religion }}</span></p>
+                            class="text-indigo-600">{{ applicant.religion || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">SOGIE:</span> <span
-                            class="text-indigo-600">{{ applicant.sogie }}</span></p>
-                        <p><span class="font-medium text-gray-700">Birth Date:</span> <span
-                            class="text-indigo-600">{{ new Date(applicant.birth_date).toLocaleDateString() }}</span>
-                        </p>
+                            class="text-indigo-600">{{ applicant.sogie || 'N/A' }}</span></p>
+                        <p><span class="font-medium text-gray-700">Birth Date:</span> <span class="text-indigo-600">{{
+                                applicant.birth_date ? new Date(applicant.birth_date).toLocaleDateString() : 'N/A'
+                            }}</span></p>
                         <p><span class="font-medium text-gray-700">Address:</span> <span
-                            class="text-indigo-600">{{ applicant.address }}</span></p>
+                            class="text-indigo-600">{{ applicant.address || 'N/A' }}</span></p>
                     </div>
                 </div>
 
@@ -73,15 +77,14 @@ console.table(props.applicant);
                     <h2 class="text-xl font-semibold text-indigo-700 mb-4">Education and Work</h2>
                     <div class="space-y-2">
                         <p><span class="font-medium text-gray-700">Highest Education:</span> <span
-                            class="text-indigo-600">{{ applicant.highest_education }}</span></p>
-                        <p><span class="font-medium text-gray-700">Latest Company:</span> <span
-                            class="text-indigo-600">{{
-                                applicant.latest_company
+                            class="text-indigo-600">{{ applicant.highest_education || 'N/A' }}</span></p>
+                        <p><span class="font-medium text-gray-700">Latest Company:</span> <span class="text-indigo-600">{{
+                                applicant.latest_company || 'N/A'
                             }}</span></p>
                         <p><span class="font-medium text-gray-700">Present Position:</span> <span
-                            class="text-indigo-600">{{ applicant.present_position }}</span></p>
+                            class="text-indigo-600">{{ applicant.present_position || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Employment Status:</span> <span
-                            class="text-indigo-600">{{ applicant.status_employment }}</span></p>
+                            class="text-indigo-600">{{ applicant.status_employment || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Last Employment Date:</span> <span
                             class="text-indigo-600">{{
                                 applicant.last_employment_date ? new Date(applicant.last_employment_date).toLocaleDateString() : 'N/A'
@@ -95,34 +98,42 @@ console.table(props.applicant);
                     <h2 class="text-xl font-semibold text-indigo-700 mb-4">Additional Information</h2>
                     <div class="space-y-2">
                         <p><span class="font-medium text-gray-700">Eligibility:</span> <span
-                            class="text-indigo-600">{{ applicant.eligibility }}</span></p>
+                            class="text-indigo-600">{{ applicant.eligibility || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Person with Disability:</span> <span
-                            class="text-indigo-600">{{ applicant.person_with_disability ? 'Yes' : 'No' }}</span></p>
-                        <p v-if="applicant.person_with_disability"><span class="font-medium text-gray-700">Disability Details:</span>
-                            <span class="text-indigo-600">{{ applicant.disability_details }}</span></p>
-                        <p><span class="font-medium text-gray-700">Pregnant:</span> <span
-                            class="text-indigo-600">{{ applicant.pregnant ? 'Yes' : 'No' }}</span></p>
+                            class="text-indigo-600">{{
+                                applicant.person_with_disability !== null ? (applicant.person_with_disability ? 'Yes' : 'No') : 'N/A'
+                            }}</span></p>
+                        <p v-if="applicant.person_with_disability"><span class="font-medium text-gray-700">Disability Details: </span>
+                            <span class="text-indigo-600">{{ applicant.disability_details || 'N/A' }}</span></p>
+                        <p><span class="font-medium text-gray-700">Pregnant:</span> <span class="text-indigo-600">{{
+                                applicant.pregnant !== null ? (applicant.pregnant ? 'Yes' : 'No') : 'N/A'
+                            }}</span></p>
                         <p><span class="font-medium text-gray-700">Indigenous Community:</span> <span
-                            class="text-indigo-600">{{ applicant.indigenous_community ? 'Yes' : 'No' }}</span></p>
-                        <p v-if="applicant.indigenous_community"><span class="font-medium text-gray-700">Indigenous Details:</span>
-                            <span class="text-indigo-600">{{ applicant.indigenous_details }}</span></p>
+                            class="text-indigo-600">{{
+                                applicant.indigenous_community !== null ? (applicant.indigenous_community ? 'Yes' : 'No') : 'N/A'
+                            }}</span></p>
+                        <p v-if="applicant.indigenous_community"><span class="font-medium text-gray-700">Indigenous Details: </span>
+                            <span class="text-indigo-600">{{ applicant.indigenous_details || 'N/A' }}</span></p>
                     </div>
                 </div>
 
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold text-indigo-700 mb-4">Application Status</h2>
                     <p><span class="font-medium text-gray-700">Status:</span> <span
-                        class="text-indigo-600">{{ applicant.status }}</span></p>
+                        class="text-indigo-600">{{ applicant.status || 'N/A' }}</span></p>
                 </div>
 
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold text-indigo-700 mb-4">Documents</h2>
                     <div class="space-y-2">
-                        <p v-for="docType in ['application_letter', 'personal_data_sheet', 'performance_rating', 'eligibility_proof', 'transcript', 'employment_proof', 'training_certificates']"
+                        <p v-for="docType in ['application_letter', 'personal_data_sheet', 'eligibility_proof', 'transcript', 'training_certificates', 'performance_rating', 'employment_proof']"
                            :key="docType">
                             <span class="font-medium text-gray-700">{{ formatDocumentType(docType) }}: </span>
-                            <span class="text-indigo-600">
-                                {{ hasDocument(docType) ? 'Submitted' : 'Not submitted' }}
+                            <span class="text-indigo-600">{{
+                                    docType === 'performance_rating' || docType === 'employment_proof'
+                                        ? (applicant[`${docType}_skipped`] ? 'Skipped' : (hasDocument(docType) ? 'Submitted' : 'Not submitted'))
+                                        : (hasDocument(docType) ? 'Submitted' : 'Not submitted')
+                                }}
                             </span>
                             <a v-if="hasDocument(docType)" :href="getDocumentPath(docType)" target="_blank"
                                class="ml-2 text-blue-500 hover:underline">View
