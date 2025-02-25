@@ -110,12 +110,12 @@ const filters = ref();
 const initFilters = () => {
     filters.value = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        'first_name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        'last_name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        'email': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
-        'position.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+        'first_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'last_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'email': { value: null, matchMode: FilterMatchMode.CONTAINS },
+        'position.name': { value: null, matchMode: FilterMatchMode.EQUALS },
         'status': { value: null, matchMode: FilterMatchMode.EQUALS },
-        'created_at': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] }
+        'created_at': { value: null, matchMode: FilterMatchMode.DATE_IS }
     };
 };
 
@@ -132,7 +132,7 @@ const getSeverity = (status) => {
         case 'Hired':
             return 'success';
         case 'Option':
-            return 'warning';
+            return 'secondary';
         case 'Viewed':
             return 'primary';
         case 'Rejected':
