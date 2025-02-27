@@ -29,7 +29,8 @@
         "esbuild": "^0.25.0",
         "primeicons": "^7.0.0",
         "primevue": "^4.2.5",
-        "tailwindcss-primeui": "^0.4.0"
+        "tailwindcss-primeui": "^0.4.0",
+        "vue-turnstile": "^1.0.11"
     },
     "overrides": {
         "vite": {

@@ -1,20 +1,23 @@
 <script setup>
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import ColumnGroup from 'primevue/columngroup';   // optional
-import Row from 'primevue/row';                   // optional
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Select from 'primevue/select';
 import {FilterMatchMode,FilterOperator} from '@primevue/core/api';
 import {useToast} from "primevue/usetoast";
-import {ref} from 'vue';
-import {useForm} from "@inertiajs/vue3";
+import {computed, ref} from 'vue';
+import {useForm, usePage} from "@inertiajs/vue3";
 import {router} from '@inertiajs/vue3'
 
 const props = defineProps([
-    'registrations'
+    'registrations',
+    'positions'
 ]);
+
+const page = usePage();
+const isAdmin = page.props.auth.isAdmin
+const canDelete = computed(() => isAdmin);
 
 const toast = useToast();
 
@@ -23,6 +26,10 @@ const selectedApplicant = ref(null);
 const selectedStatus = ref(null);
 const deleteDialogVisible = ref(false);
 const applicantToDelete = ref(null);
+
+const positionOptions = ref(props.positions.map((position) => {
+    return position.name
+}));
 
 const statusOptions = [
     {label: 'Pending', value: 'Pending'},
@@ -152,7 +159,7 @@ const getSeverity = (status) => {
                    showGridlines
                    stripedRows
                    paginator
-                   :rows="5"
+                   :rows="10"
                    :rowsPerPageOptions="[5, 10, 20, 50]"
                    tableStyle="min-width: 25rem"
                    class="p-datatable-sm"
@@ -181,7 +188,18 @@ const getSeverity = (status) => {
                 </template>
             </Column>
             <Column field="email" header="Email" class="text-left"></Column>
-            <Column field="position.name" header="Position" class="text-left"></Column>
+            <Column field="position.name" header="Position" :showFilterMatchModes="false" class="text-left">
+                <template #body="{ data }">
+                    {{ data.position.name }}
+                </template>
+                <template #filter="{ filterModel }">
+                    <Select v-model="filterModel.value" :options="positionOptions" placeholder="Select One" class="p-column-filter" showClear>
+                        <template #option="slotProps">
+                            <Tag :value="slotProps.option" severity="secondary" />
+                        </template>
+                    </Select>
+                </template>
+            </Column>
             <Column field="status" header="Status" :showFilterMatchModes="false"  class="text-left">
                 <template #body="{ data }">
                     <Tag :value="data.status" :severity="getSeverity(data.status)" />
@@ -204,7 +222,7 @@ const getSeverity = (status) => {
                     <div class="flex justify-center gap-2">
                         <Button icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-info" @click="openStatusDialog(slotProps.data)" aria-label="Edit status" />
                         <Button icon="pi pi-eye" class="p-button-text p-button-rounded p-button-success" @click="viewApplicant(slotProps.data.id)" aria-label="View applicant" />
-                        <Button icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" @click="openDeleteDialog(slotProps.data)" aria-label="Delete applicant" />
+                        <Button v-if="canDelete" icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" @click="openDeleteDialog(slotProps.data)" aria-label="Delete applicant" />
                     </div>
                 </template>
             </Column>

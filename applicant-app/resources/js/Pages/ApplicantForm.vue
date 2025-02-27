@@ -9,6 +9,7 @@ import Message from 'primevue/message';
 import InputMask from 'primevue/inputmask';
 import InputText from 'primevue/inputtext';
 import Checkbox from 'primevue/checkbox';
+import VueTurnstile from 'vue-turnstile';
 import {useToast} from 'primevue/usetoast';
 
 const props = defineProps(['positions']);
@@ -17,6 +18,20 @@ const visible = ref(false);
 const photoPreview = ref(null);
 const resetKey = ref(0);
 const selectedPositionDescription = ref('');
+const turnstileRef = ref(null);
+const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+
+const onVerify = (token) => {
+    form['cf-turnstile-response'] = token;
+};
+
+const onExpire = () => {
+    form['cf-turnstile-response'] = null;
+};
+
+const onError = () => {
+    form['cf-turnstile-response'] = null;
+};
 
 const updatePositionDescription = (event) => {
     const selectedPosition = props.positions.find(pos => pos.id === event.value);
@@ -56,6 +71,7 @@ const form = useForm({
     skip_employment_proof: false,
     performance_rating: null,
     employment_proof: null,
+    'cf-turnstile-response': null,
 });
 
 const sogieOptions = ref([
@@ -462,11 +478,14 @@ const submit = () => {
                                 </Message>
                             </div>
                             <div>
-                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document3">Performance rating
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document3">Performance
+                                    rating
                                     in the present position for one(1) year (if applicable).</label>
                                 <div class="flex items-center mb-2">
-                                    <Checkbox v-model="form.skip_performance_rating" :binary="true" inputId="skip_performance_rating" />
-                                    <label for="skip_performance_rating" class="ml-2 text-sm text-gray-700">Skip this document</label>
+                                    <Checkbox v-model="form.skip_performance_rating" indeterminate binary
+                                              inputId="skip_performance_rating"/>
+                                    <label for="skip_performance_rating" class="ml-2 text-sm text-gray-700">Skip this
+                                        document</label>
                                 </div>
                                 <input
                                     class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
@@ -504,10 +523,13 @@ const submit = () => {
                                 </Message>
                             </div>
                             <div>
-                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document4">Proof of Employment</label>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document4">Proof of
+                                    Employment</label>
                                 <div class="flex items-center mb-2">
-                                    <Checkbox v-model="form.skip_employment_proof" :binary="true" inputId="skip_employment_proof" />
-                                    <label for="skip_employment_proof" class="ml-2 text-sm text-gray-700">Skip this document</label>
+                                    <Checkbox v-model="form.skip_employment_proof" indeterminate binary
+                                              inputId="skip_employment_proof"/>
+                                    <label for="skip_employment_proof" class="ml-2 text-sm text-gray-700">Skip this
+                                        document</label>
                                 </div>
                                 <input
                                     class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
@@ -536,6 +558,16 @@ const submit = () => {
                         </div>
 
                         <div class="mt-6">
+                            <VueTurnstile
+                                ref="turnstileRef"
+                                :siteKey="turnstileSiteKey"
+                                @verify="onVerify"
+                                @expire="onExpire"
+                                @error="onError"
+                            />
+                            <Message v-if="form.errors['cf-turnstile-response']" severity="error" variant="simple"
+                                     size="small">{{ form.errors['cf-turnstile-response'] }}
+                            </Message>
                             <Button type="submit" :disabled="form.processing" label="Submit" class="mt-8 w-full"/>
                         </div>
                     </form>

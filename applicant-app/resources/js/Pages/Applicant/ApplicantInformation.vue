@@ -51,9 +51,9 @@ console.table(props.applicant);
                         <div>
                             <p class="font-medium text-lg text-indigo-600">
                                 {{ applicant.first_name || 'N/A' }}
-                                {{ applicant.middle_initial+'.' || '' }}
+                                {{ applicant.middle_initial ? applicant.middle_initial + '.' : '' }}
                                 {{ applicant.last_name || 'N/A' }}
-                                {{ applicant.suffix || '' }}
+                                {{ applicant.suffix ? applicant.suffix : '' }}
                             </p>
                             <p class="text-gray-600">{{ applicant.email || 'N/A' }}</p>
                         </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Registration;
 use App\Models\WorkPosition;
+use Coderflex\LaravelTurnstile\Rules\TurnstileCheck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -49,16 +50,16 @@ class ApplicantRegistrationController
             'pregnant' => 'nullable|boolean',
             'indigenous_community' => 'nullable|boolean',
             'indigenous_details' => 'nullable|string',
-            'application_letter' => 'required|file|mimes:pdf|max:10240',
-            'personal_data_sheet' => 'required|file|mimes:pdf|max:10240',
-            'eligibility_proof' => 'required|file|mimes:pdf|max:10240',
-            'transcript' => 'required|file|mimes:pdf|max:10240',
-            'training_certificates' => 'required|file|mimes:pdf|max:10240',
+            'application_letter' => 'required|file|mimes:pdf|max:5120',
+            'personal_data_sheet' => 'required|file|mimes:pdf|max:5120',
+            'eligibility_proof' => 'required|file|mimes:pdf|max:5120',
+            'transcript' => 'required|file|mimes:pdf|max:5120',
+            'training_certificates' => 'required|file|mimes:pdf|max:5120',
             'skip_performance_rating' => 'required|boolean',
             'skip_employment_proof' => 'required|boolean',
-            'performance_rating' => 'nullable|required_if:skip_performance_rating,false|file|mimes:pdf|max:10240',
-            'employment_proof' => 'nullable|required_if:skip_employment_proof,false|file|mimes:pdf|max:10240',
-//            'cf-turnstile-response' => ['required', Rule::turnstile()],
+            'performance_rating' => 'nullable|required_if:skip_performance_rating,false|file|mimes:pdf|max:5120',
+            'employment_proof' => 'nullable|required_if:skip_employment_proof,false|file|mimes:pdf|max:5120',
+            'cf-turnstile-response' => ['required', new TurnstileCheck()],
         ], [
             'position.required' => 'Position is required.',
             'photo.required' => 'Photo is required.',
@@ -86,31 +87,31 @@ class ApplicantRegistrationController
             'last_employment_date.date' => 'Please enter a valid date for last employment.',
             'application_letter.required' => 'Application letter is required.',
             'application_letter.mimes' => 'Application letter must be a PDF file.',
-            'application_letter.max' => 'Application letter must not exceed 10MB.',
+            'application_letter.max' => 'Application letter must not exceed 5MB.',
             'personal_data_sheet.required' => 'Personal data sheet is required.',
             'personal_data_sheet.mimes' => 'Personal data sheet must be a PDF file.',
-            'personal_data_sheet.max' => 'Personal data sheet must not exceed 10MB.',
+            'personal_data_sheet.max' => 'Personal data sheet must not exceed 5MB.',
             'eligibility_proof.required' => 'Eligibility proof is required.',
             'eligibility_proof.mimes' => 'Eligibility proof must be a PDF file.',
-            'eligibility_proof.max' => 'Eligibility proof must not exceed 10MB.',
+            'eligibility_proof.max' => 'Eligibility proof must not exceed 5MB.',
             'transcript.required' => 'Transcript is required.',
             'transcript.mimes' => 'Transcript must be a PDF file.',
-            'transcript.max' => 'Transcript must not exceed 10MB.',
+            'transcript.max' => 'Transcript must not exceed 5MB.',
             'training_certificates.required' => 'Training certificates are required.',
             'training_certificates.mimes' => 'Training certificates must be a PDF file.',
-            'training_certificates.max' => 'Training certificates must not exceed 10MB.',
+            'training_certificates.max' => 'Training certificates must not exceed 5MB.',
             'skip_performance_rating.required' => 'Please indicate whether you want to skip the performance rating.',
             'skip_employment_proof.required' => 'Please indicate whether you want to skip the employment proof.',
             'performance_rating.required_if' => 'Performance rating is required when not skipped.',
             'employment_proof.required_if' => 'Employment proof is required when not skipped.',
             'performance_rating.mimes' => 'Performance rating must be a PDF file.',
-            'performance_rating.max' => 'Performance rating must not exceed 10MB.',
+            'performance_rating.max' => 'Performance rating must not exceed 5MB.',
             'employment_proof.mimes' => 'Employment proof must be a PDF file.',
-            'employment_proof.max' => 'Employment proof must not exceed 10MB.',
-//            'cf-turnstile-response.required' => 'Please complete the CAPTCHA verification.',
-//            'cf-turnstile-response.turnstile' => 'CAPTCHA verification failed. Please try again.',
+            'employment_proof.max' => 'Employment proof must not exceed 5MB.',
+            'cf-turnstile-response.required' => 'Please complete the CAPTCHA verification.',
+            'cf-turnstile-response.turnstile' => 'CAPTCHA verification failed. Please try again.',
         ]);
-
+        dd($validator);
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
