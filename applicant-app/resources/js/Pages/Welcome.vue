@@ -1,23 +1,9 @@
 <script setup>
-import {Head, Link} from '@inertiajs/vue3';
+import {Head} from '@inertiajs/vue3';
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import {ref} from "vue";
 import {router} from '@inertiajs/vue3';
 import Button from 'primevue/button';
-
-defineProps({
-    canLogin: {
-        type: Boolean,
-    },
-    laravelVersion: {
-        type: String,
-        required: true,
-    },
-    phpVersion: {
-        type: String,
-        required: true,
-    },
-});
 
 const loading = ref(false);
 
@@ -53,10 +39,11 @@ const goToApplicantForm = () => {
                 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div class="bg-cyan-100 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 text-gray-900">
-                            <h1 class="text-3xl font-bold mb-4 text-center">Welcome to MCPI Applicant Registration
+                            <h1 class="text-3xl font-bold mb-4 text-center">Welcome to Maryknoll College of Panabo Inc. Applicant Registration
                                 System</h1>
-                            <p class="mb-4 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                                eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                            <p class="mb-4 text-center">
+                                Welcome to the Maryknoll College of Panabo Incorporated Applicant Registration System. This system allows applicants to register, view available positions, and manage their profiles. It also provides administrators with tools to manage applicants and positions efficiently.
+                            </p>
                             <div class="mt-6 flex justify-center">
                                 <Button
                                     label="Go to Applicant Form"
@@ -69,12 +56,6 @@ const goToApplicantForm = () => {
                     </div>
                 </div>
             </div>
-
-            <footer
-                class="py-16 text-center text-sm text-black"
-            >
-                Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
-            </footer>
         </div>
     </div>
 </template>
