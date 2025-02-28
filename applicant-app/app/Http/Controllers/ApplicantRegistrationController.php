@@ -40,10 +40,21 @@ class ApplicantRegistrationController
             'birth_date' => 'required|date',
             'address' => 'required|string',
             'highest_education' => 'required|string|max:255',
-            'latest_company' => 'nullable|string|max:255',
-            'present_position' => 'nullable|string|max:255',
-            'status_employment' => 'nullable|string|max:255',
-            'last_employment_date' => 'nullable|date',
+            'course_major' => [
+                'nullable',
+                Rule::requiredIf(function () use ($request) {
+                    return in_array($request->input('highest_education'), [
+                        'Vocational', 'College Level', 'Masters Degree', 'Doctors Degree'
+                    ]);
+                }),
+                'string',
+                'max:255'
+            ],
+            'has_previous_company' => 'required|boolean',
+            'latest_company' => 'nullable|required_if:has_previous_company,true|string|max:255',
+            'present_position' => 'nullable|required_if:has_previous_company,true|string|max:255',
+            'years_of_service' => 'nullable|required_if:has_previous_company,true|string|max:255',
+            'last_employment_date' => 'nullable|required_if:has_previous_company,true|date',
             'eligibility' => 'nullable|string|max:255',
             'person_with_disability' => 'nullable|boolean',
             'disability_details' => 'nullable|string',
@@ -84,6 +95,18 @@ class ApplicantRegistrationController
             'address.required' => 'Address is required.',
             'highest_education.required' => 'Highest education is required.',
             'highest_education.max' => 'Highest education must not exceed 255 characters.',
+            'course_major.required_if' => 'Course major is required.',
+            'course_major.max' => 'Course major must not exceed 255 characters.',
+            'course_major.string' => 'Course major must be a string.',
+            'latest_company.required_if' => 'Please provide your latest company name.',
+            'latest_company.max' => 'Company name must not exceed 255 characters.',
+            'present_position.required_if' => 'Please provide your present position.',
+            'present_position.max' => 'Present position must not exceed 255 characters.',
+            'years_of_service.required_if' => 'Please provide your years of service.',
+            'years_of_service.numeric' => 'Years of service must be a number.',
+            'years_of_service.min' => 'Years of service must be at least 0.',
+            'years_of_service.max' => 'Years of service must not exceed 100.',
+            'last_employment_date.required_if' => 'Please provide your last employment date.',
             'last_employment_date.date' => 'Please enter a valid date for last employment.',
             'application_letter.required' => 'Application letter is required.',
             'application_letter.mimes' => 'Application letter must be a PDF file.',
@@ -111,7 +134,6 @@ class ApplicantRegistrationController
             'cf-turnstile-response.required' => 'Please complete the CAPTCHA verification.',
             'cf-turnstile-response.turnstile' => 'CAPTCHA verification failed. Please try again.',
         ]);
-        dd($validator);
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
@@ -119,6 +141,9 @@ class ApplicantRegistrationController
         }
 
         $validatedData = $validator->validated();
+
+        // Remove has_previous_company from validatedData if it exists
+        unset($validatedData['has_previous_company']);
 
         // Remove documents from validatedData
 //        $documents = $validatedData['documents'];
