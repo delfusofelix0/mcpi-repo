@@ -135,11 +135,11 @@ const clearFilter = () => {
                    stripedRows
                    paginator
                    :rows="10"
-                   :rowsPerPageOptions="[5, 10, 20, 50]"
+                   :rowsPerPageOptions="[10, 20, 30, 40, 50]"
                    tableStyle="min-width: 25rem"
                    class="p-datatable-sm"
                    responsiveLayout="scroll"
-                   :globalFilterFields="['name', 'description']">
+                   :globalFilterFields="['name']">
             <template #header>
                 <div class="flex justify-between">
                     <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()"/>
@@ -202,7 +202,7 @@ const clearFilter = () => {
 
 
         <!-- Add New Position Dialog -->
-        <Dialog v-model:visible="addDialogVisible" modal header="Add New Position" :style="{ width: '350px' }">
+        <Dialog v-model:visible="addDialogVisible" modal header="Add New Position" :style="{ width: '500px' }">
             <div class="flex flex-col gap-4">
                 <div class="field">
                     <label for="newName" class="font-bold">Name</label>
