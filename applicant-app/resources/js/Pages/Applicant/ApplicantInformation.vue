@@ -1,6 +1,5 @@
 <script setup>
 import {defineProps} from 'vue';
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {Head, Link} from "@inertiajs/vue3";
 
 const props = defineProps({
@@ -47,13 +46,13 @@ console.table(props.applicant);
                     <h2 class="text-xl font-semibold text-indigo-700 mb-4">Personal Details</h2>
                     <div class="flex items-center mb-4">
                         <img :src="getImageUrl(applicant.image_path)" alt="Applicant Photo"
-                             class="w-32 h-32 object-cover rounded-full mr-4">
+                             class="w-32 h-32 object-cover rounded-full mr-4"/>
                         <div>
                             <p class="font-medium text-lg text-indigo-600">
                                 {{ applicant.first_name || 'N/A' }}
-                                {{ applicant.middle_initial+'.' || '' }}
+                                {{ applicant.middle_initial ? applicant.middle_initial + '.' : '' }}
                                 {{ applicant.last_name || 'N/A' }}
-                                {{ applicant.suffix || '' }}
+                                {{ applicant.suffix ? applicant.suffix : '' }}
                             </p>
                             <p class="text-gray-600">{{ applicant.email || 'N/A' }}</p>
                         </div>
@@ -63,12 +62,12 @@ console.table(props.applicant);
                             class="text-indigo-600">{{ '+'+applicant.phone || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Religion:</span> <span
                             class="text-indigo-600">{{ applicant.religion || 'N/A' }}</span></p>
-                        <p><span class="font-medium text-gray-700">SOGIE:</span> <span
+                        <p><span class="font-medium text-gray-700">Gender:</span> <span
                             class="text-indigo-600">{{ applicant.sogie || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Birth Date:</span> <span class="text-indigo-600">{{
                                 applicant.birth_date ? new Date(applicant.birth_date).toLocaleDateString() : 'N/A'
                             }}</span></p>
-                        <p><span class="font-medium text-gray-700">Address:</span> <span
+                        <p><span class="font-medium text-gray-700">Present Address:</span> <span
                             class="text-indigo-600">{{ applicant.address || 'N/A' }}</span></p>
                     </div>
                 </div>
@@ -78,13 +77,15 @@ console.table(props.applicant);
                     <div class="space-y-2">
                         <p><span class="font-medium text-gray-700">Highest Education:</span> <span
                             class="text-indigo-600">{{ applicant.highest_education || 'N/A' }}</span></p>
+                        <p><span class="font-medium text-gray-700">Course/Major:</span> <span
+                            class="text-indigo-600">{{ applicant.course_major || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Latest Company:</span> <span class="text-indigo-600">{{
                                 applicant.latest_company || 'N/A'
                             }}</span></p>
                         <p><span class="font-medium text-gray-700">Present Position:</span> <span
                             class="text-indigo-600">{{ applicant.present_position || 'N/A' }}</span></p>
-                        <p><span class="font-medium text-gray-700">Employment Status:</span> <span
-                            class="text-indigo-600">{{ applicant.status_employment || 'N/A' }}</span></p>
+                        <p><span class="font-medium text-gray-700">Years of Service:</span> <span
+                            class="text-indigo-600">{{ applicant.years_of_service || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Last Employment Date:</span> <span
                             class="text-indigo-600">{{
                                 applicant.last_employment_date ? new Date(applicant.last_employment_date).toLocaleDateString() : 'N/A'
@@ -127,16 +128,18 @@ console.table(props.applicant);
                     <h2 class="text-xl font-semibold text-indigo-700 mb-4">Documents</h2>
                     <div class="space-y-2">
                         <p v-for="docType in ['application_letter', 'personal_data_sheet', 'eligibility_proof', 'transcript', 'training_certificates', 'performance_rating', 'employment_proof']"
-                           :key="docType">
-                            <span class="font-medium text-gray-700">{{ formatDocumentType(docType) }}: </span>
-                            <span class="text-indigo-600">{{
-                                    docType === 'performance_rating' || docType === 'employment_proof'
-                                        ? (applicant[`${docType}_skipped`] ? 'Skipped' : (hasDocument(docType) ? 'Submitted' : 'Not submitted'))
-                                        : (hasDocument(docType) ? 'Submitted' : 'Not submitted')
-                                }}
+                           :key="docType" class="flex justify-between items-center">
+                            <span>
+                                <span class="font-medium text-gray-700">{{ formatDocumentType(docType) }}: </span>
+                                <span class="text-indigo-600">{{
+                                        docType === 'performance_rating' || docType === 'employment_proof'
+                                            ? (applicant[`${docType}_skipped`] ? 'Skipped' : (hasDocument(docType) ? 'Submitted' : 'Not submitted'))
+                                            : (hasDocument(docType) ? 'Submitted' : 'Not submitted')
+                                    }}
+                                </span>
                             </span>
                             <a v-if="hasDocument(docType)" :href="getDocumentPath(docType)" target="_blank"
-                               class="ml-2 text-blue-500 hover:underline">View
+                               class="text-blue-500 hover:underline">View
                             </a>
                         </p>
                     </div>

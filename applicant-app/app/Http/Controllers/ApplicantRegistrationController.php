@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Registration;
 use App\Models\WorkPosition;
+use Coderflex\LaravelTurnstile\Rules\TurnstileCheck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -39,26 +40,37 @@ class ApplicantRegistrationController
             'birth_date' => 'required|date',
             'address' => 'required|string',
             'highest_education' => 'required|string|max:255',
-            'latest_company' => 'nullable|string|max:255',
-            'present_position' => 'nullable|string|max:255',
-            'status_employment' => 'nullable|string|max:255',
-            'last_employment_date' => 'nullable|date',
+            'course_major' => [
+                'nullable',
+                Rule::requiredIf(function () use ($request) {
+                    return in_array($request->input('highest_education'), [
+                        'Vocational', 'College Level', 'Masters Degree', 'Doctors Degree'
+                    ]);
+                }),
+                'string',
+                'max:255'
+            ],
+            'has_previous_company' => 'required|boolean',
+            'latest_company' => 'nullable|required_if:has_previous_company,true|string|max:255',
+            'present_position' => 'nullable|required_if:has_previous_company,true|string|max:255',
+            'years_of_service' => 'nullable|required_if:has_previous_company,true|string|max:255',
+            'last_employment_date' => 'nullable|required_if:has_previous_company,true|date',
             'eligibility' => 'nullable|string|max:255',
             'person_with_disability' => 'nullable|boolean',
             'disability_details' => 'nullable|string',
             'pregnant' => 'nullable|boolean',
             'indigenous_community' => 'nullable|boolean',
             'indigenous_details' => 'nullable|string',
-            'application_letter' => 'required|file|mimes:pdf|max:10240',
-            'personal_data_sheet' => 'required|file|mimes:pdf|max:10240',
-            'eligibility_proof' => 'required|file|mimes:pdf|max:10240',
-            'transcript' => 'required|file|mimes:pdf|max:10240',
-            'training_certificates' => 'required|file|mimes:pdf|max:10240',
+            'application_letter' => 'required|file|mimes:pdf|max:5120',
+            'personal_data_sheet' => 'required|file|mimes:pdf|max:5120',
+            'eligibility_proof' => 'required|file|mimes:pdf|max:5120',
+            'transcript' => 'required|file|mimes:pdf|max:5120',
+            'training_certificates' => 'required|file|mimes:pdf|max:5120',
             'skip_performance_rating' => 'required|boolean',
             'skip_employment_proof' => 'required|boolean',
-            'performance_rating' => 'nullable|required_if:skip_performance_rating,false|file|mimes:pdf|max:10240',
-            'employment_proof' => 'nullable|required_if:skip_employment_proof,false|file|mimes:pdf|max:10240',
-//            'cf-turnstile-response' => ['required', Rule::turnstile()],
+            'performance_rating' => 'nullable|required_if:skip_performance_rating,false|file|mimes:pdf|max:5120',
+            'employment_proof' => 'nullable|required_if:skip_employment_proof,false|file|mimes:pdf|max:5120',
+            'cf-turnstile-response' => ['required', new TurnstileCheck()],
         ], [
             'position.required' => 'Position is required.',
             'photo.required' => 'Photo is required.',
@@ -83,34 +95,45 @@ class ApplicantRegistrationController
             'address.required' => 'Address is required.',
             'highest_education.required' => 'Highest education is required.',
             'highest_education.max' => 'Highest education must not exceed 255 characters.',
+            'course_major.required_if' => 'Course major is required.',
+            'course_major.max' => 'Course major must not exceed 255 characters.',
+            'course_major.string' => 'Course major must be a string.',
+            'latest_company.required_if' => 'Please provide your latest company name.',
+            'latest_company.max' => 'Company name must not exceed 255 characters.',
+            'present_position.required_if' => 'Please provide your present position.',
+            'present_position.max' => 'Present position must not exceed 255 characters.',
+            'years_of_service.required_if' => 'Please provide your years of service.',
+            'years_of_service.numeric' => 'Years of service must be a number.',
+            'years_of_service.min' => 'Years of service must be at least 0.',
+            'years_of_service.max' => 'Years of service must not exceed 100.',
+            'last_employment_date.required_if' => 'Please provide your last employment date.',
             'last_employment_date.date' => 'Please enter a valid date for last employment.',
             'application_letter.required' => 'Application letter is required.',
             'application_letter.mimes' => 'Application letter must be a PDF file.',
-            'application_letter.max' => 'Application letter must not exceed 10MB.',
+            'application_letter.max' => 'Application letter must not exceed 5MB.',
             'personal_data_sheet.required' => 'Personal data sheet is required.',
             'personal_data_sheet.mimes' => 'Personal data sheet must be a PDF file.',
-            'personal_data_sheet.max' => 'Personal data sheet must not exceed 10MB.',
+            'personal_data_sheet.max' => 'Personal data sheet must not exceed 5MB.',
             'eligibility_proof.required' => 'Eligibility proof is required.',
             'eligibility_proof.mimes' => 'Eligibility proof must be a PDF file.',
-            'eligibility_proof.max' => 'Eligibility proof must not exceed 10MB.',
+            'eligibility_proof.max' => 'Eligibility proof must not exceed 5MB.',
             'transcript.required' => 'Transcript is required.',
             'transcript.mimes' => 'Transcript must be a PDF file.',
-            'transcript.max' => 'Transcript must not exceed 10MB.',
+            'transcript.max' => 'Transcript must not exceed 5MB.',
             'training_certificates.required' => 'Training certificates are required.',
             'training_certificates.mimes' => 'Training certificates must be a PDF file.',
-            'training_certificates.max' => 'Training certificates must not exceed 10MB.',
+            'training_certificates.max' => 'Training certificates must not exceed 5MB.',
             'skip_performance_rating.required' => 'Please indicate whether you want to skip the performance rating.',
             'skip_employment_proof.required' => 'Please indicate whether you want to skip the employment proof.',
             'performance_rating.required_if' => 'Performance rating is required when not skipped.',
             'employment_proof.required_if' => 'Employment proof is required when not skipped.',
             'performance_rating.mimes' => 'Performance rating must be a PDF file.',
-            'performance_rating.max' => 'Performance rating must not exceed 10MB.',
+            'performance_rating.max' => 'Performance rating must not exceed 5MB.',
             'employment_proof.mimes' => 'Employment proof must be a PDF file.',
-            'employment_proof.max' => 'Employment proof must not exceed 10MB.',
-//            'cf-turnstile-response.required' => 'Please complete the CAPTCHA verification.',
-//            'cf-turnstile-response.turnstile' => 'CAPTCHA verification failed. Please try again.',
+            'employment_proof.max' => 'Employment proof must not exceed 5MB.',
+            'cf-turnstile-response.required' => 'Please complete the CAPTCHA verification.',
+            'cf-turnstile-response.turnstile' => 'CAPTCHA verification failed. Please try again.',
         ]);
-
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
@@ -118,6 +141,9 @@ class ApplicantRegistrationController
         }
 
         $validatedData = $validator->validated();
+
+        // Remove has_previous_company from validatedData if it exists
+        unset($validatedData['has_previous_company']);
 
         // Remove documents from validatedData
 //        $documents = $validatedData['documents'];

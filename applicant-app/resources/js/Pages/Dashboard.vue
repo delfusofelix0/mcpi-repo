@@ -33,7 +33,7 @@ console.table(props);
                     </div>
                 </div>
                 <div class="mt-6">
-                    <ApplicantTable :registrations="registrations"/>
+                    <ApplicantTable :registrations="registrations" :positions="positions"/>
                 </div>
                 <div class="mt-6">
                     <PositionTable :positions="positions"/>

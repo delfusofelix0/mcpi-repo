@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('highest_education');
             $table->string('latest_company')->nullable();
             $table->string('present_position')->nullable();
-            $table->string('status_employment')->nullable();
+            $table->string('years_of_service')->nullable();
             $table->date('last_employment_date')->nullable();
             $table->string('eligibility')->nullable();
             $table->boolean('person_with_disability')->default(false);
