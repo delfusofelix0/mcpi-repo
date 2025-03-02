@@ -62,7 +62,7 @@ console.table(props.applicant);
                             class="text-indigo-600">{{ '+'+applicant.phone || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Religion:</span> <span
                             class="text-indigo-600">{{ applicant.religion || 'N/A' }}</span></p>
-                        <p><span class="font-medium text-gray-700">SOGIE:</span> <span
+                        <p><span class="font-medium text-gray-700">Gender:</span> <span
                             class="text-indigo-600">{{ applicant.sogie || 'N/A' }}</span></p>
                         <p><span class="font-medium text-gray-700">Birth Date:</span> <span class="text-indigo-600">{{
                                 applicant.birth_date ? new Date(applicant.birth_date).toLocaleDateString() : 'N/A'
@@ -128,16 +128,18 @@ console.table(props.applicant);
                     <h2 class="text-xl font-semibold text-indigo-700 mb-4">Documents</h2>
                     <div class="space-y-2">
                         <p v-for="docType in ['application_letter', 'personal_data_sheet', 'eligibility_proof', 'transcript', 'training_certificates', 'performance_rating', 'employment_proof']"
-                           :key="docType">
-                            <span class="font-medium text-gray-700">{{ formatDocumentType(docType) }}: </span>
-                            <span class="text-indigo-600">{{
-                                    docType === 'performance_rating' || docType === 'employment_proof'
-                                        ? (applicant[`${docType}_skipped`] ? 'Skipped' : (hasDocument(docType) ? 'Submitted' : 'Not submitted'))
-                                        : (hasDocument(docType) ? 'Submitted' : 'Not submitted')
-                                }}
+                           :key="docType" class="flex justify-between items-center">
+                            <span>
+                                <span class="font-medium text-gray-700">{{ formatDocumentType(docType) }}: </span>
+                                <span class="text-indigo-600">{{
+                                        docType === 'performance_rating' || docType === 'employment_proof'
+                                            ? (applicant[`${docType}_skipped`] ? 'Skipped' : (hasDocument(docType) ? 'Submitted' : 'Not submitted'))
+                                            : (hasDocument(docType) ? 'Submitted' : 'Not submitted')
+                                    }}
+                                </span>
                             </span>
                             <a v-if="hasDocument(docType)" :href="getDocumentPath(docType)" target="_blank"
-                               class="ml-2 text-blue-500 hover:underline">View
+                               class="text-blue-500 hover:underline">View
                             </a>
                         </p>
                     </div>
