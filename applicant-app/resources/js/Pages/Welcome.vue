@@ -42,7 +42,7 @@ const goToApplicantForm = () => {
                             <h1 class="text-3xl font-bold mb-4 text-center">Welcome to Maryknoll College of Panabo Inc. Applicant Registration
                                 System</h1>
                             <p class="mb-4 text-center">
-                                Welcome to the Maryknoll College of Panabo Incorporated Applicant Registration System. This system allows applicants to register, view available positions, and manage their profiles. It also provides administrators with tools to manage applicants and positions efficiently.
+                                Welcome to the Maryknoll College of Panabo Inc. Applicant Registration System. This system allows applicants to register, view available positions, and manage their profiles. It also provides administrators with tools to manage applicants and positions efficiently.
                             </p>
                             <div class="mt-6 flex justify-center">
                                 <Button
