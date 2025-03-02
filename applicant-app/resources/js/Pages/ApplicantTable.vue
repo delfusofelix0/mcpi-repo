@@ -4,7 +4,8 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Select from 'primevue/select';
-import {FilterMatchMode,FilterOperator} from '@primevue/core/api';
+import DatePicker from "primevue/datepicker";
+import {FilterMatchMode, FilterOperator} from '@primevue/core/api';
 import {useToast} from "primevue/usetoast";
 import {computed, ref} from 'vue';
 import {useForm, usePage} from "@inertiajs/vue3";
@@ -52,6 +53,18 @@ const formatDate = (value) => {
         day: 'numeric',
     });
 };
+
+const mapdates = (data) => {
+    return [...(data || [])].map((d) => {
+        d.created_at = new Date(d.created_at);
+        d.updated_at = new Date(d.updated_at);
+        return d;
+    });
+};
+
+const formattedRegistrations = computed(() => {
+    return mapdates(props.registrations);
+});
 
 const openStatusDialog = (applicant) => {
     selectedApplicant.value = applicant;
@@ -116,13 +129,13 @@ const filters = ref();
 
 const initFilters = () => {
     filters.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        'first_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-        'last_name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-        'email': { value: null, matchMode: FilterMatchMode.CONTAINS },
-        'position.name': { value: null, matchMode: FilterMatchMode.EQUALS },
-        'status': { value: null, matchMode: FilterMatchMode.EQUALS },
-        'created_at': { value: null, matchMode: FilterMatchMode.DATE_IS }
+        global: {value: null, matchMode: FilterMatchMode.CONTAINS},
+        'first_name': {value: null, matchMode: FilterMatchMode.STARTS_WITH},
+        'last_name': {value: null, matchMode: FilterMatchMode.STARTS_WITH},
+        'email': {value: null, matchMode: FilterMatchMode.CONTAINS},
+        'position.name': {value: null, matchMode: FilterMatchMode.EQUALS},
+        'status': {value: null, matchMode: FilterMatchMode.EQUALS},
+        'created_at': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]}
     };
 };
 
@@ -131,7 +144,8 @@ initFilters();
 const clearFilter = () => {
     initFilters();
 };
-const statuses = ref(['Pending','Hired', 'Option', 'Viewed', 'Rejected']);
+
+const statuses = ref(['Pending', 'Hired', 'Option', 'Viewed', 'Rejected']);
 const getSeverity = (status) => {
     switch (status) {
         case 'Pending':
@@ -155,17 +169,17 @@ const getSeverity = (status) => {
     <Toast position="top-left" group="tl"/>
     <div class="bg-white p-4 rounded-lg shadow-md">
         <DataTable v-model:filters="filters"
-                   :value="props.registrations"
+                   :value="formattedRegistrations"
                    showGridlines
                    stripedRows
                    paginator
                    :rows="10"
-                   :rowsPerPageOptions="[5, 10, 20, 50]"
+                   :rowsPerPageOptions="[10, 20, 30, 40, 50]"
                    tableStyle="min-width: 25rem"
                    class="p-datatable-sm"
                    responsiveLayout="scroll"
                    filterDisplay="menu"
-                   :globalFilterFields="['first_name', 'last_name', 'email', 'position.name', 'created_at']">
+                   :globalFilterFields="['first_name', 'last_name']">
             <template #header>
                 <div class="flex justify-between">
                     <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()"/>
@@ -187,42 +201,57 @@ const getSeverity = (status) => {
                     {{ slotProps.data.first_name }} {{ slotProps.data.last_name }}
                 </template>
             </Column>
-            <Column field="email" header="Email" class="text-left"></Column>
+            <Column field="email" header="Email" class="text-left" :show-filter-match-modes="false">
+                <template #body="{ data }">
+                    {{ data.email }}
+                </template>
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by email"/>
+                </template>
+            </Column>
             <Column field="position.name" header="Position" :showFilterMatchModes="false" class="text-left">
                 <template #body="{ data }">
                     {{ data.position.name }}
                 </template>
                 <template #filter="{ filterModel }">
-                    <Select v-model="filterModel.value" :options="positionOptions" placeholder="Select One" class="p-column-filter" showClear>
+                    <Select v-model="filterModel.value" :options="positionOptions" placeholder="Select One"
+                            class="p-column-filter" showClear>
                         <template #option="slotProps">
-                            <Tag :value="slotProps.option" severity="secondary" />
+                            {{ slotProps.option }}
                         </template>
                     </Select>
                 </template>
             </Column>
-            <Column field="status" header="Status" :showFilterMatchModes="false"  class="text-left">
+            <Column field="status" header="Status" :showFilterMatchModes="false" class="text-left">
                 <template #body="{ data }">
-                    <Tag :value="data.status" :severity="getSeverity(data.status)" />
+                    <Tag :value="data.status" :severity="getSeverity(data.status)"/>
                 </template>
                 <template #filter="{ filterModel }">
                     <Select v-model="filterModel.value" :options="statuses" placeholder="Select One" showClear>
                         <template #option="slotProps">
-                            <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+                            <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)"/>
                         </template>
                     </Select>
                 </template>
             </Column>
-            <Column field="created_at" header="Applied At" class="text-left">
+            <Column filterField="created_at" dataType="date" header="Applied At" class="text-left">
                 <template #body="slotProps">
                     {{ formatDate(slotProps.data.created_at) }}
+                </template>
+                <template #filter="{ filterModel }">
+                    <DatePicker v-model="filterModel.value" dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy"/>
                 </template>
             </Column>
             <Column header="Action" class="text-center">
                 <template #body="slotProps">
                     <div class="flex justify-center gap-2">
-                        <Button icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-info" @click="openStatusDialog(slotProps.data)" aria-label="Edit status" />
-                        <Button icon="pi pi-eye" class="p-button-text p-button-rounded p-button-success" @click="viewApplicant(slotProps.data.id)" aria-label="View applicant" />
-                        <Button v-if="canDelete" icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" @click="openDeleteDialog(slotProps.data)" aria-label="Delete applicant" />
+                        <Button icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-info"
+                                @click="openStatusDialog(slotProps.data)" aria-label="Edit status"/>
+                        <Button icon="pi pi-eye" class="p-button-text p-button-rounded p-button-success"
+                                @click="viewApplicant(slotProps.data.id)" aria-label="View applicant"/>
+                        <Button v-if="canDelete" icon="pi pi-trash"
+                                class="p-button-text p-button-rounded p-button-danger"
+                                @click="openDeleteDialog(slotProps.data)" aria-label="Delete applicant"/>
                     </div>
                 </template>
             </Column>
