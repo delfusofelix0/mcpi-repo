@@ -35,7 +35,9 @@ const positionOptions = ref(props.positions.map((position) => {
 const statusOptions = [
     {label: 'Pending', value: 'Pending'},
     {label: 'Hired', value: 'Hired'},
-    {label: 'Option', value: 'Option'},
+    {label: 'For Demo', value: 'For Demo'},
+    {label: 'For Interview', value: 'For Interview'},
+    {label: 'Reserved', value: 'Reserved'},
     {label: 'Viewed', value: 'Viewed'},
     {label: 'Rejected', value: 'Rejected'},
 ];
@@ -145,14 +147,18 @@ const clearFilter = () => {
     initFilters();
 };
 
-const statuses = ref(['Pending', 'Hired', 'Option', 'Viewed', 'Rejected']);
+const statuses = ref(['Pending', 'Hired', 'For Demo', 'For Interview', 'Reserved', 'Viewed', 'Rejected']);
 const getSeverity = (status) => {
     switch (status) {
         case 'Pending':
             return 'info';
         case 'Hired':
             return 'success';
-        case 'Option':
+        case 'For Demo':
+            return 'warning';
+        case 'For Interview':
+            return 'help';
+        case 'Reserved':
             return 'secondary';
         case 'Viewed':
             return 'primary';

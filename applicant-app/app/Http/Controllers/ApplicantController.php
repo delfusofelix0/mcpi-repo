@@ -20,7 +20,7 @@ class ApplicantController extends Controller
     public function statusStore(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:Pending,Hired,Option,Viewed,Rejected',
+            'status' => 'required|in:Pending,Hired,For Demo,For Interview,Reserved,Option,Viewed,Rejected',
         ]);
 
         $registration = Registration::findOrFail($id);
