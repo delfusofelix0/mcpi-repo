@@ -234,7 +234,7 @@ const closeSuccessDialog = () => {
                                                 <div
                                                     class="h-[320px] border-l-2 border-dashed border-gray-300 hidden md:block"></div>
                                                 <div class="flex justify-center">
-                                                    <img src="/images/male.jpeg" alt="Photo Sample 2"
+                                                    <img src="/images/male.jpg" alt="Photo Sample 2"
                                                          class="w-64 h-[320px] object-cover">
                                                 </div>
                                             </div>
