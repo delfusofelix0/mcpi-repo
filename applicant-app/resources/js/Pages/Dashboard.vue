@@ -8,7 +8,6 @@ const props = defineProps([
     'registrations', 'positions'
 ]);
 
-console.table(props);
 </script>
 
 <template>

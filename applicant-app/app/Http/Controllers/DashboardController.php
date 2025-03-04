@@ -20,7 +20,9 @@ class DashboardController extends Controller
             'work_position_id',
             'created_at',
             'status'
-        ])->with('position:id,name')->latest();
+        ])->with(['position' => function($query) {
+            $query->withTrashed()->select('id', 'name');
+        }])->latest();
         $queryPos = WorkPosition::latest();
 
         $registrations = $queryReg->get();
