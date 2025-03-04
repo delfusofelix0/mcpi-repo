@@ -28,10 +28,6 @@ const selectedStatus = ref(null);
 const deleteDialogVisible = ref(false);
 const applicantToDelete = ref(null);
 
-const positionOptions = ref(props.positions.map((position) => {
-    return position.name
-}));
-
 const statusOptions = [
     {label: 'Pending', value: 'Pending'},
     {label: 'Hired', value: 'Hired'},
@@ -220,12 +216,7 @@ const getSeverity = (status) => {
                     {{ data.position.name }}
                 </template>
                 <template #filter="{ filterModel }">
-                    <Select v-model="filterModel.value" :options="positionOptions" placeholder="Select One"
-                            class="p-column-filter" showClear>
-                        <template #option="slotProps">
-                            {{ slotProps.option }}
-                        </template>
-                    </Select>
+                    <InputText v-model="filterModel.value" type="text" placeholder="Search by position"/>
                 </template>
             </Column>
             <Column field="status" header="Status" :showFilterMatchModes="false" class="text-left">
