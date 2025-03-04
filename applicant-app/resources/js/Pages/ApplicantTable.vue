@@ -131,7 +131,7 @@ const initFilters = () => {
         'first_name': {value: null, matchMode: FilterMatchMode.STARTS_WITH},
         'last_name': {value: null, matchMode: FilterMatchMode.STARTS_WITH},
         'email': {value: null, matchMode: FilterMatchMode.CONTAINS},
-        'position.name': {value: null, matchMode: FilterMatchMode.EQUALS},
+        'position.name': {value: null, matchMode: FilterMatchMode.CONTAINS},
         'status': {value: null, matchMode: FilterMatchMode.EQUALS},
         'created_at': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]}
     };
@@ -211,7 +211,7 @@ const getSeverity = (status) => {
                     <InputText v-model="filterModel.value" type="text" placeholder="Search by email"/>
                 </template>
             </Column>
-            <Column field="position.name" header="Position" :showFilterMatchModes="false" class="text-left">
+            <Column filterField="position.name" header="Position" :showFilterMatchModes="false" class="text-left">
                 <template #body="{ data }">
                     {{ data.position.name }}
                 </template>
