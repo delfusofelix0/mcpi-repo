@@ -13,7 +13,7 @@ import VueTurnstile from 'vue-turnstile';
 import {useToast} from 'primevue/usetoast';
 
 const props = defineProps(['positions']);
-
+// I like to move it, move it.
 const visible = ref(false);
 const photoPreview = ref(null);
 const resetKey = ref(0);
