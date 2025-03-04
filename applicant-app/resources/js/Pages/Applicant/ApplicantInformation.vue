@@ -1,6 +1,8 @@
 <script setup>
-import {defineProps} from 'vue';
+import {defineProps, ref} from 'vue';
 import {Head, Link} from "@inertiajs/vue3";
+import Tag from 'primevue/tag';
+
 
 const props = defineProps({
     applicant: Object
@@ -23,7 +25,27 @@ const getImageUrl = (imagePath) => {
     return imagePath ? `/storage/${imagePath}` : '/path/to/default/image.jpg';
 };
 
-console.table(props.applicant);
+const statuses = ref(['Pending', 'Hired', 'For Demo', 'For Interview', 'Reserved', 'Viewed', 'Rejected']);
+const getSeverity = (status) => {
+    switch (status) {
+        case 'Pending':
+            return 'info';
+        case 'Hired':
+            return 'success';
+        case 'For Demo':
+            return 'warning';
+        case 'For Interview':
+            return 'help';
+        case 'Reserved':
+            return 'secondary';
+        case 'Viewed':
+            return 'primary';
+        case 'Rejected':
+            return 'danger';
+        default:
+            return 'info';
+    }
+};
 </script>
 
 <template>
@@ -120,8 +142,10 @@ console.table(props.applicant);
 
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold text-indigo-700 mb-4">Application Status</h2>
-                    <p><span class="font-medium text-gray-700">Status:</span> <span
-                        class="text-indigo-600">{{ applicant.status || 'N/A' }}</span></p>
+                    <p class="flex items-center">
+                        <span class="font-medium text-gray-700 mr-2">Status:</span>
+                        <Tag :value="applicant.status || 'N/A'" :severity="getSeverity(applicant.status)" />
+                    </p>
                 </div>
 
                 <div class="bg-white p-6 rounded-lg shadow-md">
