@@ -58,10 +58,11 @@ const form = useForm({
     eligibility_proof: null,
     transcript: null,
     training_certificates: null,
-    skip_performance_rating: false,
-    skip_employment_proof: false,
     performance_rating: null,
     employment_proof: null,
+    skip_performance_rating: false,
+    skip_employment_proof: false,
+    skip_eligibility_proof: false,
     'cf-turnstile-response': '',
 });
 
@@ -80,6 +81,10 @@ const educationOptions = ref([
 ]);
 
 const toast = useToast();
+
+const closeSuccessDialog = () => {
+    successDialogVisible.value = false;
+};
 
 const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
@@ -137,10 +142,6 @@ const submit = (e) => {
             toast.add({severity: 'error', summary: 'Error', detail: 'Form submission failed', life: 5000});
         },
     });
-};
-
-const closeSuccessDialog = () => {
-    successDialogVisible.value = false;
 };
 </script>
 
@@ -529,7 +530,9 @@ const closeSuccessDialog = () => {
 
                         <h3 class="text-lg text-cyan-600 font-bold mb-4 mt-4">INSTRUCTION: UPLOAD FILE IN PDF FORMAT. IF
                             THE
-                            DOCUMENTS HAVE MULTIPLE PAGES IT SHOULD BE IN ONE (1) PDF FILE.</h3>
+                            DOCUMENTS HAVE MULTIPLE PAGES IT SHOULD BE IN ONE (1) PDF FILE.
+                            <span class="text-red-500">(5MB FILE SIZE LIMIT)</span>
+                        </h3>
                         <div class="grid grid-cols-1 gap-4">
                             <div>
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document1">Application
@@ -583,12 +586,19 @@ const closeSuccessDialog = () => {
                             <div>
                                 <label class="block text-gray-700 text-sm font-bold mb-2" for="document4">Certificate of
                                     Eligibility/Rating or Professional License as proof of eligibility.*Required</label>
+                                <div class="flex items-center mb-2">
+                                    <Checkbox v-model="form.skip_eligibility_proof" binary
+                                              inputId="skip_eligibility_proof"/>
+                                    <label for="skip_eligibility_proof" class="ml-2 text-sm text-gray-700">Skip this
+                                        document</label>
+                                </div>
                                 <input
                                     class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                                     id="document4" type="file" accept=".pdf" :key="resetKey"
                                     @input="form.eligibility_proof = $event.target.files[0]"
                                     :class="{ 'border-red-500': form.errors.eligibility_proof }"
-                                    @focus="form.clearErrors('eligibility_proof')"/>
+                                    @focus="form.clearErrors('eligibility_proof')"
+                                    :disabled="form.skip_eligibility_proof" />
                                 <Message v-if="form.errors.eligibility_proof" severity="error" variant="simple"
                                          size="small">{{ form.errors.eligibility_proof }}
                                 </Message>

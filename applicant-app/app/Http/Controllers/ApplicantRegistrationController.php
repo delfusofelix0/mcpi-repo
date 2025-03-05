@@ -63,13 +63,14 @@ class ApplicantRegistrationController
             'indigenous_details' => 'nullable|string',
             'application_letter' => 'required|file|mimes:pdf|max:5120',
             'personal_data_sheet' => 'required|file|mimes:pdf|max:5120',
-            'eligibility_proof' => 'required|file|mimes:pdf|max:5120',
             'transcript' => 'required|file|mimes:pdf|max:5120',
             'training_certificates' => 'required|file|mimes:pdf|max:5120',
             'skip_performance_rating' => 'required|boolean',
             'skip_employment_proof' => 'required|boolean',
+            'skip_eligibility_proof' => 'required|boolean',
             'performance_rating' => 'nullable|required_if:skip_performance_rating,false|file|mimes:pdf|max:5120',
             'employment_proof' => 'nullable|required_if:skip_employment_proof,false|file|mimes:pdf|max:5120',
+            'eligibility_proof' => 'nullable|required_if:skip_eligibility_proof,false|file|mimes:pdf|max:5120',
             'cf-turnstile-response' => ['required', new TurnstileCheck()],
         ], [
             'position.required' => 'Position is required.',
@@ -160,6 +161,7 @@ class ApplicantRegistrationController
             ->registrations()->create(array_merge($validatedData, [
                 'performance_rating_skipped' => $validatedData['skip_performance_rating'],
                 'employment_proof_skipped' => $validatedData['skip_employment_proof'],
+                'eligibility_proof_skipped' => $validatedData['skip_eligibility_proof'],
             ]));
 
 
@@ -167,7 +169,6 @@ class ApplicantRegistrationController
         $documentTypes = [
             'application_letter',
             'personal_data_sheet',
-            'eligibility_proof',
             'transcript',
             'training_certificates'
         ];
@@ -178,6 +179,10 @@ class ApplicantRegistrationController
 
         if (!$validatedData['skip_employment_proof']) {
             $documentTypes[] = 'employment_proof';
+        }
+
+        if (!$validatedData['skip_eligibility_proof']) {
+            $documentTypes[] = 'eligibility_proof';
         }
 
         foreach ($documentTypes as $type) {

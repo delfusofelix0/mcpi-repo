@@ -46,6 +46,7 @@ class Registration extends Model
         'status',
         'performance_rating_skipped',
         'employment_proof_skipped',
+        'eligibility_proof_skipped'
     ];
 
     protected $casts = [
