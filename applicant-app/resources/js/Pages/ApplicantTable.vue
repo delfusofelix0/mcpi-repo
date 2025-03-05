@@ -17,7 +17,7 @@ const props = defineProps([
 ]);
 
 const page = usePage();
-const isAdmin = page.props.auth.isAdmin
+const isAdmin = page.props.auth.user.isAdmin
 const canDelete = computed(() => isAdmin);
 
 const toast = useToast();
@@ -80,13 +80,11 @@ const updateStatus = () => {
         preserveScroll: true,
         onSuccess: () => {
             toast.add({severity: 'success', summary: 'Success!', detail: 'Status changed.', group: 'tl', life: 3000});
-            console.log('Status updated successfully');
             dialogVisible.value = false;
             selectedApplicant.value = null;
         },
-        onError: (error) => {
+        onError: () => {
             toast.add({severity: 'error', summary: 'Error!', detail: 'Status not changed.', group: 'tl', life: 3000});
-            console.error('Error updating status', error);
         },
     });
 };
