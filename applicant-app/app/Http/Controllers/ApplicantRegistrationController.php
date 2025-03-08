@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Registration;
 use App\Models\WorkPosition;
+use App\Services\M360SmsService;
 use Coderflex\LaravelTurnstile\Rules\TurnstileCheck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Log;
 
 class ApplicantRegistrationController
 {
@@ -194,6 +195,16 @@ class ApplicantRegistrationController
                     'file_path' => $path,
                 ]);
             }
+        }
+
+        try {
+            $smsService = new M360SmsService();
+            $title = $validatedData['sogie'] === 'Male' ? 'Mr.' : 'Ms.';
+            $message = "Dear {$title} {$validatedData['last_name']}, thank you for submitting your application to MCPI. We will review your application and contact you soon.";
+            $smsService->send($validatedData['phone'], $message);
+        } catch (\Exception $e) {
+            // Log the error but continue with the process
+            Log::error('Failed to send SMS: ' . $e->getMessage());
         }
 
         return Inertia::render('ApplicantForm', [
