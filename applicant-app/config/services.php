@@ -40,4 +40,10 @@ return [
         'secret' => env('TURNSTILE_SECRET_KEY'),
     ],
 
+    'm360' => [
+        'api_key' => env('M360_API_KEY'),
+        'api_secret' => env('M360_API_SECRET'),
+        'sender_id' => env('M360_SENDER_ID', 'MCPI'),
+        'base_url' => env('M360_BASE_URL'),
+    ],
 ];
