@@ -67,8 +67,21 @@ const getSeverity = (status) => {
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold text-indigo-700 mb-4">Personal Details</h2>
                     <div class="flex items-center mb-4">
-                        <img :src="getImageUrl(applicant.image_path)" alt="Applicant Photo"
-                             class="w-32 h-32 object-cover rounded-full mr-4"/>
+                        <div class="mr-4">
+                            <Image alt="Applicant Photo" preview>
+                                <template #previewicon >
+                                    <i class="pi pi-search"></i>
+                                </template>
+                                <template #image>
+                                    <img :src="getImageUrl(applicant.image_path)" alt="Applicant Photo"
+                                         class="w-32 h-32 object-cover rounded-full" />
+                                </template>
+                                <template #preview="slotProps">
+                                    <img :src="getImageUrl(applicant.image_path)" alt="Applicant Photo"
+                                         :style="slotProps.style" @click="slotProps.onClick" width="400" />
+                                </template>
+                            </Image>
+                        </div>
                         <div>
                             <p class="font-medium text-lg text-indigo-600">
                                 {{ applicant.first_name || 'N/A' }}
@@ -174,5 +187,11 @@ const getSeverity = (status) => {
 </template>
 
 <style scoped>
-/* Any additional component-specific styles can go here */
+:deep(.p-image-preview-mask) {
+    border-radius: 9999px; /* Makes the hover mask rounded */
+}
+
+:deep(.p-image-preview) {
+    border-radius: 9999px; /* Makes the preview container rounded */
+}
 </style>
