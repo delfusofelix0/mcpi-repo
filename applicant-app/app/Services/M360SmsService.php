@@ -27,7 +27,7 @@ class M360SmsService
             $phoneNumber = $this->formatPhoneNumber($phoneNumber);
 
             // Use query parameters for authentication instead of Basic Auth
-            $response = Http::post($this->baseUrl . '/broadcast', [
+            $response = Http::withoutVerifying()->post($this->baseUrl . '/broadcast', [
                 'app_key' => $this->apiKey,
                 'app_secret' => $this->apiSecret,
                 'msisdn' => $phoneNumber,

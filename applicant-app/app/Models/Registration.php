@@ -46,12 +46,15 @@ class Registration extends Model
         'status',
         'performance_rating_skipped',
         'employment_proof_skipped',
-        'eligibility_proof_skipped'
+        'eligibility_proof_skipped',
+        'remarks',
+        'remarks_date'
     ];
 
     protected $casts = [
         'birthdate' => 'date',
         'last_employment_date' => 'date',
+        'remarks_date' => 'datetime',
         'person_with_disability' => 'boolean',
         'pregnant' => 'boolean',
         'indigenous_community' => 'boolean',

@@ -16,10 +16,13 @@ class DashboardController extends Controller
             'first_name',
             'last_name',
             'email',
+            'phone',
             'highest_education',
             'work_position_id',
             'created_at',
-            'status'
+            'status',
+            'remarks',
+            'remarks_date'
         ])->with(['position' => function($query) {
             $query->withTrashed()->select('id', 'name');
         }])->latest();

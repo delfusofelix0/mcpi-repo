@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/position/{id}', [PositionController::class, 'update'])->name('positions.update');
         Route::delete('/position/{id}', [PositionController::class, 'destroy'])->name('positions.destroy');
     });
+    Route::post('/applicant/{id}/send-sms', [ApplicantController::class, 'sendSms'])->name('applicant.send-sms');
 });
 
 Route::get('/applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show')

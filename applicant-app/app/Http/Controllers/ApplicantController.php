@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\WorkPosition;
 use App\Models\Registration;
+use App\Services\M360SmsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use function Laravel\Prompts\error;
 
 class ApplicantController extends Controller
 {
@@ -19,15 +21,29 @@ class ApplicantController extends Controller
 
     public function statusStore(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:Pending,Hired,For Demo,For Interview,Reserved,Option,Viewed,Rejected',
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|string',
+            'remarks' => 'nullable|string',
+            'remarks_date' => 'nullable|date',
         ]);
 
-        $registration = Registration::findOrFail($id);
-        $registration->status = $request->status;
-        $registration->save();
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
-        return redirect()->back()->with('success', 'Applicant status updated successfully.');
+        $applicant = Registration::findOrFail($id);
+
+        // Only allow remarks_date for specific statuses
+        $allowedStatusesForDate = ['Hired', 'For Interview', 'For Demo'];
+        $remarksDate = in_array($request->status, $allowedStatusesForDate) ? $request->remarks_date : null;
+
+        $applicant->update([
+            'status' => $request->status,
+            'remarks' => $request->remarks,
+            'remarks_date' => $remarksDate,
+        ]);
+
+        return redirect()->back()->with('success', 'Status updated successfully');
     }
 
     public function show($id)
@@ -51,5 +67,31 @@ class ApplicantController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('dashboard')->with('error', 'Failed to delete applicant');
         }
+    }
+
+    public function sendSms(Request $request, $id, M360SmsService $smsService)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|string',
+            'message' => 'required|string|max:400',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        Registration::findOrFail($id);
+
+        // Send SMS using the M360SmsService
+        $success = $smsService->send($request->phone, $request->message);
+
+        if ($success) {
+            // FUTURE TODO:
+            // Log the SMS in your database if needed
+            // You could create an SmsLog model to track all sent messages
+
+            return back()->with('success', 'SMS sent successfully');
+        }
+        return back()->withErrors(['message' => 'Failed to send SMS. Please try again.']);
     }
 }
