@@ -35,12 +35,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [PositionController::class, 'store'])->name('positions.store');
         Route::put('/position/{id}', [PositionController::class, 'update'])->name('positions.update');
         Route::delete('/position/{id}', [PositionController::class, 'destroy'])->name('positions.destroy');
+        Route::get('/show-applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show');
     });
     Route::post('/applicant/{id}/send-sms', [ApplicantController::class, 'sendSms'])->name('applicant.send-sms');
 });
 
-Route::get('/applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show')
-    ->middleware(['auth', 'verified']);
+//Route::get('/applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show')
+//    ->middleware(['auth', 'verified']);
 
 
 

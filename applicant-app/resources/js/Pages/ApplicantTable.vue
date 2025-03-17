@@ -130,7 +130,7 @@ const updateStatus = () => {
 };
 
 const viewApplicant = (id) => {
-    router.visit(route('applicant.show', {id: id}));
+    window.open(route('applicant.show', {id: id}), '_blank');
 };
 
 const deleteApplicant = () => {
