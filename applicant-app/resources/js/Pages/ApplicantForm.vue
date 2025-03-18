@@ -13,7 +13,6 @@ import VueTurnstile from 'vue-turnstile';
 import {useToast} from 'primevue/usetoast';
 
 const props = defineProps(['positions']);
-// I like to move it, move it.
 const visible = ref(false);
 const photoPreview = ref(null);
 const resetKey = ref(0);
@@ -663,6 +662,13 @@ const submit = (e) => {
                                      size="small">{{ form.errors['cf-turnstile-response'] }}
                             </Message>
                             <Button type="submit" :disabled="form.processing" label="Submit" class="mt-8 w-full"/>
+                        </div>
+
+                        <div class="text-center mt-4 text-sm text-gray-600">
+                            If you encounter any issues, please contact us at
+                            <a href="https://www.facebook.com/InfoTechSSS" target="_blank" class="text-blue-600 hover:underline">
+                                MCPI Information Technology System Support Services
+                            </a>
                         </div>
                     </form>
                     <!-- Success modal -->
