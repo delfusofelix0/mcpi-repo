@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicantRegistrationController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
@@ -38,6 +39,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/show-applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show');
     });
     Route::post('/applicant/{id}/send-sms', [ApplicantController::class, 'sendSms'])->name('applicant.send-sms');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+   Route::prefix('appointment')->group(function () {
+       Route::get('/', [AppointmentController::class, 'index'])->name('appointment');
+   });
 });
 
 //Route::get('/applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show')
