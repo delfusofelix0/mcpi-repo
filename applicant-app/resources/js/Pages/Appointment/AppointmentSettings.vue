@@ -1,34 +1,29 @@
 <script setup>
 import {Head} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import OfficeManagement from "@/Pages/Appointment/OfficeManagement.vue";
+
+const props = defineProps({
+    offices: Array
+});
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Appointment Settings" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2
-                class="text-xl font-semibold leading-tight text-gray-800"
-            >
-                Dashboard
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                Appointment Settings
             </h2>
         </template>
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div
-                    class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
-                >
-                    <div class="p-6 text-gray-900">
-                        You're logged in!
-                    </div>
-                </div>
+                <OfficeManagement :offices="offices" />
+
                 <div class="mt-6">
-                    Test
-                </div>
-                <div class="mt-6">
-                    Test
+                    <!-- Additional settings sections can be added here -->
                 </div>
             </div>
         </div>

@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicantRegistrationController;
-use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -42,8 +42,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-   Route::prefix('appointment')->group(function () {
-       Route::get('/', [AppointmentController::class, 'index'])->name('appointment');
+   Route::prefix('appointment-settings')->group(function () {
+       Route::get('/', [OfficeController::class, 'index'])
+           ->name('offices.index');
+       Route::post('/', [OfficeController::class, 'store'])
+           ->name('offices.store');
+       Route::put('offices/{office}/update-availability', [OfficeController::class, 'updateAvailability'])
+           ->name('offices.updateAvailability');
+       Route::put('offices/{office}/update-name', [OfficeController::class, 'updateOfficeName'])
+           ->name('offices.updateName');
+       Route::delete('/{office}', [OfficeController::class, 'destroy'])
+           ->name('offices.destroy');
    });
 });
 
