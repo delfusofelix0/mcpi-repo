@@ -11,8 +11,6 @@ const props = defineProps({
     }
 });
 
-console.log(props.offices);
-
 const toast = useToast();
 const officeForm = useForm({
     name: '',
@@ -21,6 +19,7 @@ const officeForm = useForm({
 
 const confirmDeleteDialog = ref(false);
 const officeToDelete = ref(null);
+const tableLoading = ref(true);
 
 const submitOffice = () => {
     officeForm.post(route('offices.store'), {
@@ -36,7 +35,7 @@ const submitOffice = () => {
 
 const onCellEditComplete = (event) => {
     const { data, newValue, field } = event;
-
+    tableLoading.value = true;
     if (field === 'name') {
         useForm({
             name: newValue
@@ -44,10 +43,12 @@ const onCellEditComplete = (event) => {
             preserveState: false,
             preserveScroll: true,
             onSuccess: () => {
+                tableLoading.value = false;
                 toast.add({ severity: 'success', summary: 'Success', detail: 'Office name updated successfully', life: 3000 });
             },
             onError: () => {
                 // Revert the change if the update fails
+                tableLoading.value = false;
                 data[field] = event.originalEvent.target.defaultValue;
                 toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update office name', life: 3000 });
             }
@@ -76,13 +77,16 @@ const deleteOffice = () => {
 };
 
 const toggleAvailability = (office) => {
+    tableLoading.value = true;
     const newAvailability = !office.is_available;
-    useForm({
-        is_available: newAvailability
-    }).put(route('offices.updateAvailability', office.id), {
+    officeForm.reset();
+    officeForm.is_available = newAvailability;
+
+    officeForm.put(route('offices.updateAvailability', office.id), {
         preserveScroll: true,
         preserveState: false,
         onSuccess: () => {
+            tableLoading.value = false;
             // Update the local state
             office.is_available = newAvailability;
 
@@ -95,7 +99,7 @@ const toggleAvailability = (office) => {
             });
         },
         onError: (errors) => {
-            console.error(errors);
+            tableLoading.value = false;
             // Revert the local state if the API call fails
             office.is_available = !newAvailability;
             toast.add({
@@ -170,6 +174,7 @@ const toggleAvailability = (office) => {
                 <DataTable
                     v-else
                     :value="props.offices"
+                    :loading="tableLoading"
                     stripedRows
                     paginator
                     :rows="10"
@@ -180,6 +185,11 @@ const toggleAvailability = (office) => {
                     @cell-edit-complete="onCellEditComplete"
                     dataKey="id"
                 >
+                    <template #loading>
+                        <div class="flex flex-column align-items-center justify-content-center p-4 bg-gray-300">
+                            <span class="mt-2 text-lg font-medium text-white">Loading office data...🤣</span>
+                        </div>
+                    </template>
                     <Column field="name" header="Office Name" sortable>
                         <template #editor="{ data, field }">
                             <InputText v-model="data[field]" autofocus />

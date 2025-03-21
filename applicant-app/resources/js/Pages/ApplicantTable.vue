@@ -9,7 +9,6 @@ import {FilterMatchMode, FilterOperator} from '@primevue/core/api';
 import {useToast} from "primevue/usetoast";
 import {computed, ref} from 'vue';
 import {useForm, usePage} from "@inertiajs/vue3";
-import {router} from '@inertiajs/vue3'
 import InputMask from "primevue/inputmask";
 
 const props = defineProps([
