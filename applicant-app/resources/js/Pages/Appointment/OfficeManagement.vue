@@ -3,6 +3,7 @@ import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import {useForm} from "@inertiajs/vue3";
 import {ref} from "vue";
+import {FilterMatchMode} from "@primevue/core/api";
 
 const props = defineProps({
     offices: {
@@ -12,6 +13,7 @@ const props = defineProps({
 });
 
 const toast = useToast();
+const deleteForm = useForm({});
 const officeForm = useForm({
     name: '',
     is_available: true
@@ -19,7 +21,27 @@ const officeForm = useForm({
 
 const confirmDeleteDialog = ref(false);
 const officeToDelete = ref(null);
-const tableLoading = ref(true);
+const tableLoading = ref(false);
+
+// Add this new code for filters
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    is_available: { value: null, matchMode: FilterMatchMode.EQUALS }
+});
+
+const clearFilter = () => {
+    initFilters();
+};
+
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        is_available: { value: null, matchMode: FilterMatchMode.EQUALS }
+    };
+};
+
 
 const submitOffice = () => {
     officeForm.post(route('offices.store'), {
@@ -62,7 +84,7 @@ const confirmDelete = (office) => {
 };
 
 const deleteOffice = () => {
-    useForm().delete(route('offices.destroy', officeToDelete.value.id), {
+    deleteForm.delete(route('offices.destroy', officeToDelete.value.id), {
         preserveScroll: true,
         preserveState: false,
         onSuccess: () => {
@@ -166,36 +188,49 @@ const toggleAvailability = (office) => {
             <div class="mt-6">
                 <h4 class="text-lg font-medium mb-3">Office List</h4>
 
-                <div v-if="props.offices.length === 0" class="p-4 border-round bg-gray-100 text-center">
-                    <i class="pi pi-info-circle mr-2"></i>
-                    <span class="text-gray-600">No offices added yet.</span>
-                </div>
-
-                <DataTable
-                    v-else
-                    :value="props.offices"
-                    :loading="tableLoading"
-                    stripedRows
-                    paginator
-                    :rows="10"
-                    :rowsPerPageOptions="[5, 10, 20]"
-                    tableStyle="min-width: 50rem"
-                    class="p-datatable-sm"
-                    editMode="cell"
-                    @cell-edit-complete="onCellEditComplete"
-                    dataKey="id"
-                >
+                <DataTable v-model:filters="filters"
+                           :value="props.offices"
+                           showGridlines
+                           stripedRows
+                           paginator
+                           :rows="10"
+                           :rowsPerPageOptions="[10, 20, 30, 40, 50]"
+                           tableStyle="min-width: 25rem"
+                           class="p-datatable-sm"
+                           responsiveLayout="scroll"
+                           filterDisplay="menu"
+                           :globalFilterFields="['name']"
+                           :loading="tableLoading"
+                           editMode="cell"
+                           @cell-edit-complete="onCellEditComplete"
+                           dataKey="id">
                     <template #loading>
-                        <div class="flex flex-column align-items-center justify-content-center p-4 bg-gray-300">
+                        <div class="flex flex-column align-items-center justify-content-center p-4">
                             <span class="mt-2 text-lg font-medium text-white">Loading office data...🤣</span>
                         </div>
                     </template>
-                    <Column field="name" header="Office Name" sortable>
+                    <template #header>
+                        <div class="flex justify-between">
+                            <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter()"/>
+                            <IconField>
+                                <InputIcon>
+                                    <i class="pi pi-search"/>
+                                </InputIcon>
+                                <InputText v-model="filters['global'].value" placeholder="Keyword Search"/>
+                            </IconField>
+                        </div>
+                    </template>
+                    <template #empty>
+                        <div class="p-4 text-center">
+                            <p>No offices found.</p>
+                        </div>
+                    </template>
+                    <Column field="name" header="Office Name" :showFilterMatchModes="false" style="width: 25%">
                         <template #editor="{ data, field }">
                             <InputText v-model="data[field]" autofocus />
                         </template>
                     </Column>
-                    <Column header="Status" class="w-10rem">
+                    <Column header="Status" class="w-10rem" removableSort>
                         <template #body="slotProps">
                             <div class="flex align-items-center">
                                 <Checkbox
@@ -204,21 +239,16 @@ const toggleAvailability = (office) => {
                                     @change="toggleAvailability(slotProps.data)"
                                 />
                                 <span class="ml-2" :class="slotProps.data.is_available ? 'text-green-500' : 'text-red-500'">
-                                    {{ slotProps.data.is_available ? 'Available' : 'Not Available' }}
-                                </span>
+                            {{ slotProps.data.is_available ? 'Available' : 'Not Available' }}
+                        </span>
                             </div>
                         </template>
                     </Column>
-                    <Column header="Actions" class="w-10rem">
+                    <Column header="Action" class="text-center" style="width: 5%">
                         <template #body="slotProps">
-                            <Button
-                                icon="pi pi-trash"
-                                severity="danger"
-                                text
-                                rounded
-                                aria-label="Delete"
-                                @click="confirmDelete(slotProps.data)"
-                            />
+                            <div class="flex justify-center gap-2">
+                                <Button icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" @click="confirmDelete(slotProps.data)" aria-label="Delete office" />
+                            </div>
                         </template>
                     </Column>
                 </DataTable>
@@ -239,11 +269,41 @@ const toggleAvailability = (office) => {
         </div>
         <template #footer>
             <Button label="No" icon="pi pi-times" outlined @click="confirmDeleteDialog = false" />
-            <Button label="Yes" icon="pi pi-check" severity="danger" @click="deleteOffice" />
+            <Button label="Yes" icon="pi pi-check" severity="danger" @click="deleteOffice" :loading="deleteForm.processing"/>
         </template>
     </Dialog>
 </template>
 
 <style scoped>
+:deep(.p-datatable) {
+    @apply text-sm;
+}
 
+:deep(.p-datatable .p-datatable-header) {
+    @apply bg-gray-100 border border-gray-200 border-x-0 p-4;
+}
+
+:deep(.p-datatable .p-datatable-thead > tr > th) {
+    @apply bg-gray-100 text-gray-700 font-semibold p-3;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr) {
+    @apply bg-white;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr:nth-child(even)) {
+    @apply bg-gray-50;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr > td) {
+    @apply p-3;
+}
+
+:deep(.p-datatable .p-paginator) {
+    @apply p-4;
+}
+
+:deep(.p-button.p-button-icon-only) {
+    @apply w-8 h-8;
+}
 </style>

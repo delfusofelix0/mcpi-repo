@@ -238,6 +238,7 @@ const getSeverity = (status) => {
 <template>
     <Toast position="top-left" group="tl"/>
     <div class="bg-white p-4 rounded-lg shadow-md">
+        <h4 class="text-lg font-medium mb-3">Applicant List</h4>
         <DataTable v-model:filters="filters"
                    :value="formattedRegistrations"
                    showGridlines

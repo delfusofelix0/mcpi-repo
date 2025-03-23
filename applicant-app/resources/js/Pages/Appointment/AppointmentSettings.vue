@@ -20,10 +20,11 @@ const props = defineProps({
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <OfficeManagement :offices="offices" />
-
                 <div class="mt-6">
-                    <!-- Additional settings sections can be added here -->
+                    <OfficeManagement :offices="offices" />
+                </div>
+                <div class="mt-6">
+                    <!-- add more features here... -->
                 </div>
             </div>
         </div>
