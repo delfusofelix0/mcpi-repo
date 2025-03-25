@@ -73,7 +73,7 @@ class ApplicantController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string',
-            'message' => 'required|string|max:400',
+            'message' => 'required|string|max:2000',
         ]);
 
         if ($validator->fails()) {

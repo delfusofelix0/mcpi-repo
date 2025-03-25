@@ -389,7 +389,7 @@ const getSeverity = (status) => {
                               placeholder="Enter your message here" />
                     <small v-if="smsForm.errors.message" class="text-red-500">{{ smsForm.errors.message }}</small>
                     <div class="text-right mt-1">
-                        <small class="text-gray-500">{{ smsForm.message.length }}/400 characters</small>
+                        <small class="text-gray-500">{{ smsForm.message.length }}/2000 characters</small>
                     </div>
                 </div>
             </div>
