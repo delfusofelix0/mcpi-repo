@@ -15,43 +15,67 @@ const form = useForm({
 
 const availableTimeSlots = ref([]);
 
-const isWeekday = (date) => {
-  const day = date.getDay();
-  return day !== 0 && day !== 6;
+const fetchReservedTimeSlots = (date) => {
+    // This would be an API call in a real application
+    // For now, let's just return some random reserved slots
+    return ['09:00 - 10:00', '14:00 - 15:00'];
 };
 
-const generateTimeSlots = () => {
-  const slots = [];
-  for (let hour = 8; hour < 17; hour++) {
-    if (hour !== 12) {
-      slots.push({
-        label: `${hour.toString().padStart(2, '0')}:00 - ${(hour + 1).toString().padStart(2, '0')}:00`,
-        disabled: false
-      });
-    } else {
-      slots.push({
-        label: 'Lunch Break',
-        disabled: true
-      });
+const isWeekday = (date) => {
+    const day = date.getDay();
+    return day !== 0 && day !== 6;
+};
+
+const getSeverity = (slot) => {
+    if (slot.disabled) return 'secondary';
+    if (slot.reserved) return 'danger';
+    if (form.time === slot.label) return 'success';
+    return 'primary';
+};
+
+
+const selectTime = (slot) => {
+    if (!slot.disabled && !slot.reserved) {
+        form.time = slot.label;
     }
-  }
-  return slots;
+};
+
+const generateTimeSlots = (reservedSlots) => {
+    const slots = [];
+    for (let hour = 8; hour < 17; hour++) {
+        if (hour !== 12) {
+            const slotLabel = `${hour.toString().padStart(2, '0')}:00 - ${(hour + 1).toString().padStart(2, '0')}:00`;
+            slots.push({
+                label: slotLabel,
+                disabled: false,
+                reserved: reservedSlots.includes(slotLabel)
+            });
+        } else {
+            slots.push({
+                label: 'Lunch Break',
+                disabled: true,
+                reserved: false
+            });
+        }
+    }
+    return slots;
 };
 
 const onDateSelect = (event) => {
-  const selectedDate = event;
-  if (selectedDate && isWeekday(selectedDate)) {
-    availableTimeSlots.value = generateTimeSlots();
-    // Format the date as "YYYY-MM-DD"
-    form.date = selectedDate.toISOString().split('T')[0];
-  } else {
-    availableTimeSlots.value = [];
-    form.date = null;
-  }
+    const selectedDate = event;
+    if (selectedDate && isWeekday(selectedDate)) {
+        const reservedSlots = fetchReservedTimeSlots(selectedDate);
+        availableTimeSlots.value = generateTimeSlots(reservedSlots);
+        form.date = selectedDate.toISOString().split('T')[0];
+    } else {
+        availableTimeSlots.value = [];
+        form.date = null;
+    }
+    form.time = null; // Reset selected time when date changes
 };
 
 const isFormValid = computed(() => {
-  return form.name && form.contact && form.date;
+    return form.name && form.contact && form.date && form.time;
 });
 
 const submitForm = () => {
@@ -89,21 +113,20 @@ const submitForm = () => {
               class="w-full"
           />
         </div>
-
-        <div v-if="availableTimeSlots.length > 0" class="field mt-4">
-          <h3 class="text-xl font-semibold mb-2">Available Time Slots</h3>
-          <div class="grid">
-            <div v-for="slot in availableTimeSlots" :key="slot.label" class="col-6 sm:col-4 md:col-3 lg:col-2">
-              <Button
-                  :label="slot.label"
-                  class="p-button-outlined p-button-secondary w-full mb-2"
-                  :class="{ 'p-button-primary': form.time === slot.label }"
-                  @click="form.time = slot.label"
-                  :disabled="slot.disabled"
-              />
-            </div>
+          <div v-if="availableTimeSlots.length > 0" class="field mt-4">
+              <h3 class="text-xl font-semibold mb-2">Available Time Slots</h3>
+              <div class="grid">
+                  <div v-for="slot in availableTimeSlots" :key="slot.label" class="col-6 sm:col-4 md:col-3 lg:col-2">
+                      <Button
+                          :label="slot.label"
+                          class="w-full mb-2"
+                          :severity="getSeverity(slot)"
+                          @click="selectTime(slot)"
+                          :disabled="slot.disabled || slot.reserved"
+                      />
+                  </div>
+              </div>
           </div>
-        </div>
 
         <Button type="submit" label="Book Appointment" class="mt-4" :disabled="!isFormValid || !form.time"/>
       </form>
