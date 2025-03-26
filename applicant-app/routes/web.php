@@ -17,6 +17,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/test', function () {
+    return Inertia::render('Appointment/AppointmentForm');
+});
+
 Route::prefix('applicant-form')->group(function () {
     Route::get('/', [ApplicantRegistrationController::class, 'workPosition'])->name('applicant-form.workPosition');
     Route::post('/', [ApplicantRegistrationController::class, 'store'])->name('applicant-form.store');
@@ -28,32 +32,37 @@ Route::prefix('applicant-form')->group(function () {
 //})->name('applicant-form');
 //
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::prefix('dashboard')->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard'); //registrations and position list
-        Route::post('/applicant/{id}', [ApplicantController::class, 'statusStore'])->name('applicant.statusStore');
-        Route::delete('/applicant/{id}', [ApplicantController::class, 'destroyApplicant'])->name('applicant.destroyApplicant')
-            ->middleware('role:Admin');
-        Route::post('/', [PositionController::class, 'store'])->name('positions.store');
-        Route::put('/position/{id}', [PositionController::class, 'update'])->name('positions.update');
-        Route::delete('/position/{id}', [PositionController::class, 'destroy'])->name('positions.destroy');
-        Route::get('/show-applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show');
+    Route::prefix('appointment-settings')->group(function () {
+        Route::get('/', [OfficeController::class, 'index'])
+            ->name('offices.index');
+        Route::post('/', [OfficeController::class, 'store'])
+            ->name('offices.store');
+        Route::put('offices/{office}/update-availability', [OfficeController::class, 'updateAvailability'])
+            ->name('offices.updateAvailability');
+        Route::put('offices/{office}/update-name', [OfficeController::class, 'updateOfficeName'])
+            ->name('offices.updateName');
+        Route::delete('/{office}', [OfficeController::class, 'destroy'])
+            ->name('offices.destroy');
     });
-    Route::post('/applicant/{id}/send-sms', [ApplicantController::class, 'sendSms'])->name('applicant.send-sms');
-});
-
-Route::middleware(['auth', 'verified'])->group(function () {
-   Route::prefix('appointment-settings')->group(function () {
-       Route::get('/', [OfficeController::class, 'index'])
-           ->name('offices.index');
-       Route::post('/', [OfficeController::class, 'store'])
-           ->name('offices.store');
-       Route::put('offices/{office}/update-availability', [OfficeController::class, 'updateAvailability'])
-           ->name('offices.updateAvailability');
-       Route::put('offices/{office}/update-name', [OfficeController::class, 'updateOfficeName'])
-           ->name('offices.updateName');
-       Route::delete('/{office}', [OfficeController::class, 'destroy'])
-           ->name('offices.destroy');
-   });
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])
+            ->name('dashboard'); //registrations and position list
+        Route::post('/applicant/{id}', [ApplicantController::class, 'statusStore'])
+            ->name('applicant.statusStore');
+        Route::delete('/applicant/{id}', [ApplicantController::class, 'destroyApplicant'])
+            ->name('applicant.destroyApplicant')
+            ->middleware('role:Admin');
+        Route::post('/', [PositionController::class, 'store'])
+            ->name('positions.store');
+        Route::put('/position/{id}', [PositionController::class, 'update'])
+            ->name('positions.update');
+        Route::delete('/position/{id}', [PositionController::class, 'destroy'])
+            ->name('positions.destroy');
+        Route::get('/show-applicant/{id}', [ApplicantController::class, 'show'])
+            ->name('applicant.show');
+    });
+    Route::post('/applicant/{id}/send-sms', [ApplicantController::class, 'sendSms'])
+        ->name('applicant.send-sms');
 });
 
 //Route::get('/applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show')

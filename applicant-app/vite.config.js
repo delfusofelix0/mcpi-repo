@@ -5,12 +5,13 @@ import Components from 'unplugin-vue-components/vite';
 import {PrimeVueResolver} from '@primevue/auto-import-resolver';
 
 export default defineConfig({
-    // server: {
-    //     host: '0.0.0.0',
-    //     hmr: {
-    //         host: 'localhost',
-    //     },
-    // },
+    server: {
+        host: '0.0.0.0',
+        hmr: {
+            host: 'localhost',
+            protocol: 'ws',
+        },
+    },
     plugins: [
         laravel({
             input: 'resources/js/app.js',
