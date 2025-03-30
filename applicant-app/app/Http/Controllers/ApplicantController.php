@@ -34,7 +34,7 @@ class ApplicantController extends Controller
         $applicant = Registration::findOrFail($id);
 
         // Only allow remarks_date for specific statuses
-        $allowedStatusesForDate = ['Hired', 'For Interview', 'For Demo'];
+        $allowedStatusesForDate = ['Hired', 'For Interview', 'For Demo', 'Recommended'];
         $remarksDate = in_array($request->status, $allowedStatusesForDate) ? $request->remarks_date : null;
 
         $applicant->update([

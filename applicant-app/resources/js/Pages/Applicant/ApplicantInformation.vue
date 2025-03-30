@@ -25,7 +25,7 @@ const getImageUrl = (imagePath) => {
     return imagePath ? `/storage/${imagePath}` : '/path/to/default/image.jpg';
 };
 
-const statuses = ref(['Pending', 'Hired', 'For Demo', 'For Interview', 'Reserved', 'Viewed', 'Rejected']);
+const statuses = ref(['Pending', 'Hired', 'For Demo', 'For Interview', 'Reserved', 'Viewed', 'Rejected', 'Recommended']);
 const getSeverity = (status) => {
     switch (status) {
         case 'Pending':

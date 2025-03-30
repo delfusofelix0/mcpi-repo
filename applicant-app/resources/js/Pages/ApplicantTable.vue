@@ -41,6 +41,7 @@ const statusOptions = [
     {label: 'Rejected', value: 'Rejected'},
     {label: 'Declined', value: 'Declined'},
     {label: 'Did Not Respond', value: 'Did Not Respond'},
+    {label: 'Recommended', value: 'Recommended'}
 ];
 
 const statusForm = useForm({
@@ -111,7 +112,7 @@ const openSmsDialog = (applicant) => {
 
 const updateStatus = () => {
     // Set remarks_date to null if not one of the statuses that require it
-    if (!['Hired', 'For Interview', 'For Demo'].includes(statusForm.status)) {
+    if (!['Hired', 'For Interview', 'For Demo', 'Recommended'].includes(statusForm.status)) {
         statusForm.remarks_date = null;
     }
 
@@ -207,7 +208,7 @@ const clearFilter = () => {
     initFilters();
 };
 
-const statuses = ref(['Pending', 'Hired', 'For Demo', 'For Interview', 'Reserved', 'Viewed', 'Rejected', 'Declined', 'Did Not Respond']);
+const statuses = ref(['Pending', 'Hired', 'For Demo', 'For Interview', 'Reserved', 'Viewed', 'Rejected', 'Declined', 'Did Not Respond', 'Recommended']);
 const getSeverity = (status) => {
     switch (status) {
         case 'Pending':
@@ -313,7 +314,7 @@ const getSeverity = (status) => {
                     <div v-if="data.remarks" class="flex flex-col">
                         <span class="text-sm">{{ data.remarks }}</span>
                         <span class="text-xs text-gray-500"
-                              v-if="data.remarks_date && ['Hired', 'For Interview', 'For Demo'].includes(data.status)">
+                              v-if="data.remarks_date && ['Hired', 'For Interview', 'For Demo', 'Recommended'].includes(data.status)">
                             {{ formatStatusDate(data.remarks_date) }}
                         </span>
                     </div>
@@ -349,7 +350,7 @@ const getSeverity = (status) => {
                     <Textarea v-model="statusForm.remarks" id="remarks" rows="3" class="w-full" placeholder="Add remarks about this applicant"/>
                 </div>
 
-                <div class="field" v-if="['Hired', 'For Interview', 'For Demo'].includes(statusForm.status)">
+                <div class="field" v-if="['Hired', 'For Interview', 'For Demo', 'Recommended'].includes(statusForm.status)">
                     <label for="remarks_date" class="block text-sm font-medium text-gray-700 mb-1">Remarks Date & Time</label>
                     <DatePicker v-model="statusForm.remarks_date" id="remarks_date"
                                 showTime showIcon :showOnFocus="false"

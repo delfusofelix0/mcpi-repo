@@ -547,9 +547,9 @@ const submit = (e) => {
                                 </Message>
                             </div>
                             <div>
-                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document2">Fully
-                                    accomplished
-                                    Personal Data Sheet (PDS) with recent passport-sized picture.*Required</label>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="document2">
+                                    Curriculum Vitae (CV).*Required
+                                </label> <!-- TODO: Replace the database name for CV -->
                                 <input
                                     class="shadow appearance-none border border-gray-400 rounded w-full md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                                     id="document2" type="file" accept=".pdf" :key="resetKey"
@@ -653,6 +653,7 @@ const submit = (e) => {
                         </div>
 
                         <div class="mt-6">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">I'm not a robot.</label>
                             <VueTurnstile
                                 ref="turnstileRef"
                                 :siteKey="turnstileSiteKey"

@@ -63,7 +63,7 @@ class ApplicantRegistrationController
             'indigenous_community' => 'nullable|boolean',
             'indigenous_details' => 'nullable|string',
             'application_letter' => 'required|file|mimes:pdf|max:5120',
-            'personal_data_sheet' => 'required|file|mimes:pdf|max:5120',
+            'personal_data_sheet' => 'required|file|mimes:pdf|max:5120', // TODO: Replace the database name for CV
             'transcript' => 'required|file|mimes:pdf|max:5120',
             'training_certificates' => 'required|file|mimes:pdf|max:5120',
             'skip_performance_rating' => 'required|boolean',
