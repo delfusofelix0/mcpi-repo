@@ -81,6 +81,7 @@ const isFormValid = computed(() => {
 const submitForm = () => {
   // Handle form submission
   console.log('Form submitted', form);
+  form.post
 };
 </script>
 
@@ -119,7 +120,7 @@ const submitForm = () => {
                   <div v-for="slot in availableTimeSlots" :key="slot.label" class="col-6 sm:col-4 md:col-3 lg:col-2">
                       <Button
                           :label="slot.label"
-                          class="w-full mb-2"
+                          class="w-full mb-2 cursor-pointer"
                           :severity="getSeverity(slot)"
                           @click="selectTime(slot)"
                           :disabled="slot.disabled || slot.reserved"
