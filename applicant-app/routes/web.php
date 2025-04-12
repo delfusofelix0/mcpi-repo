@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Office;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,7 +20,11 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function () {
-    return Inertia::render('Appointment/AppointmentForm');
+    $offices = Office::all();
+
+    return Inertia::render('Appointment/AppointmentForm', [
+        'offices' => $offices
+    ]);
 });
 
 Route::prefix('applicant-form')->group(function () {
@@ -91,17 +96,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-
-//Route::middleware(['role:HR|Admin'])->group(function () {
-//    Route::get('/applicants', [ApplicantController::class, 'index']);
-//});
-
-//Route::middleware(['role:Admin'])->group(function () {
-//    Route::get('/users', [UserController::class, 'index']);
-//});
-
-//Route::middleware(['auth', 'role:Admin'])->group(function () {
-//    Route::get('/admin-dashboard', function () {
-//        return Inertia::render('AdminDashboard');
-//    });
-//});
