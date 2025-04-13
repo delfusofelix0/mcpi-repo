@@ -127,6 +127,7 @@ class ApplicantRegistrationController
             'training_certificates.max' => 'Training certificates must not exceed 5MB.',
             'skip_performance_rating.required' => 'Please indicate whether you want to skip the performance rating.',
             'skip_employment_proof.required' => 'Please indicate whether you want to skip the employment proof.',
+            'skip_eligibility_proof.required' => 'Please indicate whether you want to skip the eligibility proof.',
             'performance_rating.required_if' => 'Performance rating is required when not skipped.',
             'employment_proof.required_if' => 'Employment proof is required when not skipped.',
             'performance_rating.mimes' => 'Performance rating must be a PDF file.',
