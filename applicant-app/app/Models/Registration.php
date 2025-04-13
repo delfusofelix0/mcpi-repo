@@ -52,7 +52,7 @@ class Registration extends Model
     ];
 
     protected $casts = [
-        'birthdate' => 'date',
+        'birth_date' => 'date',
         'last_employment_date' => 'date',
         'remarks_date' => 'datetime',
         'person_with_disability' => 'boolean',
@@ -62,7 +62,10 @@ class Registration extends Model
 
     public function setBirthDateAttribute($value): void
     {
-        $this->attributes['birth_date'] = Carbon::parse($value)->format('Y-m-d');
+        if ($value) {
+            // Use Carbon without timezone conversion
+            $this->attributes['birth_date'] = Carbon::parse($value)->format('Y-m-d');
+        }
     }
 
     public function documents(): HasMany
