@@ -19,26 +19,15 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/test', function () {
-    $offices = Office::all();
-
-    return Inertia::render('Appointment/AppointmentForm', [
-        'offices' => $offices
-    ]);
-});
-
 Route::prefix('applicant-form')->group(function () {
     Route::get('/', [ApplicantRegistrationController::class, 'workPosition'])->name('applicant-form.workPosition');
     Route::post('/', [ApplicantRegistrationController::class, 'store'])->name('applicant-form.store');
 });
 
 Route::prefix('appointments')->group(function () {
-   Route::get('/', [AppointmentController::class, 'index']);
-   Route::get('/create', [AppointmentController::class, 'create']);
-
-   Route::middleware(['auth', 'role:Admin'])->group(function () {
-       Route::get('/reserved-slots', [AppointmentController::class, 'getReservedTimeSlots']);
-   });
+   Route::get('/', [AppointmentController::class, 'index'])->name('appointments.index');
+   Route::post('/', [AppointmentController::class, 'store'])->name('appointments.create');
+   Route::get('/reserved-slots', [AppointmentController::class, 'getReservedTimeSlots'])->name('appointments.reserved-slots');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
