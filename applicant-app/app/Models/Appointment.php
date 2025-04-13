@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Appointment extends Model
 {
@@ -14,7 +15,7 @@ class Appointment extends Model
      *
      * @var array
      */
-    protected $fillable = ['name', 'contact', 'date', 'time'];
+    protected $fillable = ['name', 'contact', 'date', 'time', 'office_id'];
 
     /**
      * The attributes that should be cast.
@@ -24,4 +25,22 @@ class Appointment extends Model
     protected $casts = [
         'date' => 'date',
     ];
+
+    public function office(): BelongsTo
+    {
+        return $this->belongsTo(Office::class);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public static function createAppointment(array $data)
+    {
+        try {
+            return self::create($data);
+        } catch (\Exception $e) {
+            \Log::error('Failed to create appointment: ' . $e->getMessage());
+            throw $e;
+        }
+    }
 }
