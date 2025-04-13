@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Office extends Model
 {
@@ -18,4 +19,9 @@ class Office extends Model
     protected $casts = [
         'is_available' => 'boolean',
     ];
+
+    public function appointment(): hasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }
