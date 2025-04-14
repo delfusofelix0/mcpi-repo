@@ -121,6 +121,24 @@ const scrollToFirstError = () => {
 const submit = (e) => {
     e.preventDefault()
 
+    // Format dates to YYYY-MM-DD to avoid timezone issues
+    if (form.birth_date) {
+        const date = new Date(form.birth_date);
+        // Use local date components to avoid timezone shifts
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        form.birth_date = `${year}-${month}-${day}`;
+    }
+
+    if (form.last_employment_date) {
+        const date = new Date(form.last_employment_date);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        form.last_employment_date = `${year}-${month}-${day}`;
+    }
+
     form.phone = form.phone.replace(/\D/g, '');
     form.post(route('applicant-form.store'), {
         preserveScroll: true,
