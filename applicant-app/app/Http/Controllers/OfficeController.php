@@ -8,15 +8,6 @@ use Inertia\Inertia;
 
 class OfficeController extends Controller
 {
-    public function index()
-    {
-        $offices = Office::all();
-
-        return Inertia::render('Appointment/AppointmentSettings', [
-            'offices' => $offices
-        ]);
-    }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
