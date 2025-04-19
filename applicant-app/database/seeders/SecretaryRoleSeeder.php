@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
@@ -29,5 +31,14 @@ class SecretaryRoleSeeder extends Seeder
         // Create Secretary role
         $secretaryRole = Role::firstOrCreate(['name' => 'Secretary']);
         $secretaryRole->syncPermissions($newPermissions);
+
+        // Create HR user
+        $hr = User::factory()->create([
+            'name' => 'Secretary User',
+            'email' => 'Secretary@example.com',
+            'password' => Hash::make('password'), // Change this to a secure password
+        ]);
+
+        $hr->assignRole('Secretary');
     }
 }
