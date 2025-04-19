@@ -40,8 +40,8 @@ const showingNavigationDropdown = ref(false);
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    :href="route('offices.index')"
-                                    :active="route().current('offices.index')"
+                                    :href="route('appointment-settings.index')"
+                                    :active="route().current('appointment-settings.index')"
                                 >
                                     Appointment
                                 </NavLink>
@@ -158,8 +158,8 @@ const showingNavigationDropdown = ref(false);
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            :href="route('offices.index')"
-                            :active="route().current('offices.index')"
+                            :href="route('appointment-settings.index')"
+                            :active="route().current('appointment-settings.index')"
                         >
                             Appointment
                         </ResponsiveNavLink>
