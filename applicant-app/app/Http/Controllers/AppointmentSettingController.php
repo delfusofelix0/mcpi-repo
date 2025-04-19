@@ -11,7 +11,9 @@ class AppointmentSettingController extends Controller
     public function index()
     {
         $offices = Office::all();
-        $appointments = Appointment::with('office')->orderBy('date', 'desc')->get();
+        $appointments = Appointment::with(['office' => function($query) {
+            $query->withTrashed();
+        }])->orderBy('date', 'desc')->get();
 
         return Inertia::render('Appointment/AppointmentSettings', [
             'offices' => $offices,
