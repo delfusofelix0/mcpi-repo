@@ -15,7 +15,7 @@ class Appointment extends Model
      *
      * @var array
      */
-    protected $fillable = ['name', 'contact', 'date', 'time', 'office_id'];
+    protected $fillable = ['name', 'contact', 'date', 'time', 'office_id', 'purpose', 'company_name', 'address'];
 
     /**
      * The attributes that should be cast.
