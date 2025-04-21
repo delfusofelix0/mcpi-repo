@@ -128,9 +128,9 @@ const clearFilter = () => {
 <template>
     <Toast position="top-left" group="tl"/>
     <div class="bg-white p-4 rounded-lg shadow-md">
-        <div class="flex items-center justify-between">
-            <h4 class="text-lg font-medium mb-3">Position List</h4>
-            <Button label="Add New Position" icon="pi pi-plus" @click="openAddDialog" class="mb-4" />
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xl font-semibold text-primary">Position List</h3>
+            <Button label="Add New Position" icon="pi pi-plus" @click="openAddDialog" />
         </div>
         <DataTable v-model:filters="filters"
                    :value="props.positions"

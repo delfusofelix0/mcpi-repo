@@ -11,7 +11,7 @@ class AppointmentSettingController extends Controller
     public function index()
     {
         $offices = Office::all();
-        $appointments = Appointment::with(['office' => function($query) {
+        $appointments = Appointment::with(['office' => function ($query) {
             $query->withTrashed();
         }])->orderBy('date', 'desc')->get();
 

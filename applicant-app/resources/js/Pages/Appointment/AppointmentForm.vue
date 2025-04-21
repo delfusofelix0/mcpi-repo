@@ -234,7 +234,7 @@ const submitForm = () => {
 
 <template>
     <Toast/>
-    <div class="bg-[#EDEFEF] min-h-screen py-8">
+    <div class="form-background min-h-screen py-8">
         <Head title="Appointment Form"/>
 
         <!-- Submission Dialog -->
@@ -262,7 +262,7 @@ const submitForm = () => {
 
         <Card class="appointment-form mt-8 mb-8 shadow-lg">
             <template #title>
-                Book an Appointment
+                <h2 class="text-2xl font-bold">Book an Appointment</h2>
             </template>
             <template #content>
                 <form @submit.prevent="submitForm">
@@ -443,6 +443,13 @@ const submitForm = () => {
 </template>
 
 <style scoped>
+.form-background {
+    background-image: url('/images/bg.webp'); /* Light blue background */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* This makes the background fixed while scrolling */
+}
+
 .appointment-form {
     max-width: 800px;
     margin: 2rem auto;

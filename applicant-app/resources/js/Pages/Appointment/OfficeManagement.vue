@@ -186,7 +186,7 @@ const toggleAvailability = (office) => {
 
             <!-- Offices List -->
             <div class="mt-6">
-                <h4 class="text-xl font-semibold text-primary">Office List</h4>
+                <h3 class="text-xl font-semibold text-primary">Office List</h3>
 
                 <DataTable v-model:filters="filters"
                            :value="props.offices"

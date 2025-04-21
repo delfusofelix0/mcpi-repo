@@ -1,8 +1,9 @@
 <script setup>
-import {computed, ref} from 'vue';
-import {useForm} from '@inertiajs/vue3';
+import {computed, onMounted, ref} from 'vue';
+import {useForm, usePage} from '@inertiajs/vue3';
 import {FilterMatchMode, FilterOperator} from "@primevue/core/api";
 import {useToast} from "primevue/usetoast";
+import Select from "primevue/select";
 
 const props = defineProps({
     appointments: Array,
@@ -13,6 +14,7 @@ const tableLoading = ref(false);
 const confirmCancelDialog = ref(false);
 const selectedAppointment = ref(null);
 const filters = ref();
+const showTodayOnly = ref(false);
 
 // Format date for display
 const formatDate = (date) => {
@@ -31,8 +33,25 @@ const mapDates = (data) => {
 };
 
 const formattedAppointments = computed(() => {
-    return mapDates(props.appointments);
+    const mappedData = mapDates(props.appointments);
+
+    if (showTodayOnly.value) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        return mappedData.filter(appointment => {
+            const appointmentDate = new Date(appointment.date);
+            appointmentDate.setHours(0, 0, 0, 0);
+            return appointmentDate.getTime() === today.getTime();
+        });
+    }
+
+    return mappedData;
 });
+
+const toggleTodayView = () => {
+    showTodayOnly.value = !showTodayOnly.value;
+};
 
 // Filter setup for DataTable
 const initFilters = () => {
@@ -42,6 +61,7 @@ const initFilters = () => {
         'office.name': {value: null, matchMode: FilterMatchMode.CONTAINS},
         date: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
         time: {value: null, matchMode: FilterMatchMode.CONTAINS},
+        status: {value: null, matchMode: FilterMatchMode.EQUALS},
         company_name: {value: null, matchMode: FilterMatchMode.CONTAINS}
     };
 };
@@ -76,18 +96,29 @@ const sendAppointmentSms = () => {
                 life: 3000
             });
         },
-        onError: (errors) => {
+        onError: () => {
+            confirmCancelDialog.value = false;
+            selectedAppointment.value = null;
             toast.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: errors.message || 'Failed to send SMS',
+                detail: 'Failed to send SMS',
                 life: 3000
             });
         }
     });
 };
 
-
+const statuses = ref(['Pending', 'Confirmed']);
+const getStatusSeverity = (status) => {
+    switch (status.toLowerCase()) {
+        case 'confirmed':
+            return 'success';
+        case 'pending':
+        default:
+            return 'info';
+    }
+};
 </script>
 
 <template>
@@ -97,9 +128,18 @@ const sendAppointmentSms = () => {
         <template #title>
             <div class="flex items-center justify-between">
                 <h3 class="text-xl font-semibold text-primary">Appointment List</h3>
+                <div class="flex gap-2">
+                    <Button
+                        :class="{'p-button-outlined': !showTodayOnly}"
+                        label="Today's Appointments"
+                        icon="pi pi-calendar"
+                        @click="toggleTodayView"
+                    />
+                </div>
             </div>
         </template>
 
+        <!-- ALL APPOINTMENTS -->
         <template #content>
             <DataTable v-model:filters="filters"
                        :value="formattedAppointments"
@@ -139,13 +179,13 @@ const sendAppointmentSms = () => {
                 </template>
                 <Column field="name" header="Name" :showFilterMatchModes="false">
                     <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by name" />
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by name"/>
                     </template>
                 </Column>
                 <Column field="contact" header="Contact"></Column>
                 <Column field="office.name" header="Office" :showFilterMatchModes="false">
                     <template #filter="{ filterModel }">
-                        <InputText v-model="filterModel.value" type="text" placeholder="Search by office" />
+                        <InputText v-model="filterModel.value" type="text" placeholder="Search by office"/>
                     </template>
                 </Column>
                 <Column filterField="date" header="Date" dataType="date">
@@ -165,6 +205,19 @@ const sendAppointmentSms = () => {
                     </template>
                 </Column>
                 <Column field="company_name" header="Company"></Column>
+                <Column field="status" header="Status" :showFilterMatchModes="false" class="capitalize">
+                    <template #body="slotProps">
+                        <Tag :severity="getStatusSeverity(slotProps.data.status || 'pending')"
+                             :value="slotProps.data.status || 'pending'"/>
+                    </template>
+                    <template #filter="{ filterModel }">
+                        <Select v-model="filterModel.value" :options="statuses" placeholder="Select One" showClear>
+                            <template #option="slotProps">
+                                <Tag :value="slotProps.option" :severity="getStatusSeverity(slotProps.option)"/>
+                            </template>
+                        </Select>
+                    </template>
+                </Column>
                 <Column header="Action" class="text-center" style="width: 8%">
                     <template #body="slotProps">
                         <div class="flex justify-center gap-2">

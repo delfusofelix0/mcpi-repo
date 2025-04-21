@@ -89,7 +89,6 @@ class AppointmentController extends Controller
         try {
             // Send SMS notification
             $this->sendAppointmentSms($appointment);
-
             return redirect()->back()->with('success', 'SMS sent successfully!');
         } catch (Exception $e) {
             \Log::error('Failed to send SMS: ' . $e->getMessage());
@@ -102,12 +101,15 @@ class AppointmentController extends Controller
      *
      * @param \App\Models\Appointment $appointment
      * @return void
+     * @throws Exception
      */
     private function sendAppointmentSms(Appointment $appointment)
     {
         try {
             // Load the office relationship
-            $appointment->load('office');
+            $appointment->load(['office' => function($query) {
+                $query->withTrashed();
+            }]);
 
             // Format the date
             $formattedDate = date('F j, Y', strtotime($appointment->date));
@@ -116,16 +118,20 @@ class AppointmentController extends Controller
             $message = "Your appointment has been confirmed at {$appointment->office->name} on $formattedDate at $appointment->time. Please present a VALID ID and this confirmation message to the School Guard upon arrival. Thank you!";
 
             // Send SMS using the M360SmsService
-            app(M360SmsService::class)->send(
+            $smsResult = app(M360SmsService::class)->send(
                 $appointment->contact,
                 $message
             );
 
-            \Log::info("SMS sent for appointment #{$appointment->id}");
+            if ($smsResult) {
+                // Update appointment status to Confirmed
+                $appointment->status = 'confirmed';
+                $appointment->save();
+                \Log::info("SMS sent and appointment #{$appointment->id} status updated to Confirmed");
+            }
         } catch (Exception $e) {
             \Log::error("Failed to send appointment SMS: " . $e->getMessage());
-            // Don't throw the exception - we don't want to fail the appointment creation
-            // if SMS sending fails
+            throw $e;
         }
     }
 }

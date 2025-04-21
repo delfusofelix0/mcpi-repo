@@ -29,7 +29,7 @@ Route::prefix('appointment')->group(function () {
    Route::get('/', [AppointmentController::class, 'index'])->name('appointments.index');
    Route::post('/', [AppointmentController::class, 'store'])->name('appointments.create');
    Route::get('/reserved-slots', [AppointmentController::class, 'getReservedTimeSlots'])->name('appointments.reserved-slots');
-   Route::post('/{appointment}/send-sms', [AppointmentController::class,'sendSms'])->middleware(['auth', 'verified','role:Secretary'])
+   Route::post('/{appointment}/send-sms', [AppointmentController::class,'sendSms'])->middleware(['auth', 'verified','role:Secretary|Admin'])
         ->name('appointments.send-sms');
 });
 
