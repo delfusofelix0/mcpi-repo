@@ -186,7 +186,7 @@ const toggleAvailability = (office) => {
 
             <!-- Offices List -->
             <div class="mt-6">
-                <h4 class="text-lg font-medium mb-3">Office List</h4>
+                <h4 class="text-xl font-semibold text-primary">Office List</h4>
 
                 <DataTable v-model:filters="filters"
                            :value="props.offices"
@@ -206,7 +206,7 @@ const toggleAvailability = (office) => {
                            dataKey="id">
                     <template #loading>
                         <div class="flex flex-column align-items-center justify-content-center p-4">
-                            <span class="mt-2 text-lg font-medium text-white">Loading office data...🤣</span>
+                            <span class="mt-2 text-lg font-medium text-white">Loading office data...</span>
                         </div>
                     </template>
                     <template #header>

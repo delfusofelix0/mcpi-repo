@@ -1,9 +1,7 @@
 <script setup>
 import {ref, computed, watch} from 'vue';
 import {Head, useForm} from '@inertiajs/vue3';
-
 import {useToast} from "primevue/usetoast";
-
 
 const toast = useToast();
 const props = defineProps({
@@ -11,13 +9,16 @@ const props = defineProps({
     reservedSlots: Array
 })
 
-// Add these for success dialog
-const successDialogVisible = ref(false);
+// Change to submission dialog
+const confirmDialogVisible = ref(false);
 const appointmentDetails = ref({
     name: '',
     office: '',
-    date: '',
-    time: ''
+    date: null,
+    time: null,
+    purpose: '',
+    company_name: '',
+    address: ''
 });
 
 const form = useForm({
@@ -26,12 +27,28 @@ const form = useForm({
     date: null,
     time: null,
     office_id: '',
+    company_name: '',
+    address: '',
+    purpose: ''
 });
 
 // New reactive variable for the DatePicker
 const selectedDateValue = ref(null);
 const selectedOffice = ref(null);
+
+// Check for the check pass time slot
+const isCurrentDay = (date) => {
+    if (!date) return false;
+    const today = new Date();
+    const compareDate = new Date(date);
+    return today.getFullYear() === compareDate.getFullYear() &&
+        today.getMonth() === compareDate.getMonth() &&
+        today.getDate() === compareDate.getDate();
+};
+
 const availableTimeSlots = ref([]);
+const fetchTimeSlotsLoading = ref(false);
+const fetchTimeSlotsError = ref(false);
 
 const fetchReservedTimeSlots = async (date) => {
     if (!selectedOffice.value || !selectedOffice.value.id) {
@@ -39,6 +56,8 @@ const fetchReservedTimeSlots = async (date) => {
     }
 
     try {
+        fetchTimeSlotsLoading.value = true;
+        fetchTimeSlotsError.value = false;
         const response = await axios.get(route('appointments.reserved-slots'), {
             params: {
                 date: date instanceof Date ?
@@ -47,17 +66,18 @@ const fetchReservedTimeSlots = async (date) => {
                 office_id: selectedOffice.value.id
             }
         });
-
+        fetchTimeSlotsLoading.value = false;
         return response.data.reservedSlots || [];
-    } catch (error) {
-        console.error('Error fetching reserved slots:', error);
+    } catch (e) {
         toast.add({
             severity: 'error',
             summary: 'Error',
             detail: 'Failed to fetch available time slots',
-            life: 3000
+            life: 5000
         });
-        return [];
+        fetchTimeSlotsLoading.value = false;
+        fetchTimeSlotsError.value = true;
+        return null;
     }
 };
 
@@ -80,8 +100,15 @@ const selectTime = (slot) => {
     }
 };
 
+// Add this variable to track when we're loading new slots
+const loadingNewSlots = ref(false);
+
 const generateTimeSlots = (reservedSlots) => {
     const slots = [];
+    const currentDate = new Date();
+    const currentHour = currentDate.getHours();
+    const isToday = isCurrentDay(selectedDateValue.value);
+
     for (let hour = 8; hour < 17; hour++) {
         if (hour !== 12) {
             const startHour = hour % 12 || 12;
@@ -90,9 +117,13 @@ const generateTimeSlots = (reservedSlots) => {
             const endAmPm = (hour + 1) < 12 ? 'AM' : 'PM';
 
             const slotLabel = `${startHour}:00 ${startAmPm} - ${endHour}:00 ${endAmPm}`;
+
+            // Disable the slot if it's today and the current hour is >= the slot's hour
+            const isPastSlot = isToday && hour <= currentHour;
+
             slots.push({
                 label: slotLabel,
-                disabled: false,
+                disabled: isPastSlot,
                 reserved: reservedSlots.includes(slotLabel)
             });
         }
@@ -129,8 +160,25 @@ watch(selectedDateValue, async (newDate) => {
             form.date = newDate;
         }
 
-        const reservedSlots = await fetchReservedTimeSlots(newDate);
-        availableTimeSlots.value = generateTimeSlots(reservedSlots);
+        // If we already have slots displayed, show skeleton loading
+        if (availableTimeSlots.value.length > 0) {
+            loadingNewSlots.value = true;
+        }
+
+        try {
+            const reservedSlots = await fetchReservedTimeSlots(newDate);
+            // Only generate time slots if we successfully got the reserved slots
+            if (reservedSlots !== null) {
+                availableTimeSlots.value = generateTimeSlots(reservedSlots);
+            } else {
+                availableTimeSlots.value = [];
+            }
+        } catch (error) {
+            availableTimeSlots.value = [];
+            fetchTimeSlotsError.value = true;
+        } finally {
+            loadingNewSlots.value = false;
+        }
     } else {
         availableTimeSlots.value = [];
         form.date = null;
@@ -139,12 +187,11 @@ watch(selectedDateValue, async (newDate) => {
 });
 
 const isFormValid = computed(() => {
-    return form.name && form.contact && form.date && form.time && form.office_id;
+    return form.name && form.contact && form.date && form.time && form.office_id && form.purpose && form.address;
 });
 
 const submitForm = () => {
     // Handle form submission
-    console.table(form);
     form.post(route('appointments.create'), {
         onSuccess: () => {
             // Store appointment details for the success dialog
@@ -156,11 +203,14 @@ const submitForm = () => {
                     month: 'long',
                     day: 'numeric'
                 }) : '',
-                time: form.time
+                time: form.time,
+                purpose: form.purpose,
+                company_name: form.company_name || 'N/A',
+                address: form.address || 'N/A'
             };
 
-            // Show success dialog instead of toast
-            successDialogVisible.value = true;
+            // Show success dialog
+            confirmDialogVisible.value = true;
 
             // Reset form after successful submission
             form.reset();
@@ -169,59 +219,43 @@ const submitForm = () => {
             availableTimeSlots.value = [];
         },
         onError: (e) => {
-            // Show error toast
-            console.log(e)
+            console.log(e);
+            console.table(form);
             toast.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'Failed to book appointment. Please check your information.',
+                detail: 'Failed to submit appointment request. Please check your information.',
                 life: 5000
             });
         }
     });
 };
-
-const closeSuccessDialog = () => {
-    successDialogVisible.value = false;
-};
 </script>
 
 <template>
+    <Toast/>
     <div class="bg-[#EDEFEF] min-h-screen py-8">
         <Head title="Appointment Form"/>
 
-        <!-- Success Dialog -->
-        <Dialog v-model:visible="successDialogVisible" modal header="Appointment Confirmed!" :style="{ width: '90%', maxWidth: '500px' }">
+        <!-- Submission Dialog -->
+        <Dialog v-model:visible="confirmDialogVisible" modal header="Appointment Request Submitted"
+                :style="{ width: '90%', maxWidth: '500px' }">
             <div class="p-4">
                 <div class="flex flex-col items-center mb-4">
                     <i class="pi pi-check-circle text-green-500 text-5xl mb-3"></i>
-                    <h3 class="text-xl font-bold">Thank You, {{ appointmentDetails.name }}!</h3>
-                    <p class="text-center mt-2">Your appointment has been successfully booked.</p>
-                </div>
-
-                <div class="bg-gray-50 p-4 rounded-lg mb-4">
-                    <div class="grid grid-cols-2 gap-2 mb-2">
-                        <div class="font-semibold">Office:</div>
-                        <div>{{ appointmentDetails.office }}</div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 mb-2">
-                        <div class="font-semibold">Date:</div>
-                        <div>{{ appointmentDetails.date }}</div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="font-semibold">Time:</div>
-                        <div>{{ appointmentDetails.time }}</div>
-                    </div>
+                    <h3 class="text-xl font-bold">Thank You!</h3>
+                    <p class="text-center mt-2">Your appointment request has been submitted successfully.</p>
                 </div>
 
                 <Message severity="info" class="w-full mb-4">
-                    <span class="font-bold">Important:</span> A confirmation text has been sent to your phone.
-                    Please present a <span class="font-bold text-red-500">valid ID</span> and show the text to the School Guard upon arrival.
-                    <br>If you don't receive the text, please take a screenshot of this confirmation as backup.
+                    <span class="font-bold">Important:</span> Your appointment is pending approval.
+                    You will receive a confirmation text message once your appointment is approved by the admin.
+                    <br><br>
+                    Please do not visit the school until you receive the confirmation text.
                 </Message>
 
                 <div class="flex justify-center">
-                    <Button label="Close" @click="closeSuccessDialog" class="w-full md:w-auto" />
+                    <Button label="Close" @click="confirmDialogVisible = false" class="w-full md:w-auto"/>
                 </div>
             </div>
         </Dialog>
@@ -239,7 +273,9 @@ const closeSuccessDialog = () => {
                             <InputText id="name" placeholder="Full name" :class="{ 'p-invalid': form.errors.name }"
                                        @input="form.clearErrors('name')"
                                        v-model="form.name" required class="w-full"/>
-                            <Message size="small" severity="secondary" variant="simple">Use the same name as your valid GOVERNMENT ID.</Message>
+                            <Message size="small" severity="secondary" variant="simple">Use the same name as your valid
+                                GOVERNMENT ID.
+                            </Message>
                             <p class="text-red-500" v-if="form.errors.name">{{ form.errors.name }}</p>
                         </div>
 
@@ -249,9 +285,40 @@ const closeSuccessDialog = () => {
                                        @input="form.clearErrors('contact')"
                                        mask="99999999999" placeholder="09XXXXXXXXX"
                                        v-model="form.contact" required class="w-full"/>
-                            <Message size="small" severity="secondary" variant="simple">Use a working phone number.</Message>
+                            <Message size="small" severity="secondary" variant="simple">Use a working phone number.
+                            </Message>
                             <p class="text-red-500" v-if="form.errors.contact">{{ form.errors.contact }}</p>
                         </div>
+                    </div>
+
+                    <!-- Add this after the Name and Phone Number section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="field">
+                            <label for="company_name" class="block mb-2">Company Name</label>
+                            <InputText id="company_name" placeholder="Company name (if applicable)"
+                                       :class="{ 'p-invalid': form.errors.company_name }"
+                                       @input="form.clearErrors('company_name')"
+                                       v-model="form.company_name" class="w-full"/>
+                            <p class="text-red-500" v-if="form.errors.company_name">{{ form.errors.company_name }}</p>
+                        </div>
+
+                        <div class="field">
+                            <label for="address" class="block mb-2">Address</label>
+                            <InputText id="address" placeholder="Your address"
+                                       :class="{ 'p-invalid': form.errors.address }"
+                                       @input="form.clearErrors('address')"
+                                       v-model="form.address" class="w-full"/>
+                            <p class="text-red-500" v-if="form.errors.address">{{ form.errors.address }}</p>
+                        </div>
+                    </div>
+
+                    <div class="field mt-4">
+                        <label for="purpose" class="block mb-2">Purpose of Visit</label>
+                        <Textarea id="purpose" placeholder="Please describe the purpose of your visit"
+                                  :class="{ 'p-invalid': form.errors.purpose }"
+                                  @input="form.clearErrors('purpose')"
+                                  v-model="form.purpose" required rows="3" class="w-full"/>
+                        <p class="text-red-500" v-if="form.errors.purpose">{{ form.errors.purpose }}</p>
                     </div>
 
                     <!-- Office and DatePicker side by side -->
@@ -259,7 +326,7 @@ const closeSuccessDialog = () => {
                         <div class="field">
                             <label for="office" class="block mb-2">Office</label>
                             <Select id="office" v-model="selectedOffice" :options="offices" optionLabel="name"
-                                    placeholder="Select a City" class="w-full"
+                                    placeholder="Select an Office" class="w-full"
                                     @change="form.office_id = selectedOffice?.id || ''"/>
                             <p class="text-red-500" v-if="form.errors.office_id">{{ form.errors.office_id }}</p>
                         </div>
@@ -289,17 +356,23 @@ const closeSuccessDialog = () => {
                             <div class="flex-1 min-w-[45%]">
                                 <h4 class="text-md font-medium mb-2">Morning</h4>
                                 <div class="grid gap-2">
-                                    <div v-for="slot in availableTimeSlots.slice(0, 4)" :key="slot.label"
-                                         class="col-12">
-                                        <Button
-                                            :label="slot.label"
-                                            class="w-full text-sm p-2 h-auto"
-                                            :severity="getSeverity(slot)"
-                                            @click="selectTime(slot)"
-                                            :disabled="slot.disabled || slot.reserved"
-                                            size="small"
-                                        />
-                                    </div>
+                                    <template v-if="loadingNewSlots">
+                                        <div v-for="i in 4" :key="`morning-skeleton-${i}`" class="col-12">
+                                            <Skeleton height="2.5rem" width="100%" class="rounded-md"></Skeleton>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <div v-for="slot in availableTimeSlots.slice(0, 4)" :key="slot.label" class="col-12">
+                                            <Button
+                                                :label="slot.label"
+                                                class="w-full text-sm p-2 h-[2.5rem]"
+                                                :severity="getSeverity(slot)"
+                                                @click="selectTime(slot)"
+                                                :disabled="slot.disabled || slot.reserved"
+                                                size="small"
+                                            />
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
 
@@ -307,37 +380,61 @@ const closeSuccessDialog = () => {
                             <div class="flex-1 min-w-[45%]">
                                 <h4 class="text-md font-medium mb-2">Afternoon</h4>
                                 <div class="grid gap-2">
-                                    <div v-for="slot in availableTimeSlots.slice(4)" :key="slot.label" class="col-12">
-                                        <Button
-                                            :label="slot.label"
-                                            class="w-full text-sm p-2 h-auto"
-                                            :severity="getSeverity(slot)"
-                                            @click="selectTime(slot)"
-                                            :disabled="slot.disabled || slot.reserved"
-                                            size="small"
-                                        />
-                                    </div>
+                                    <template v-if="loadingNewSlots">
+                                        <div v-for="i in 4" :key="`afternoon-skeleton-${i}`" class="col-12">
+                                            <Skeleton height="2.5rem" width="100%" class="rounded-md"></Skeleton>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <div v-for="slot in availableTimeSlots.slice(4)" :key="slot.label" class="col-12">
+                                            <Button
+                                                :label="slot.label"
+                                                class="w-full text-sm p-2 h-[2.5rem]"
+                                                :severity="getSeverity(slot)"
+                                                @click="selectTime(slot)"
+                                                :disabled="slot.disabled || slot.reserved"
+                                                size="small"
+                                            />
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Single column grid for small screens -->
                         <div class="grid gap-2 md:hidden">
-                            <div v-for="slot in availableTimeSlots" :key="slot.label" class="col-6 sm:col-4">
-                                <Button
-                                    :label="slot.label"
-                                    class="w-full text-sm p-2 h-auto"
-                                    :severity="getSeverity(slot)"
-                                    @click="selectTime(slot)"
-                                    :disabled="slot.disabled || slot.reserved"
-                                    size="small"
-                                />
-                            </div>
+                            <template v-if="loadingNewSlots">
+                                <div v-for="i in 8" :key="`mobile-skeleton-${i}`" class="col-6 sm:col-4">
+                                    <Skeleton height="2.5rem" width="100%" class="rounded-md"></Skeleton>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <div v-for="slot in availableTimeSlots" :key="slot.label" class="col-6 sm:col-4">
+                                    <Button
+                                        :label="slot.label"
+                                        class="w-full text-sm p-2 h-[2.5rem]"
+                                        :severity="getSeverity(slot)"
+                                        @click="selectTime(slot)"
+                                        :disabled="slot.disabled || slot.reserved"
+                                        size="small"
+                                    />
+                                </div>
+                            </template>
                         </div>
+                    </div>
+                    <div v-else-if="fetchTimeSlotsLoading" class="text-center py-4">
+                        <i class="pi pi-spin pi-spinner text-2xl"></i>
+                        <p class="mt-2">Loading available time slots...</p>
+                    </div>
+                    <div v-else-if="fetchTimeSlotsError"
+                         class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4">
+                        <strong class="font-bold">Error!</strong>
+                        <span class="block sm:inline ml-2">Failed to fetch reserved time slots. Please try again.</span>
                     </div>
 
                     <div class="flex justify-center mt-6">
-                        <Button type="submit" label="Book Appointment" :disabled="!isFormValid || !form.time"/>
+                        <Button type="submit" label="Submit Appointment Request"
+                                :disabled="!isFormValid || !form.time"/>
                     </div>
                 </form>
             </template>

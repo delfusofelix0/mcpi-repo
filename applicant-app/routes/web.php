@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicantRegistrationController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AppointmentSettingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PositionController;
@@ -24,16 +25,20 @@ Route::prefix('applicant-form')->group(function () {
     Route::post('/', [ApplicantRegistrationController::class, 'store'])->name('applicant-form.store');
 });
 
-Route::prefix('appointments')->group(function () {
+Route::prefix('appointment')->group(function () {
    Route::get('/', [AppointmentController::class, 'index'])->name('appointments.index');
    Route::post('/', [AppointmentController::class, 'store'])->name('appointments.create');
    Route::get('/reserved-slots', [AppointmentController::class, 'getReservedTimeSlots'])->name('appointments.reserved-slots');
+   Route::post('/{appointment}/send-sms', [AppointmentController::class,'sendSms'])->middleware(['auth', 'verified','role:Secretary'])
+        ->name('appointments.send-sms');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::prefix('appointment-settings')->group(function () {
-        Route::get('/', [OfficeController::class, 'index'])
-            ->name('offices.index');
+    Route::prefix('appointment-settings')->middleware(['role:Secretary'])->group(function () {
+        // Getting the list offices and appointments
+        Route::get('/', [AppointmentSettingController::class, 'index'])
+            ->name('appointment-settings.index');
+        // Office Management Side
         Route::post('/', [OfficeController::class, 'store'])
             ->name('offices.store');
         Route::put('offices/{office}/update-availability', [OfficeController::class, 'updateAvailability'])
@@ -43,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{office}', [OfficeController::class, 'destroy'])
             ->name('offices.destroy');
     });
-    Route::prefix('dashboard')->group(function () {
+    Route::prefix('dashboard')->middleware(['role:HR','role:Admin'])->group(function () {
         Route::get('/', [DashboardController::class, 'index'])
             ->name('dashboard'); //registrations and position list
         Route::post('/applicant/{id}', [ApplicantController::class, 'statusStore'])

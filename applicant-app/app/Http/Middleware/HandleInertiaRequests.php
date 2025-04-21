@@ -40,6 +40,7 @@ class HandleInertiaRequests extends Middleware
                     'roles' => $request->user()->getRoleNames(),
                     'isAdmin' => $request->user()->hasRole('Admin'),
                     'isHR' => $request->user()->hasRole('HR'),
+                    'isSecretary' => $request->user()->hasRole('Secretary'),
                 ] : null,
             ],
             'ziggy' => fn () => [

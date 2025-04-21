@@ -1,13 +1,17 @@
 <script setup>
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import {Link, usePage} from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+
+const page = usePage()
+const isAdmin = page.props.auth.isAdmin
+const isHR = page.props.auth.isHR
 </script>
 
 <template>
@@ -33,15 +37,15 @@ const showingNavigationDropdown = ref(false);
                             <div
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
-                                <NavLink
+                                <NavLink v-if="isAdmin || isHR"
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
                                 >
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    :href="route('offices.index')"
-                                    :active="route().current('offices.index')"
+                                    :href="route('appointment-settings.index')"
+                                    :active="route().current('appointment-settings.index')"
                                 >
                                     Appointment
                                 </NavLink>
@@ -158,8 +162,8 @@ const showingNavigationDropdown = ref(false);
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            :href="route('offices.index')"
-                            :active="route().current('offices.index')"
+                            :href="route('appointment-settings.index')"
+                            :active="route().current('appointment-settings.index')"
                         >
                             Appointment
                         </ResponsiveNavLink>

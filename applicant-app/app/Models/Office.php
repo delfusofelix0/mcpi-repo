@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Office extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    public mixed $is_available;
+//    public mixed $is_available;
     protected $fillable = [
         'name',
         'is_available',

@@ -33,6 +33,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Check if the authenticated user has the Secretary role
+        if (Auth::user()->hasRole('Secretary')) {
+            return redirect()->route('appointment-settings.index');
+        }
+
         return redirect()->route('dashboard');
     }
 
