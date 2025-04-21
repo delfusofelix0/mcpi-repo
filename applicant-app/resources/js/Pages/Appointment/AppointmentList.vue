@@ -157,7 +157,13 @@ const sendAppointmentSms = () => {
                     </template>
                 </Column>
                 <Column field="time" header="Time" :sortable="true"></Column>
-                <Column field="purpose" header="Purpose"></Column>
+                <Column field="purpose" header="Purpose" style="max-width: 150px; overflow: hidden;">
+                    <template #body="slotProps">
+                        <div class="truncate" v-tooltip.top="slotProps.data.purpose">
+                            {{ slotProps.data.purpose }}
+                        </div>
+                    </template>
+                </Column>
                 <Column field="company_name" header="Company"></Column>
                 <Column header="Action" class="text-center" style="width: 8%">
                     <template #body="slotProps">
