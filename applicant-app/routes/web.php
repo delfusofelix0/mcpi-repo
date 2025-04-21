@@ -34,7 +34,7 @@ Route::prefix('appointment')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::prefix('appointment-settings')->middleware(['role:Secretary'])->group(function () {
+    Route::prefix('appointment-settings')->middleware(['role:Secretary|Admin'])->group(function () {
         // Getting the list offices and appointments
         Route::get('/', [AppointmentSettingController::class, 'index'])
             ->name('appointment-settings.index');
@@ -48,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{office}', [OfficeController::class, 'destroy'])
             ->name('offices.destroy');
     });
-    Route::prefix('dashboard')->middleware(['role:HR','role:Admin'])->group(function () {
+    Route::prefix('dashboard')->middleware(['role:HR|Admin'])->group(function () {
         Route::get('/', [DashboardController::class, 'index'])
             ->name('dashboard'); //registrations and position list
         Route::post('/applicant/{id}', [ApplicantController::class, 'statusStore'])

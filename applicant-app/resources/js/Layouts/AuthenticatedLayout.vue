@@ -10,8 +10,9 @@ import {Link, usePage} from '@inertiajs/vue3';
 const showingNavigationDropdown = ref(false);
 
 const page = usePage()
-const isAdmin = page.props.auth.isAdmin
-const isHR = page.props.auth.isHR
+const isAdmin = page.props.auth.user.isAdmin
+const isHR = page.props.auth.user.isHR
+const isSecretary = page.props.auth.user.isSecretary
 </script>
 
 <template>
@@ -43,7 +44,7 @@ const isHR = page.props.auth.isHR
                                 >
                                     Dashboard
                                 </NavLink>
-                                <NavLink
+                                <NavLink v-if="isAdmin || isSecretary"
                                     :href="route('appointment-settings.index')"
                                     :active="route().current('appointment-settings.index')"
                                 >
@@ -155,13 +156,13 @@ const isHR = page.props.auth.isHR
                     class="sm:hidden"
                 >
                     <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
+                        <ResponsiveNavLink v-if="isAdmin || isHR"
                             :href="route('dashboard')"
                             :active="route().current('dashboard')"
                         >
                             Dashboard
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink
+                        <ResponsiveNavLink v-if="isAdmin || isSecretary"
                             :href="route('appointment-settings.index')"
                             :active="route().current('appointment-settings.index')"
                         >
