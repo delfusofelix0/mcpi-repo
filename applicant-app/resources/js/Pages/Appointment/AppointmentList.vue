@@ -74,11 +74,19 @@ const clearFilter = () => {
 
 // Form for sending SMS
 const smsForm = useForm({
-    id: null
+    id: null,
+    status: 'confirmed'
 });
 
 const confirmAppointment = (appointment) => {
     selectedAppointment.value = appointment;
+    smsForm.status = 'confirmed';
+    confirmCancelDialog.value = true;
+};
+
+const declineAppointment = (appointment) => {
+    selectedAppointment.value = appointment;
+    smsForm.status = 'declined';
     confirmCancelDialog.value = true;
 };
 
@@ -92,7 +100,7 @@ const sendAppointmentSms = () => {
             toast.add({
                 severity: 'success',
                 summary: 'Success',
-                detail: 'SMS sent successfully',
+                detail: `SMS ${smsForm.status} notification sent successfully`,
                 life: 3000
             });
         },
@@ -109,11 +117,13 @@ const sendAppointmentSms = () => {
     });
 };
 
-const statuses = ref(['Pending', 'Confirmed']);
+const statuses = ref(['Pending', 'Confirmed', 'Declined']);
 const getStatusSeverity = (status) => {
     switch (status.toLowerCase()) {
         case 'confirmed':
             return 'success';
+        case 'declined':
+            return 'danger';
         case 'pending':
         default:
             return 'info';
@@ -218,12 +228,21 @@ const getStatusSeverity = (status) => {
                         </Select>
                     </template>
                 </Column>
-                <Column header="Action" class="text-center" style="width: 8%">
+                <Column header="Action" class="text-center" style="width: 12%">
                     <template #body="slotProps">
                         <div class="flex justify-center gap-2">
-                            <Button icon="pi pi-send" class="p-button-text p-button-rounded p-button-success"
+                            <Button icon="pi pi-check-circle"
+                                    class="p-button-text p-button-rounded p-button-success"
                                     @click="confirmAppointment(slotProps.data)"
+                                    v-tooltip.top="slotProps.data.status?.toLowerCase() === 'confirmed' || slotProps.data.status?.toLowerCase() === 'declined' ? 'Appointment already processed' : 'Confirm Appointment'"
+                                    :disabled="slotProps.data.status?.toLowerCase() === 'confirmed' || slotProps.data.status?.toLowerCase() === 'declined'"
                                     aria-label="Confirm Appointment"/>
+                            <Button icon="pi pi-times-circle"
+                                    class="p-button-text p-button-rounded p-button-danger"
+                                    @click="declineAppointment(slotProps.data)"
+                                    v-tooltip.top="slotProps.data.status?.toLowerCase() === 'confirmed' || slotProps.data.status?.toLowerCase() === 'declined' ? 'Appointment already processed' : 'Decline Appointment'"
+                                    :disabled="slotProps.data.status?.toLowerCase() === 'confirmed' || slotProps.data.status?.toLowerCase() === 'declined'"
+                                    aria-label="Decline Appointment"/>
                         </div>
                     </template>
                 </Column>
@@ -235,17 +254,25 @@ const getStatusSeverity = (status) => {
     <Dialog
         v-model:visible="confirmCancelDialog"
         modal
-        header="Send Appointment Confirmation"
+        :header="smsForm.status === 'confirmed' ? 'Send Appointment Confirmation' : 'Send Appointment Decline'"
         :style="{ width: '450px' }"
     >
         <div class="flex items-center gap-2 mb-4">
-            <i class="pi pi-send text-blue-500" style="font-size: 2rem"></i>
-            <span>Are you sure you want to send an SMS confirmation for this appointment?</span>
+            <i :class="smsForm.status === 'confirmed' ? 'pi pi-check-circle text-green-500' : 'pi pi-times-circle text-red-500'" style="font-size: 2rem"></i>
+            <span>
+                Are you sure you want to
+                <strong>{{ smsForm.status === 'confirmed' ? 'confirm' : 'decline' }}</strong>
+                this appointment and send an SMS notification?
+            </span>
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" outlined @click="confirmCancelDialog = false"/>
-            <Button label="Yes" icon="pi pi-check" severity="success" @click="sendAppointmentSms"
-                    :loading="smsForm.processing"/>
+            <Button label="Cancel" icon="pi pi-times" outlined @click="confirmCancelDialog = false"/>
+            <Button
+                :label="smsForm.status === 'confirmed' ? 'Confirm' : 'Decline'"
+                icon="pi pi-check"
+                :severity="smsForm.status === 'confirmed' ? 'success' : 'danger'"
+                @click="sendAppointmentSms"
+                :loading="smsForm.processing"/>
         </template>
     </Dialog>
 </template>
