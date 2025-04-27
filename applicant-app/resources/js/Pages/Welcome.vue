@@ -1,24 +1,34 @@
 <script setup>
-import {Head} from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-import {ref} from "vue";
-import {router} from '@inertiajs/vue3';
+import { ref } from "vue";
+import { router } from '@inertiajs/vue3';
 import Button from 'primevue/button';
 
-const loading = ref(false);
+const loadingApplicant = ref(false);
+const loadingAppointment = ref(false);
 
 const goToApplicantForm = () => {
-    loading.value = true;
+    loadingApplicant.value = true;
     router.visit(route('applicant-form.workPosition'), {
         preserveState: false,
         preserveScroll: false,
         onFinish: () => {
-            loading.value = false;
+            loadingApplicant.value = false;
         },
     });
 };
 
-
+const goToAppointmentSystem = () => {
+    loadingAppointment.value = true;
+    router.visit(route('appointments.index'), {
+        preserveState: false,
+        preserveScroll: false,
+        onFinish: () => {
+            loadingAppointment.value = false;
+        },
+    });
+};
 </script>
 
 <template>
@@ -26,10 +36,8 @@ const goToApplicantForm = () => {
     <div
         class="welcome-background relative flex min-h-screen flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white"
     >
-        <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-            <header
-                class="grid grid-cols-1 items-center gap-2 py-10"
-            >
+        <div class="relative w-full px-6 lg:max-w-7xl">
+            <header class="grid grid-cols-1 items-center gap-2 py-10">
                 <div class="flex justify-center">
                     <ApplicationLogo class="max-h-52"/>
                 </div>
@@ -37,20 +45,50 @@ const goToApplicantForm = () => {
 
             <div class="py-12">
                 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div class="bg-cyan-100 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="bg-white bg-opacity-90 overflow-hidden shadow-lg sm:rounded-lg border border-blue-700">
                         <div class="p-6 text-gray-900">
-                            <h1 class="text-3xl font-bold mb-4 text-center">Welcome to Maryknoll College of Panabo Inc. Applicant Registration
-                                System</h1>
-                            <p class="mb-4 text-center">
-                                Welcome to the Maryknoll College of Panabo Inc. Applicant Registration System. This system allows applicants to register, view available positions, and manage their profiles. It also provides administrators with tools to manage applicants and positions efficiently.
-                            </p>
-                            <div class="mt-6 flex justify-center">
-                                <Button
-                                    label="Go to Applicant Form"
-                                    @click="goToApplicantForm"
-                                    :loading="loading"
-                                    class="text-white font-bold py-2 px-4 rounded"
-                                />
+                            <h1 class="text-3xl font-bold mb-8 text-center text-blue-800">Maryknoll College of Panabo Inc.</h1>
+
+                            <div class="flex flex-col md:flex-row justify-center gap-8 mb-6">
+                                <!-- Applicant Card -->
+                                <div class="flex-1 bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-600 flex flex-col">
+                                    <div class="flex flex-col items-center flex-grow">
+                                        <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
+                                            <i class="pi pi-user text-white text-4xl"></i>
+                                        </div>
+                                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Applicant</h2>
+                                        <p class="text-gray-600 text-center mb-4">Register as an applicant and explore available positions</p>
+                                        <div class="flex-grow"></div> <!-- This pushes the button to the bottom -->
+                                        <Button
+                                            label="Go to Applicant System"
+                                            @click="goToApplicantForm"
+                                            :loading="loadingApplicant"
+                                            class="p-button-primary mt-auto"
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Appointment Card -->
+                                <div class="flex-1 bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-green-600 flex flex-col">
+                                    <div class="flex flex-col items-center flex-grow">
+                                        <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
+                                            <i class="pi pi-calendar text-white text-4xl"></i>
+                                        </div>
+                                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Appointment</h2>
+                                        <p class="text-gray-600 text-center mb-4">Schedule or manage your appointments</p>
+                                        <div class="flex-grow"></div> <!-- This pushes the button to the bottom -->
+                                        <Button
+                                            label="Go to Appointment System"
+                                            @click="goToAppointmentSystem"
+                                            :loading="loadingAppointment"
+                                            class="p-button-success mt-auto"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center text-sm text-gray-700 mt-4 font-medium">
+                                For assistance, please contact the administration office
                             </div>
                         </div>
                     </div>
@@ -59,12 +97,25 @@ const goToApplicantForm = () => {
         </div>
     </div>
 </template>
+
 <style scoped>
 .welcome-background {
-    background-image: url('/images/bg.webp'); /* Light blue background */
+    background-image: url('/images/bg.webp');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed; /* This makes the background fixed while scrolling */
+    background-attachment: fixed;
     min-height: 100vh;
+    position: relative;
+}
+
+.welcome-background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(2px);
 }
 </style>
