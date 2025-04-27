@@ -162,7 +162,7 @@ const deleteApplicant = () => {
 };
 
 const sendSms = () => {
-    smsForm.post(route('applicant.send-sms', { id: applicantToSms.value.id }), {
+    smsForm.post(route('applicant.send-sms', {id: applicantToSms.value.id}), {
         onSuccess: () => {
             smsDialogVisible.value = false;
             toast.add({
@@ -327,15 +327,19 @@ const getSeverity = (status) => {
                 <template #body="slotProps">
                     <div class="flex justify-center gap-2">
                         <Button icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-info"
-                                @click="openStatusDialog(slotProps.data)" aria-label="Edit status"/>
+                                @click="openStatusDialog(slotProps.data)" aria-label="Edit status"
+                                v-tooltip.top="'Update applicant status'"/>
                         <Button icon="pi pi-eye" class="p-button-text p-button-rounded p-button-success"
-                                @click="viewApplicant(slotProps.data.id)" aria-label="View applicant"/>
+                                @click="viewApplicant(slotProps.data.id)" aria-label="View applicant"
+                                v-tooltip.top="'View applicant details'"/>
                         <Button v-if="canDelete" icon="pi pi-trash"
                                 class="p-button-text p-button-rounded p-button-danger"
-                                @click="openDeleteDialog(slotProps.data)" aria-label="Delete applicant"/>
+                                @click="openDeleteDialog(slotProps.data)" aria-label="Delete applicant"
+                                v-tooltip.top="'Delete applicant'"/>
                         <Button icon="pi pi-send"
                                 class="p-button-text p-button-rounded p-button-primary"
-                                @click="openSmsDialog(slotProps.data)" aria-label="Send SMS" />
+                                @click="openSmsDialog(slotProps.data)" aria-label="Send SMS"
+                                v-tooltip.top="'Send SMS notification'"/>
                     </div>
                 </template>
             </Column>
@@ -349,14 +353,17 @@ const getSeverity = (status) => {
 
                 <div class="field">
                     <label for="remarks" class="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
-                    <Textarea v-model="statusForm.remarks" id="remarks" rows="3" class="w-full" placeholder="Add remarks about this applicant"/>
+                    <Textarea v-model="statusForm.remarks" id="remarks" rows="3" class="w-full"
+                              placeholder="Add remarks about this applicant"/>
                 </div>
 
-                <div class="field" v-if="['Hired', 'For Interview', 'For Demo', 'Recommended'].includes(statusForm.status)">
-                    <label for="remarks_date" class="block text-sm font-medium text-gray-700 mb-1">Remarks Date & Time</label>
+                <div class="field"
+                     v-if="['Hired', 'For Interview', 'For Demo', 'Recommended'].includes(statusForm.status)">
+                    <label for="remarks_date" class="block text-sm font-medium text-gray-700 mb-1">Remarks Date &
+                        Time</label>
                     <DatePicker v-model="statusForm.remarks_date" id="remarks_date"
                                 showTime showIcon :showOnFocus="false"
-                                hourFormat="12" class="w-full" />
+                                hourFormat="12" class="w-full"/>
                 </div>
             </div>
             <template #footer>
@@ -382,14 +389,14 @@ const getSeverity = (status) => {
                 <div class="field">
                     <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                     <InputMask id="phone" class="w-full" v-model="smsForm.phone" disabled
-                               mask="+63 9999999999" placeholder="+63 9XXXXXXXXX" />
+                               mask="+63 9999999999" placeholder="+63 9XXXXXXXXX"/>
                     <small v-if="smsForm.errors.phone" class="text-red-500">{{ smsForm.errors.phone }}</small>
                 </div>
 
                 <div class="field">
                     <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
                     <Textarea v-model="smsForm.message" id="message" rows="5" class="w-full"
-                              placeholder="Enter your message here" />
+                              placeholder="Enter your message here"/>
                     <small v-if="smsForm.errors.message" class="text-red-500">{{ smsForm.errors.message }}</small>
                     <div class="text-right mt-1">
                         <small class="text-gray-500">{{ smsForm.message.length }}/2000 characters</small>
@@ -397,9 +404,9 @@ const getSeverity = (status) => {
                 </div>
             </div>
             <template #footer>
-                <Button label="Cancel" icon="pi pi-times" @click="smsDialogVisible = false" class="p-button-text" text />
+                <Button label="Cancel" icon="pi pi-times" @click="smsDialogVisible = false" class="p-button-text" text/>
                 <Button label="Send" icon="pi pi-send" @click="sendSms" class="p-button-text p-button-primary"
-                        :disabled="smsForm.processing || !smsForm.phone || !smsForm.message" autofocus />
+                        :disabled="smsForm.processing || !smsForm.phone || !smsForm.message" autofocus/>
             </template>
         </Dialog>
     </div>

@@ -274,7 +274,7 @@ const submitForm = () => {
                                        @input="form.clearErrors('name')"
                                        v-model="form.name" required class="w-full"/>
                             <Message size="small" severity="secondary" variant="simple">Use the same name as your valid
-                                GOVERNMENT ID.
+                                <span class="font-bold text-red-500">GOVERNMENT ID.</span>
                             </Message>
                             <p class="text-red-500" v-if="form.errors.name">{{ form.errors.name }}</p>
                         </div>

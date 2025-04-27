@@ -6,7 +6,7 @@ import Row from 'primevue/row';                   // optional
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Select from 'primevue/select';
-import {FilterMatchMode,FilterOperator} from '@primevue/core/api';
+import {FilterMatchMode, FilterOperator} from '@primevue/core/api';
 import {useToast} from "primevue/usetoast";
 import {ref} from 'vue';
 import {useForm} from "@inertiajs/vue3";
@@ -57,25 +57,37 @@ const addPosition = () => {
     newPositionForm.post(route('positions.store'), {
         preserveScroll: true,
         onSuccess: () => {
-            toast.add({ severity: 'success', summary: 'Success!', detail: 'Position added.', group: 'tl', life: 3000 });
+            toast.add({severity: 'success', summary: 'Success!', detail: 'Position added.', group: 'tl', life: 3000});
             addDialogVisible.value = false;
         },
         onError: (error) => {
-            toast.add({ severity: 'error', summary: 'Error!', detail: 'Failed to add position.', group: 'tl', life: 3000 });
+            toast.add({
+                severity: 'error',
+                summary: 'Error!',
+                detail: 'Failed to add position.',
+                group: 'tl',
+                life: 3000
+            });
             console.error('Error adding position', error);
         },
     });
 };
 
 const updatePosition = () => {
-    positionForm.put(route('positions.update', { id: positionForm.id }), {
+    positionForm.put(route('positions.update', {id: positionForm.id}), {
         preserveScroll: true,
         onSuccess: () => {
-            toast.add({ severity: 'success', summary: 'Success!', detail: 'Position updated.', group: 'tl', life: 3000 });
+            toast.add({severity: 'success', summary: 'Success!', detail: 'Position updated.', group: 'tl', life: 3000});
             dialogVisible.value = false;
         },
         onError: (error) => {
-            toast.add({ severity: 'error', summary: 'Error!', detail: 'Failed to update position.', group: 'tl', life: 3000 });
+            toast.add({
+                severity: 'error',
+                summary: 'Error!',
+                detail: 'Failed to update position.',
+                group: 'tl',
+                life: 3000
+            });
             console.error('Error updating position', error);
         },
     });
@@ -83,7 +95,7 @@ const updatePosition = () => {
 
 const deletePosition = () => {
     if (applicantToDelete.value) {
-        deleteForm.delete(route('positions.destroy', { id: applicantToDelete.value.id }), {
+        deleteForm.delete(route('positions.destroy', {id: applicantToDelete.value.id}), {
             preserveScroll: true,
             onSuccess: () => {
                 toast.add({
@@ -113,7 +125,7 @@ const filters = ref();
 
 const initFilters = () => {
     filters.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        global: {value: null, matchMode: FilterMatchMode.CONTAINS},
     };
 };
 
@@ -130,7 +142,7 @@ const clearFilter = () => {
     <div class="bg-white p-4 rounded-lg shadow-md">
         <div class="flex items-center justify-between mb-3">
             <h3 class="text-xl font-semibold text-primary">Position List</h3>
-            <Button label="Add New Position" icon="pi pi-plus" @click="openAddDialog" />
+            <Button label="Add New Position" icon="pi pi-plus" @click="openAddDialog"/>
         </div>
         <DataTable v-model:filters="filters"
                    :value="props.positions"
@@ -164,9 +176,13 @@ const clearFilter = () => {
             <Column header="Action" class="text-center">
                 <template #body="slotProps">
                     <div class="flex justify-center gap-2">
-                        <Button icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-info" @click="openStatusDialog(slotProps.data)" aria-label="Edit status" />
-<!--                        <Button icon="pi pi-eye" class="p-button-text p-button-rounded p-button-success" @click="viewApplicant(slotProps.data.id)" aria-label="View applicant" />-->
-                        <Button icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" @click="openDeleteDialog(slotProps.data)" aria-label="Delete applicant" />
+                        <Button icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-info"
+                                @click="openStatusDialog(slotProps.data)" aria-label="Edit status"
+                                v-tooltip.top="'Edit Position'"/>
+                        <!--                        <Button icon="pi pi-eye" class="p-button-text p-button-rounded p-button-success" @click="viewApplicant(slotProps.data.id)" aria-label="View applicant" />-->
+                        <Button icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger"
+                                @click="openDeleteDialog(slotProps.data)" aria-label="Delete applicant"
+                                v-tooltip.top="'Delete Applicant'"/>
                     </div>
                 </template>
             </Column>
@@ -177,19 +193,22 @@ const clearFilter = () => {
             <div class="flex flex-col gap-4">
                 <div class="field">
                     <label for="name" class="font-bold">Name</label>
-                    <InputText id="name" v-model="positionForm.name" required autofocus class="w-full" />
+                    <InputText id="name" v-model="positionForm.name" required autofocus class="w-full"/>
                     <small class="p-error" v-if="positionForm.errors.name">{{ positionForm.errors.name }}</small>
                 </div>
                 <div class="field">
                     <label for="description" class="font-bold">Description</label>
-                    <Textarea id="description" v-model="positionForm.description" required rows="3" class="w-full" />
-                    <small class="p-error" v-if="positionForm.errors.description">{{ positionForm.errors.description }}</small>
+                    <Textarea id="description" v-model="positionForm.description" required rows="3" class="w-full"/>
+                    <small class="p-error" v-if="positionForm.errors.description">{{
+                            positionForm.errors.description
+                        }}</small>
                 </div>
             </div>
             <template #footer>
-                <Button label="Cancel" icon="pi pi-times" @click="dialogVisible = false" severity="danger" class="p-button-text" />
+                <Button label="Cancel" icon="pi pi-times" @click="dialogVisible = false" severity="danger"
+                        class="p-button-text"/>
                 <Button label="Save" icon="pi pi-check" @click="updatePosition" severity="success" class="p-button-text"
-                        :disabled="positionForm.processing" autofocus />
+                        :disabled="positionForm.processing" autofocus/>
             </template>
         </Dialog>
 
@@ -209,19 +228,22 @@ const clearFilter = () => {
             <div class="flex flex-col gap-4">
                 <div class="field">
                     <label for="newName" class="font-bold">Name</label>
-                    <InputText id="newName" v-model="newPositionForm.name" required autofocus class="w-full" />
+                    <InputText id="newName" v-model="newPositionForm.name" required autofocus class="w-full"/>
                     <small class="p-error" v-if="newPositionForm.errors.name">{{ newPositionForm.errors.name }}</small>
                 </div>
                 <div class="field">
                     <label for="newDescription" class="font-bold">Description</label>
-                    <Textarea id="newDescription" v-model="newPositionForm.description" required rows="3" class="w-full" />
-                    <small class="p-error" v-if="newPositionForm.errors.description">{{ newPositionForm.errors.description }}</small>
+                    <Textarea id="newDescription" v-model="newPositionForm.description" required rows="3"
+                              class="w-full"/>
+                    <small class="p-error"
+                           v-if="newPositionForm.errors.description">{{ newPositionForm.errors.description }}</small>
                 </div>
             </div>
             <template #footer>
-                <Button label="Cancel" icon="pi pi-times" @click="addDialogVisible = false" severity="danger" class="p-button-text" />
+                <Button label="Cancel" icon="pi pi-times" @click="addDialogVisible = false" severity="danger"
+                        class="p-button-text"/>
                 <Button label="Add" icon="pi pi-check" @click="addPosition" severity="success" class="p-button-text"
-                        :disabled="newPositionForm.processing" autofocus />
+                        :disabled="newPositionForm.processing" autofocus/>
             </template>
         </Dialog>
     </div>
