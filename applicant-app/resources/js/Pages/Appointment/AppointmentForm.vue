@@ -348,7 +348,7 @@ const submitForm = () => {
 
                     <!-- Time slots centered -->
                     <div v-if="availableTimeSlots.length > 0" class="field mt-6 max-w-2xl mx-auto">
-                        <h3 class="text-xl font-semibold mb-2 text-center">Available Time Slots</h3>
+                        <h3 class="text-xl font-semibold mb-2 text-center">Select your preferred time and wait for the SMS confirmation.</h3>
 
                         <!-- Two-column layout for medium screens and up -->
                         <div class="hidden md:flex flex-wrap gap-4">
