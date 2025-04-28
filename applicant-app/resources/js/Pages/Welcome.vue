@@ -88,7 +88,10 @@ const goToAppointmentSystem = () => {
                             </div>
 
                             <div class="text-center text-sm text-gray-700 mt-4 font-medium">
-                                For assistance, please contact the administration office
+                                If you encounter any issues, please contact us at
+                                <a href="https://www.facebook.com/InfoTechSSS" target="_blank" class="text-blue-600 hover:underline">
+                                    MCPI Information Technology System Support Services
+                                </a>
                             </div>
                         </div>
                     </div>
