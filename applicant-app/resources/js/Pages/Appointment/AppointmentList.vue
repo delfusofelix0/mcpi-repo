@@ -94,6 +94,7 @@ const sendAppointmentSms = () => {
     smsForm.id = selectedAppointment.value.id;
 
     smsForm.post(route('appointments.send-sms', selectedAppointment.value.id), {
+        preserveScroll: true,
         onSuccess: () => {
             confirmCancelDialog.value = false;
             selectedAppointment.value = null;
