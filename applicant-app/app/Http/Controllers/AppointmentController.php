@@ -134,11 +134,11 @@ class AppointmentController extends Controller
 
             // Prepare the message based on status
             if ($status === 'confirmed') {
-                $message = "Your appointment has been confirmed at {$appointment->office->name} on $formattedDate at $appointment->time. Please present a VALID ID and this confirmation message to the School Guard upon arrival. Thank you!";
+                $message = "Hello {$appointment->name}, your appointment has been confirmed at {$appointment->office->name} on $formattedDate at $appointment->time. Please present a VALID ID and this confirmation message to the School Guard upon arrival. Thank you!";
             } else if ($status === 'declined') {
-                $message = "We regret to inform you that your appointment request at {$appointment->office->name} on $formattedDate at $appointment->time has been declined. Please contact the office for more information or schedule a new appointment. Thank you for your understanding.";
+                $message = "Hello {$appointment->name}, we regret to inform you that your appointment request at {$appointment->office->name} on $formattedDate at $appointment->time has been declined. Please contact the office for more information or schedule a new appointment. Thank you for your understanding.";
             } else {
-                $message = "Update regarding your appointment at {$appointment->office->name} on $formattedDate at $appointment->time. Status: $status. For any questions, please contact the office directly. Thank you.";
+                $message = "Hello {$appointment->name}, update regarding your appointment at {$appointment->office->name} on $formattedDate at $appointment->time. Status: $status. For any questions, please contact the office directly. Thank you.";
             }
 
             // Send SMS using the M360SmsService
