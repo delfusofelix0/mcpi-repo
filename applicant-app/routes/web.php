@@ -8,7 +8,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Office;
+//
+use App\Http\Controllers\QMS\TicketController;
+use App\Http\Controllers\QMS\DisplayController;
+use App\Http\Controllers\QMS\CashierController;
+use App\Http\Controllers\QMS\AdminWindowController;
+//
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -69,18 +74,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('applicant.send-sms');
 });
 
-//Route::get('/applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show')
-//    ->middleware(['auth', 'verified']);
+// Public routes
+Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+Route::post('/tickets/generate', [TicketController::class, 'generate'])->name('tickets.generate');
+Route::middleware(['display.token'])->group(function() {
+    Route::get('/display', [DisplayController::class, 'index'])->name('display.index');
+    Route::get('/api/display-tickets', [DisplayController::class, 'getCurrentTickets'])->name('api.display-tickets');
+});
 
+// Cashier routes (protected by auth)
+Route::prefix('cashier')->name('cashier.')->group(function () {
+    Route::get('/test-cashier', [CashierController::class, 'dashboard'])->name('dashboard');
+    Route::post('/call-next', [CashierController::class, 'callNext'])->name('call-next');
+    Route::post('/complete/{ticket}', [CashierController::class, 'complete'])->name('complete');
+    Route::post('/skip/{ticket}', [CashierController::class, 'skip'])->name('skip');
+});
 
-
-//Route::prefix('dashboard')->group(function () {
-//    Route::get('/', function() {
-//        return Inertia::render('Dashboard');
-//    });
-//    Route::get('/', [ApplicantController::class, 'index']);
-////    Route::get('/', [PositionController::class, 'index'])->name('dashboard.positions');
-//})->middleware(['auth', 'verified']);
+// Admin routes (protected by auth + admin check)
+//Route::prefix('admin')->name('admin.')->group(function () {
+//    Route::get('/windows', [AdminWindowController::class, 'index'])->name('windows.index');
+//    Route::post('/windows', [AdminWindowController::class, 'store'])->name('windows.store');
+//    Route::put('/windows/{window}', [AdminWindowController::class, 'update'])->name('windows.update');
+//});
 
 
 Route::middleware('auth')->group(function () {
