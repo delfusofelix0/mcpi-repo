@@ -8,6 +8,7 @@ use App\Models\Window;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class CashierController extends Controller
 {
@@ -26,6 +27,9 @@ class CashierController extends Controller
         ]);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function callNext(Request $request)
     {
         $window = Window::with('currentTicket')->find(Auth::user()->window_id ?? $request->window_id);
@@ -34,15 +38,22 @@ class CashierController extends Controller
             return redirect()->back()->with('error', 'Please complete or skip the current ticket first.');
         }
 
-        $nextTicket = Ticket::where('status', 'waiting')
-            ->orderBy('issue_time')
-            ->first();
+        $nextTicket = null;
+
+        DB::transaction(function () use (&$nextTicket, $window) {
+            $nextTicket = Ticket::where('status', 'waiting')
+                ->orderBy('issue_time')
+                ->lockForUpdate()
+                ->first();
+
+            if ($nextTicket) {
+                $nextTicket->markAsServing($window);
+            }
+        });
 
         if (!$nextTicket) {
             return redirect()->back()->with('error', 'No waiting tickets available.');
         }
-
-        $nextTicket->markAsServing($window);
 
         return redirect()->back()->with('success', 'Ticket #' . $nextTicket->ticket_number . ' called.');
     }
