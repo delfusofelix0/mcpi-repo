@@ -12,7 +12,7 @@ class WindowsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create the two cashier windows
+        // Create cashier windows
         Window::create([
             'name' => 'Cashier 1',
             'is_active' => true,
@@ -20,6 +20,38 @@ class WindowsSeeder extends Seeder
 
         Window::create([
             'name' => 'Cashier 2',
+            'is_active' => true,
+        ]);
+
+        Window::create([
+            'name' => 'Cashier 3',
+            'is_active' => true,
+        ]);
+
+        // Create accounting windows
+        Window::create([
+            'name' => 'Accounting 1',
+            'is_active' => true,
+        ]);
+
+        Window::create([
+            'name' => 'Accounting 2',
+            'is_active' => true,
+        ]);
+
+        // Create registrar windows
+        Window::create([
+            'name' => 'Registrar 1 - Grade School/College',
+            'is_active' => true,
+        ]);
+
+        Window::create([
+            'name' => 'Registrar 2 - Junior High School',
+            'is_active' => true,
+        ]);
+
+        Window::create([
+            'name' => 'Registrar 3 - Senior High School',
             'is_active' => true,
         ]);
     }
