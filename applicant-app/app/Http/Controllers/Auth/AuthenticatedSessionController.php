@@ -33,9 +33,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Check if the authenticated user has the Secretary role
-        if (Auth::user()->hasRole('Secretary')) {
+        $user = Auth::user();
+
+        // Redirect based on user role
+        if ($user->hasRole('Secretary')) {
             return redirect()->route('appointment-settings.index');
+        } elseif ($user->hasRole('Cashier')) {
+            return redirect()->route('cashier.dashboard');
+        } elseif ($user->hasRole('Accounting')) {
+            return redirect()->route('accounting.dashboard');
+        } elseif ($user->hasRole('Registrar')) {
+            return redirect()->route('registrar.dashboard');
         }
 
         return redirect()->route('dashboard');
