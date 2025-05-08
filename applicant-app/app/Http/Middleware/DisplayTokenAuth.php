@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Symfony\Component\HttpFoundation\Response;
 
 class DisplayTokenAuth
@@ -13,9 +14,22 @@ class DisplayTokenAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $validToken = config('app.display_token', 'UWUXD');
+        $validToken = config('display.token');
 
-        if ($request->query('token') !== $validToken) {
+        if (empty($validToken)) {
+            abort(403, 'Display token not configured');
+        }
+
+        try {
+            $requestToken = $request->query('token');
+
+            // Decrypt the token from the request
+            $decryptedToken = Crypt::decryptString($requestToken);
+
+            if ($decryptedToken !== $validToken) {
+                throw new \Exception('Invalid token');
+            }
+        } catch (\Exception $e) {
             abort(403, 'Invalid display token');
         }
 
