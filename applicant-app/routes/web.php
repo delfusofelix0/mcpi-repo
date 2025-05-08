@@ -9,6 +9,9 @@ use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 //
+use App\Http\Controllers\QMS\AccountingController;
+use App\Http\Controllers\QMS\DepartmentController;
+use App\Http\Controllers\QMS\RegistrarController;
 use App\Http\Controllers\QMS\TicketController;
 use App\Http\Controllers\QMS\DisplayController;
 use App\Http\Controllers\QMS\CashierController;
@@ -82,12 +85,41 @@ Route::middleware(['display.token'])->group(function() {
     Route::get('/api/display-tickets', [DisplayController::class, 'getCurrentTickets'])->name('api.display-tickets');
 });
 
-// Cashier routes (protected by auth)
-Route::prefix('cashier')->name('cashier.')->group(function () {
-    Route::get('/test-cashier', [CashierController::class, 'dashboard'])->name('dashboard');
-    Route::post('/call-next', [CashierController::class, 'callNext'])->name('call-next');
-    Route::post('/complete/{ticket}', [CashierController::class, 'complete'])->name('complete');
-    Route::post('/skip/{ticket}', [CashierController::class, 'skip'])->name('skip');
+// QMS routes (protected by auth)
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Department route
+    Route::post('/select-window', [DepartmentController::class, 'selectWindow'])->name('select-window');
+
+    Route::prefix('department')->name('department.')->group(function () {
+        Route::post('/call-next', [DepartmentController::class, 'callNext'])->name('call-next');
+        Route::post('/complete/{ticket}', [DepartmentController::class, 'complete'])->name('complete');
+        Route::post('/skip/{ticket}', [DepartmentController::class, 'skip'])->name('skip');
+        Route::post('/select-window', [DepartmentController::class, 'selectWindow'])->name('select-window');
+    });
+
+    // Cashier routes
+    Route::prefix('cashier')->name('cashier.')->middleware(['role:Cashier'])->group(function () {
+        Route::get('/dashboard', [CashierController::class, 'dashboard'])->name('dashboard');
+//        Route::post('/call-next', [CashierController::class, 'callNext'])->name('call-next');
+//        Route::post('/complete/{ticket}', [CashierController::class, 'complete'])->name('complete');
+//        Route::post('/skip/{ticket}', [CashierController::class, 'skip'])->name('skip');
+    });
+
+    // Accounting routes
+    Route::prefix('accounting')->name('accounting.')->middleware(['role:Accounting'])->group(function () {
+        Route::get('/dashboard', [AccountingController::class, 'dashboard'])->name('dashboard');
+//        Route::post('/call-next', [AccountingController::class, 'callNext'])->name('call-next');
+//        Route::post('/complete/{ticket}', [AccountingController::class, 'complete'])->name('complete');
+//        Route::post('/skip/{ticket}', [AccountingController::class, 'skip'])->name('skip');
+    });
+
+    // Registrar routes
+    Route::prefix('registrar')->name('registrar.')->middleware(['role:Registrar'])->group(function () {
+        Route::get('/dashboard', [RegistrarController::class, 'dashboard'])->name('dashboard');
+//        Route::post('/call-next', [RegistrarController::class, 'callNext'])->name('call-next');
+//        Route::post('/complete/{ticket}', [RegistrarController::class, 'complete'])->name('complete');
+//        Route::post('/skip/{ticket}', [RegistrarController::class, 'skip'])->name('skip');
+    });
 });
 
 // Admin routes (protected by auth + admin check)
