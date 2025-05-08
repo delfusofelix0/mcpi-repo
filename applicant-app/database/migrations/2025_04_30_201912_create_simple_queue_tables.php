@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('windows', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // e.g., "Cashier 1", "Cashier 2"
+            $table->string('department')->nullable(); // e.g., "cashier", "accounting", "registrar"
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
@@ -23,6 +24,7 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->string('ticket_number'); // e.g., 001, 002, etc.
+            $table->string('department'); // e.g., "cashier", "accounting", "registrar"
             $table->dateTime('issue_time');
             $table->dateTime('call_time')->nullable();
             $table->dateTime('completion_time')->nullable();
