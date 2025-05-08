@@ -12,6 +12,7 @@ class Ticket extends Model
 
     protected $fillable = [
         'ticket_number',
+        'department',
         'issue_time',
         'call_time',
         'completion_time',
