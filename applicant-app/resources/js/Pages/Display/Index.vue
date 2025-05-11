@@ -94,7 +94,7 @@ const registrarTickets = computed(() => {
             <div class="space-y-6">
                 <!-- Cashier Windows -->
                 <div v-if="accountingTickets.length > 0">
-                    <h2 class="text-2xl font-bold mb-2">Cashier</h2>
+                    <h2 class="text-2xl font-bold mb-2">Accounting</h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div
                             v-for="ticket in accountingTickets"
@@ -116,7 +116,7 @@ const registrarTickets = computed(() => {
                 <div class="grid grid-cols-2 gap-4">
                     <!-- Accounting Windows -->
                     <div v-if="cashierTickets.length > 0">
-                        <h2 class="text-2xl font-bold mb-2">Accounting</h2>
+                        <h2 class="text-2xl font-bold mb-2">Cashier</h2>
                         <div class="grid grid-cols-1 gap-4">
                             <div
                                 v-for="ticket in cashierTickets"
