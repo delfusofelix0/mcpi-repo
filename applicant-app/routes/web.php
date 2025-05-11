@@ -8,7 +8,15 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Office;
+//
+use App\Http\Controllers\QMS\AccountingController;
+use App\Http\Controllers\QMS\DepartmentController;
+use App\Http\Controllers\QMS\RegistrarController;
+use App\Http\Controllers\QMS\TicketController;
+use App\Http\Controllers\QMS\DisplayController;
+use App\Http\Controllers\QMS\CashierController;
+use App\Http\Controllers\QMS\AdminWindowController;
+//
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -69,18 +77,57 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('applicant.send-sms');
 });
 
-//Route::get('/applicant/{id}', [ApplicantController::class, 'show'])->name('applicant.show')
-//    ->middleware(['auth', 'verified']);
+// Public routes
+Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+Route::post('/tickets/generate', [TicketController::class, 'generate'])->name('tickets.generate');
+Route::middleware(['display.token'])->group(function() {
+    Route::get('/display', [DisplayController::class, 'index'])->name('display.index');
+    Route::get('/api/display-tickets', [DisplayController::class, 'getCurrentTickets'])->name('api.display-tickets');
+});
 
+// QMS routes (protected by auth)
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Department route
+    Route::post('/select-window', [DepartmentController::class, 'selectWindow'])->name('select-window');
 
+    Route::prefix('department')->name('department.')->group(function () {
+        Route::post('/call-next', [DepartmentController::class, 'callNext'])->name('call-next');
+        Route::post('/complete/{ticket}', [DepartmentController::class, 'complete'])->name('complete');
+        Route::post('/skip/{ticket}', [DepartmentController::class, 'skip'])->name('skip');
+        Route::post('/select-window', [DepartmentController::class, 'selectWindow'])->name('select-window');
+    });
 
-//Route::prefix('dashboard')->group(function () {
-//    Route::get('/', function() {
-//        return Inertia::render('Dashboard');
-//    });
-//    Route::get('/', [ApplicantController::class, 'index']);
-////    Route::get('/', [PositionController::class, 'index'])->name('dashboard.positions');
-//})->middleware(['auth', 'verified']);
+    // Cashier routes
+    Route::prefix('cashier')->name('cashier.')->middleware(['role:Cashier'])->group(function () {
+        Route::get('/dashboard', [CashierController::class, 'dashboard'])->name('dashboard');
+//        Route::post('/call-next', [CashierController::class, 'callNext'])->name('call-next');
+//        Route::post('/complete/{ticket}', [CashierController::class, 'complete'])->name('complete');
+//        Route::post('/skip/{ticket}', [CashierController::class, 'skip'])->name('skip');
+    });
+
+    // Accounting routes
+    Route::prefix('accounting')->name('accounting.')->middleware(['role:Accounting'])->group(function () {
+        Route::get('/dashboard', [AccountingController::class, 'dashboard'])->name('dashboard');
+//        Route::post('/call-next', [AccountingController::class, 'callNext'])->name('call-next');
+//        Route::post('/complete/{ticket}', [AccountingController::class, 'complete'])->name('complete');
+//        Route::post('/skip/{ticket}', [AccountingController::class, 'skip'])->name('skip');
+    });
+
+    // Registrar routes
+    Route::prefix('registrar')->name('registrar.')->middleware(['role:Registrar'])->group(function () {
+        Route::get('/dashboard', [RegistrarController::class, 'dashboard'])->name('dashboard');
+//        Route::post('/call-next', [RegistrarController::class, 'callNext'])->name('call-next');
+//        Route::post('/complete/{ticket}', [RegistrarController::class, 'complete'])->name('complete');
+//        Route::post('/skip/{ticket}', [RegistrarController::class, 'skip'])->name('skip');
+    });
+});
+
+// Admin routes (protected by auth + admin check)
+//Route::prefix('admin')->name('admin.')->group(function () {
+//    Route::get('/windows', [AdminWindowController::class, 'index'])->name('windows.index');
+//    Route::post('/windows', [AdminWindowController::class, 'store'])->name('windows.store');
+//    Route::put('/windows/{window}', [AdminWindowController::class, 'update'])->name('windows.update');
+//});
 
 
 Route::middleware('auth')->group(function () {

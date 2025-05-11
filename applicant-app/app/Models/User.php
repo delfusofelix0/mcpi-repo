@@ -46,4 +46,23 @@ class User extends Authenticatable // add this if need to verify email: "impleme
             'password' => 'hashed',
         ];
     }
+
+    public function activeWindow()
+    {
+        return $this->hasOneThrough(
+            Window::class,
+            UserWindow::class,
+            'user_id',
+            'id',
+            'id',
+            'window_id'
+        )->whereHas('userWindows', function($query) {
+            $query->where('is_active', true);
+        });
+    }
+
+    public function userWindows()
+    {
+        return $this->hasMany(UserWindow::class);
+    }
 }
