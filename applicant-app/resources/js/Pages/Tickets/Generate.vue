@@ -2,6 +2,9 @@
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
+const props = defineProps({
+    token: String,
+})
 const showDepartments = ref(false);
 const form = useForm({
     department: ''
@@ -13,7 +16,7 @@ const showDepartmentOptions = () => {
 
 const generateTicket = (department) => {
     form.department = department;
-    form.post(route('tickets.generate'));
+    form.post(route('tickets.generate') + '?token=' + props.token);
 };
 </script>
 

@@ -78,9 +78,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Public routes
-Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
-Route::post('/tickets/generate', [TicketController::class, 'generate'])->name('tickets.generate');
 Route::middleware(['display.token'])->group(function() {
+    Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+    Route::post('/tickets/generate', [TicketController::class, 'generate'])->name('tickets.generate');
     Route::get('/display', [DisplayController::class, 'index'])->name('display.index');
     Route::get('/api/display-tickets', [DisplayController::class, 'getCurrentTickets'])->name('api.display-tickets');
 });
