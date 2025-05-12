@@ -3,8 +3,25 @@ import { onMounted, ref, computed } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
-    ticket: Object
+    ticket: Object,
+    token: String
 });
+
+const qrImageLoaded = ref(false);
+const qrImageSrc = '/images/qrcode-print.jpg';
+
+// Preload the QR code image
+const preloadImage = () => {
+    const img = new Image();
+    img.onload = () => {
+        qrImageLoaded.value = true;
+        console.log('QR code image preloaded');
+    };
+    img.onerror = (err) => {
+        console.error('Failed to load QR code image:', err);
+    };
+    img.src = qrImageSrc;
+};
 
 const departmentName = computed(() => {
     const dept = props.ticket.department;
@@ -23,7 +40,7 @@ const departmentName = computed(() => {
 });
 
 // Auto-redirect after 5 seconds
-const countdown = ref(999);
+const countdown = ref(30);
 const timer = ref(null);
 
 // Function to stop the timer
@@ -35,15 +52,20 @@ const stopTimer = () => {
 };
 
 onMounted(() => {
-    // Automatically print the ticket when the page loads
-    printTicket();
+    // Preload the image first
+    preloadImage();
+
+    // Wait a short time to ensure image is in browser cache before printing
+    setTimeout(() => {
+        printTicket();
+    }, 300);
 
     // Start countdown for redirect
     timer.value = setInterval(() => {
         countdown.value--;
         if (countdown.value <= 0) {
             stopTimer();
-            router.visit(route('tickets.index'));
+            router.visit(route('tickets.index') + "?token=" + props.token);
         }
     }, 1000);
 });
@@ -53,7 +75,6 @@ const printTicket = () => {
     console.log('Printing ticket:', props.ticket);
 
     // Print the current page using the browser's print function
-    // You'll replace this with your thermal printer integration
     window.print();
 };
 </script>
@@ -82,7 +103,7 @@ const printTicket = () => {
 
                     <div class="space-x-2">
                         <Button @click="printTicket" class="px-4" label="Print Again" />
-                        <Link :href="route('tickets.index')" @click="stopTimer">
+                        <Link :href="route('tickets.index') + '?token=' + props.token" @click="stopTimer">
                             <Button label="Get Another Ticket" class="px-4" />
                         </Link>
                     </div>
@@ -101,9 +122,9 @@ const printTicket = () => {
             </div>
             <p class="text-sm">{{ new Date(ticket.issue_time).toLocaleString() }}</p>
             <div class="flex justify-center">
-                <Image src="/images/qrcode-print.jpg" alt="Image" width="110"/>
+                <Image :src="qrImageSrc" alt="QR Code" width="110" class="print-image" />
             </div>
-            <p class="text-sm mt-2 italic">We’d love to hear your thoughts!</p>
+            <p class="text-sm mt-2 italic">We'd love to hear your thoughts!</p>
             <p class="text-sm">Please wait for your number to be called</p>
             <p class="text-sm">**This ticket will be valid today.**</p>
         </div>
@@ -125,6 +146,23 @@ const printTicket = () => {
 
     .print-only {
         display: block;
+    }
+
+    /* Force image to be visible during print */
+    .print-image {
+        display: block !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Override any PrimeVue styles that might interfere with printing */
+    :deep(.p-image) {
+        display: block !important;
+    }
+
+    :deep(.p-image img) {
+        display: block !important;
+        visibility: visible !important;
     }
 }
 </style>
