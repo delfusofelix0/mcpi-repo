@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
-import { router } from '@inertiajs/vue3';
+import {router, usePage} from '@inertiajs/vue3';
 import { Head } from '@inertiajs/vue3';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
@@ -19,6 +19,9 @@ defineProps({
         type: String,
     },
 });
+
+const page = usePage();
+const isAdmin = page.props.auth.user.isAdmin;
 
 const showSuccessMessage = ref(false);
 const showErrorMessage = ref(false);
@@ -93,7 +96,7 @@ const deleteAllTickets = () => {
                     <DeleteUserForm class="max-w-xl" />
                 </div>
 
-                <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+                <div v-if="isAdmin" class="bg-white p-4 shadow sm:rounded-lg sm:p-8">
                     <section class="space-y-6">
                         <header>
                             <h2 class="text-lg font-medium text-gray-900">

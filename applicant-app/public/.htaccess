@@ -25,5 +25,5 @@
 </IfModule>
 
 # Increase upload file size limit
-upload_max_filesize = 10M
-post_max_size = 80M
+#upload_max_filesize = 10M #DO NOT PUSH
+#post_max_size = 80M
