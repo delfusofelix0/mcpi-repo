@@ -56,4 +56,11 @@ class TicketController extends Controller
             'ticket' => $ticket,
         ]);
     }
+
+    public function deleteAll()
+    {
+        Ticket::truncate();
+
+        return redirect()->back()->with('success', 'All tickets have been deleted successfully.');
+    }
 }

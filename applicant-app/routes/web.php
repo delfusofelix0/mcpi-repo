@@ -85,6 +85,10 @@ Route::middleware(['display.token'])->group(function() {
     Route::get('/api/display-tickets', [DisplayController::class, 'getCurrentTickets'])->name('api.display-tickets');
 });
 
+Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
+    Route::delete('/tickets/delete-all', [TicketController::class, 'deleteAll'])->name('tickets.deleteAll');
+});
+
 // QMS routes (protected by auth)
 Route::middleware(['auth', 'verified'])->group(function () {
     // Department route
