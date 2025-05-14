@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import {onMounted, ref, computed} from 'vue';
+import {Link, router} from '@inertiajs/vue3';
 
 const props = defineProps({
     ticket: Object,
@@ -48,6 +48,7 @@ const stopTimer = () => {
     if (timer.value) {
         clearInterval(timer.value);
         timer.value = null;
+        router.visit(route('tickets.index') + "?token=" + props.token);
     }
 };
 
@@ -102,10 +103,8 @@ const printTicket = () => {
                     <p class="text-sm text-gray-500 mb-6">This screen will reset in {{ countdown }} seconds</p>
 
                     <div class="space-x-2">
-                        <Button @click="printTicket" class="px-4" label="Print Again" />
-                        <Link :href="route('tickets.index') + '?token=' + props.token" @click="stopTimer">
-                            <Button label="Get Another Ticket" class="px-4" />
-                        </Link>
+                        <Button @click="printTicket" label="Print Again" class="px-4"/>
+                        <Button @click="stopTimer" label="Get Another Ticket" class="px-4"/>
                     </div>
                 </div>
             </template>
@@ -122,7 +121,7 @@ const printTicket = () => {
             </div>
             <p class="text-sm">{{ new Date(ticket.issue_time).toLocaleString() }}</p>
             <div class="flex justify-center">
-                <Image :src="qrImageSrc" alt="QR Code" width="110" class="print-image" />
+                <Image :src="qrImageSrc" alt="QR Code" width="110" class="print-image"/>
             </div>
             <p class="text-sm mt-2 italic">We'd love to hear your thoughts!</p>
             <p class="text-sm">Please wait for your number to be called</p>

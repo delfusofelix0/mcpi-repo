@@ -10,9 +10,11 @@ use Inertia\Inertia;
 class TicketController extends Controller
 {
     // Simple ticket generation page
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('Tickets/Generate');
+        return Inertia::render('Tickets/Generate', [
+            'token' => $request->query('token')
+        ]);
     }
 
     // Generate a new ticket
@@ -53,6 +55,7 @@ class TicketController extends Controller
 
         // Default for Vue/Inertia for fallback
         return Inertia::render('Tickets/Issued', [
+            'token' => $request->query('token'),
             'ticket' => $ticket,
         ]);
     }
