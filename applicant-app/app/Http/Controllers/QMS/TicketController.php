@@ -14,9 +14,8 @@ class TicketController extends Controller
         'registrar-gradecollege',
         'registrar-jhs',
         'registrar-shs',
+        'accounting',
         'cashier',
-        'admission',
-        'registrar'
     ];
 
     // Simple ticket generation page

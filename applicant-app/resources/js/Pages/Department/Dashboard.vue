@@ -15,8 +15,9 @@ const completeForm = useForm({});
 const skipForm = useForm({});
 const loading = ref(false);
 
-const waitingCount = computed(() => props.waitingTickets.total);
+const hasPriorityTickets = computed(() => props.waitingTickets.data.some(ticket => ticket.is_priority));
 
+const waitingCount = computed(() => props.waitingTickets.total);
 
 onMounted(() => {
     loading.value = false;
@@ -156,7 +157,7 @@ const skipTicket = () => {
                                 </div>
                             </div>
 
-                            <div v-else class="text-center  space-x-4 py-8">
+                            <div v-else class="text-center space-x-4 py-8">
                                 <p class="text-gray-500 text-xl mb-6">No active ticket</p>
                                 <Button
                                     label="Call Next Ticket"
@@ -172,7 +173,7 @@ const skipTicket = () => {
                                     severity="help"
                                     size="large"
                                     @click="callNextPriority"
-                                    :disabled="waitingCount === 0"
+                                    :disabled="waitingCount === 0 || !hasPriorityTickets"
                                 />
                             </div>
                         </template>
