@@ -5,10 +5,20 @@ namespace App\Http\Controllers\QMS;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class TicketController extends Controller
 {
+    private const DEPARTMENTS = [
+        'registrar-gradecollege',
+        'registrar-jhs',
+        'registrar-shs',
+        'cashier',
+        'admission',
+        'registrar'
+    ];
+
     // Simple ticket generation page
     public function index(Request $request)
     {
@@ -20,18 +30,21 @@ class TicketController extends Controller
     // Generate a new ticket
     public function generate(Request $request)
     {
-        $department = $request->input('department', 'general');
+        $validated = $request->validate([
+            'department' => ['required', Rule::in(self::DEPARTMENTS)],
+            'is_priority' => 'boolean',
+        ]);
+
+        $department = $validated['department'];
+        $isPriority = $validated['is_priority'] ?? false;
 
         // Determine prefix based on department
-        if ($department === 'registrar-gradecollege') {
-            $prefix = 'GC';
-        } elseif ($department === 'registrar-jhs') {
-            $prefix = 'JHS';
-        } elseif ($department === 'registrar-shs') {
-            $prefix = 'SHS';
-        } else {
-            $prefix = strtoupper(substr($department, 0, 1)); // C, A, or R
-        }
+        $prefix = match ($department) {
+            'registrar-gradecollege' => 'GC',
+            'registrar-jhs' => 'JHS',
+            'registrar-shs' => 'SHS',
+            default => strtoupper(substr($department, 0, 1)),
+        };
 
         // Get the current count for today for this department
         $count = Ticket::where('department', $department)
@@ -44,6 +57,7 @@ class TicketController extends Controller
         $ticket = Ticket::create([
             'ticket_number' => $ticketNumber,
             'department' => $department,
+            'is_priority' => $isPriority,
             'status' => 'waiting',
             'issue_time' => now(),
         ]);
