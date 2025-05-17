@@ -6,8 +6,11 @@ const props = defineProps({
     token: String,
 })
 const showDepartments = ref(false);
+const priorityMode = ref(false);
+
 const form = useForm({
-    department: ''
+    department: '',
+    is_priority: false,
 });
 
 const showDepartmentOptions = () => {
@@ -16,6 +19,8 @@ const showDepartmentOptions = () => {
 
 const generateTicket = (department) => {
     form.department = department;
+    form.is_priority = priorityMode.value;
+    console.log(form.data()); // For debugging purposes
     form.post(route('tickets.generate') + '?token=' + props.token);
 };
 </script>
@@ -43,6 +48,16 @@ const generateTicket = (department) => {
                 </div>
 
                 <div v-else class="flex flex-col gap-4">
+                    <div class="flex items-center gap-2 mb-4">
+                        <Checkbox
+                            v-model="priorityMode"
+                            inputId="priority"
+                            size="large"
+                            binary
+                        />
+                        <label for="priority" class="text-2xl font-semibold">Priority Lane (Senior / PWD)</label>
+                    </div>
+
                     <Button
                         @click="generateTicket('cashier')"
                         label="Cashier"

@@ -26,6 +26,7 @@ class DisplayController extends Controller
             $currentTickets[] = [
                 'window' => $window->name,
                 'ticket' => $currentTicket ? $currentTicket->ticket_number : null,
+                'is_priority' => $currentTicket ? $currentTicket->is_priority : false,
             ];
         }
         return response()->json([

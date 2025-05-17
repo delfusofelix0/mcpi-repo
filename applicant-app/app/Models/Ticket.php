@@ -15,6 +15,7 @@ class Ticket extends Model
         'department',
         'issue_time',
         'call_time',
+        'is_priority',
         'completion_time',
         'window_id',
         'status'

@@ -10,11 +10,13 @@ const props = defineProps({
 });
 
 const callNextForm = useForm({});
+const callNextPriorityForm = useForm({});
 const completeForm = useForm({});
 const skipForm = useForm({});
 const loading = ref(false);
 
 const waitingCount = computed(() => props.waitingTickets.total);
+
 
 onMounted(() => {
     loading.value = false;
@@ -38,7 +40,18 @@ const refreshWaitingList = () => {
     });
 };
 
-// Call the next ticket in queue
+// Call the next priority ticket in queue
+const callNextPriority = () => {
+    callNextPriorityForm.post(route('department.call-priority', {window_id: props.window.id}), {
+        onSuccess: () => {
+            refreshWaitingList();
+        },
+        onError: (errors) => {
+            console.error('Error calling next priority ticket:', errors);
+        }
+    });
+};
+
 // Call the next ticket in queue
 const callNext = () => {
     callNextForm.post(route('department.call-next', {window_id: props.window.id}), {
@@ -86,7 +99,7 @@ const skipTicket = () => {
     <Head :title="`${window.name} Dashboard`"/>
 
     <AuthenticatedLayout>
-        <div class="p-4 bg-gray-100 min-h-screen">
+        <div class="p-4 bg-gray-100">
             <div class="max-w-7xl mx-auto">
                 <h1 class="text-3xl font-bold mb-6">{{ window.name }} Window</h1>
 
@@ -96,12 +109,30 @@ const skipTicket = () => {
                         <template #title>
                             <div class="flex justify-between items-center">
                                 <h2 class="text-xl font-bold">Current Ticket</h2>
-                                <Badge
-                                    v-if="currentTicket"
-                                    :value="'SERVING'"
-                                    severity="success"
-                                    class="p-2"
-                                />
+                                <template v-if="currentTicket && currentTicket.is_priority">
+                                    <Tag
+                                        value="SERVING - PRIORITY"
+                                        severity="warn"
+                                        class="p-2 font-semibold"
+                                        size="large"
+                                    />
+                                </template>
+                                <template v-else-if="currentTicket && !currentTicket.is_priority">
+                                    <Tag
+                                        value="SERVING"
+                                        severity="success"
+                                        class="p-2 font-semibold"
+                                        size="large"
+                                    />
+                                </template>
+                                <template v-else>
+                                    <Tag
+                                        value="SERVING?"
+                                        severity="info"
+                                        class="p-2 font-semibold"
+                                        size="large"
+                                    />
+                                </template>
                             </div>
                         </template>
 
@@ -125,15 +156,22 @@ const skipTicket = () => {
                                 </div>
                             </div>
 
-                            <div v-else class="text-center py-8">
+                            <div v-else class="text-center  space-x-4 py-8">
                                 <p class="text-gray-500 text-xl mb-6">No active ticket</p>
-
                                 <Button
                                     label="Call Next Ticket"
                                     icon="pi pi-bell"
                                     severity="primary"
                                     size="large"
                                     @click="callNext"
+                                    :disabled="waitingCount === 0"
+                                />
+                                <Button
+                                    label="Call Priority Ticket"
+                                    icon="pi pi-bell"
+                                    severity="help"
+                                    size="large"
+                                    @click="callNextPriority"
                                     :disabled="waitingCount === 0"
                                 />
                             </div>
@@ -161,15 +199,20 @@ const skipTicket = () => {
                         <template #content>
                             <DataTable
                                 :value="waitingTickets.data"
-                                :rows="waitingTickets.per_page"
+                                paginator :rows="5"
                                 :totalRecords="waitingTickets.total"
-                                :first="(waitingTickets.current_page - 1) * waitingTickets.per_page"
                                 @page="onPageChange"
                                 :loading="loading"
                             >
                                 <template #empty> No tickets found.</template>
                                 <template #loading> Loading tickets data. Please wait.</template>
                                 <Column field="ticket_number" header="Ticket #"/>
+                                <Column field="is_priority" header="Priority Lane">
+                                    <template #body="{ data }">
+                                        <Tag v-if="data.is_priority" class="font-bold" severity="danger">Yes</Tag>
+                                        <Tag v-else severity="success">No</Tag>
+                                    </template>
+                                </Column>
                                 <Column field="issue_time" header="Time Issued">
                                     <template #body="{ data }">
                                         {{ new Date(data.issue_time).toLocaleTimeString() }}
@@ -178,6 +221,7 @@ const skipTicket = () => {
                             </DataTable>
                         </template>
                     </Card>
+
                 </div>
             </div>
         </div>
