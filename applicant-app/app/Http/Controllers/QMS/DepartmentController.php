@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\UserWindow;
 use App\Models\Window;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Throwable;
 
 class DepartmentController extends Controller
 {
@@ -104,7 +106,7 @@ class DepartmentController extends Controller
             $waitingTicketsQuery->where('department', $department);
         }
 
-        $waitingTickets = $waitingTicketsQuery->orderBy('issue_time')->paginate(5);
+        $waitingTickets = $waitingTicketsQuery->orderByDesc('is_priority')->orderBy('issue_time')->paginate(99);
 
         return Inertia::render('Department/Dashboard', [
             'window' => $window,
@@ -115,135 +117,156 @@ class DepartmentController extends Controller
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
+     */
+    public function callNextPriority(Request $request)
+    {
+        return $this->processNextTicket(true);
+    }
+
+    /**
+     * @throws Throwable
      */
     public function callNext(Request $request)
     {
-        $department = $this->getDepartmentFromRole();
+        return $this->processNextTicket(false);
+    }
+
+    /**
+     * Process the next ticket based on priority flag
+     *
+     * @param bool $priorityOnly Whether to only process priority tickets
+     * @return RedirectResponse
+     * @throws Throwable
+     */
+    private function processNextTicket(bool $priorityOnly): RedirectResponse
+    {
         $user = Auth::user();
+        $department = $this->getDepartmentFromRole();
 
-        // Get active window assignment
-        $activeWindowAssignment = UserWindow::where('user_id', $user->id)
-            ->where('is_active', true)
-            ->first();
-
-        $windowId = $activeWindowAssignment ? $activeWindowAssignment->window_id : null;
-
-        if (!$windowId) {
-            return redirect()->back()->with('error', 'Please select a window first.');
-        }
-
-        $window = Window::with(['currentTicket' => function($query) use ($department) {
-            $query->where('department', $department);
-        }])->find($windowId);
-
-        if (!$window) {
-            // Clear invalid window assignment
-            UserWindow::where('user_id', $user->id)
+        return DB::transaction(function () use ($user, $department, $priorityOnly) {
+            // Find active window
+            $activeWindow = UserWindow::where('user_id', $user->id)
                 ->where('is_active', true)
-                ->update([
-                    'is_active' => false,
-                    'released_at' => now()
-                ]);
-
-            return redirect()->back()->with('error', 'The selected window does not exist.');
-        }
-
-        if ($window->currentTicket) {
-            return redirect()->back()->with('error', 'Please complete or skip the current ticket first.');
-        }
-
-        $nextTicket = null;
-
-        DB::transaction(function () use (&$nextTicket, $window, $department) {
-            $departmentQuery = Ticket::where('status', 'waiting');
-
-            if ($department === 'registrar') {
-                $windowName = strtolower($window->name);
-
-                // Check window name to determine which registrar department to serve
-                if ($windowName === 'registrar 1 - grade school/college') {
-                    $departmentQuery->where('department', 'registrar-gradecollege');
-                } elseif ($windowName === 'registrar 2 - junior high school') {
-                    $departmentQuery->where('department', 'registrar-jhs');
-                } elseif ($windowName === 'registrar 3 - senior high school') {
-                    $departmentQuery->where('department', 'registrar-shs');
-                } else {
-                    // Fallback to any registrar ticket if window name doesn't match
-                    $departmentQuery->where(function($query) {
-                        $query->where('department', 'like', 'registrar-%');
-                    });
-                }
-            } else {
-                $departmentQuery->where('department', $department);
-            }
-
-            $nextTicket = $departmentQuery
-                ->orderBy('issue_time')
                 ->lockForUpdate()
                 ->first();
 
-            if ($nextTicket) {
-                $nextTicket->window_id = $window->id;
-                $nextTicket->status = 'serving';
-                $nextTicket->call_time = now();
-                $nextTicket->save();
+            if (!$activeWindow) {
+                return redirect()->back()->with('error', 'Please select a window first.');
             }
+
+            $window = Window::with('currentTicket')->lockForUpdate()->find($activeWindow->window_id);
+
+            if (!$window) {
+                // Clear broken assignment
+                UserWindow::where('user_id', $user->id)
+                    ->where('is_active', true)
+                    ->update(['is_active' => false, 'released_at' => now()]);
+
+                return redirect()->back()->with('error', 'The selected window does not exist.');
+            }
+
+            // Prevent selecting new ticket if already serving
+            if ($window->currentTicket) {
+                return redirect()->back()->with('error', 'Please complete or skip the current ticket first.');
+            }
+
+            $query = Ticket::where('status', 'waiting')
+                ->where('is_priority', $priorityOnly);
+
+            // Department filtering
+            if ($department === 'registrar') {
+                $windowName = strtolower($window->name);
+
+                $query->where(function ($q) use ($windowName) {
+                    if ($windowName === 'registrar 1 - grade school/college') {
+                        $q->where('department', 'registrar-gradecollege');
+                    } elseif ($windowName === 'registrar 2 - junior high school') {
+                        $q->where('department', 'registrar-jhs');
+                    } elseif ($windowName === 'registrar 3 - senior high school') {
+                        $q->where('department', 'registrar-shs');
+                    } else {
+                        $q->where('department', 'like', 'registrar-%');
+                    }
+                });
+            } else {
+                $query->where('department', $department);
+            }
+
+            // Always order by time
+            $nextTicket = $query->orderBy('issue_time')->lockForUpdate()->first();
+
+            if (!$nextTicket) {
+                $msg = $priorityOnly ? 'No priority tickets available.' : 'No non-priority tickets available.';
+                return redirect()->back()->with('error', $msg);
+            }
+
+            $nextTicket->update([
+                'window_id' => $window->id,
+                'status' => 'serving',
+                'call_time' => now(),
+            ]);
+
+            $prefix = $priorityOnly ? 'Priority Ticket #' : 'Ticket #';
+            return redirect()->back()->with('success', $prefix . $nextTicket->ticket_number . ' called.');
         });
-
-        if (!$nextTicket) {
-            return redirect()->back()->with('error', 'No waiting tickets available.');
-        }
-
-        return redirect()->back()->with('success', 'Ticket #' . $nextTicket->ticket_number . ' called.');
     }
+
 
     public function complete(Request $request, Ticket $ticket)
     {
-        $department = $this->getDepartmentFromRole();
+        return DB::transaction(function () use ($request, $ticket) {
+            $department = $this->getDepartmentFromRole();
 
-        // Special handling for registrar department
-        if ($department === 'registrar') {
-            if (!str_starts_with($ticket->department, 'registrar-')) {
+            // Special handling for registrar department
+            if ($department === 'registrar') {
+                if (!str_starts_with($ticket->department, 'registrar-')) {
+                    return redirect()->back()->with('error', 'You do not have permission to complete this ticket.');
+                }
+            } elseif ($ticket->department !== $department) {
                 return redirect()->back()->with('error', 'You do not have permission to complete this ticket.');
             }
-        } elseif ($ticket->department !== $department) {
-            return redirect()->back()->with('error', 'You do not have permission to complete this ticket.');
-        }
 
-        if ($ticket->status !== 'serving') {
-            return redirect()->back()->with('error', 'Only serving tickets can be completed.');
-        }
+            $ticket = Ticket::lockForUpdate()->find($ticket->id);
 
-        $ticket->status = 'completed';
-        $ticket->completion_time = now();
-        $ticket->save();
+            if (!$ticket || $ticket->status !== 'serving') {
+                return redirect()->back()->with('error', 'Only serving tickets can be completed.');
+            }
 
-        return redirect()->back()->with('success', 'Ticket #' . $ticket->ticket_number . ' completed.');
+            $ticket->status = 'completed';
+            $ticket->completion_time = now();
+            $ticket->save();
+
+            return redirect()->back()->with('success', 'Ticket #' . $ticket->ticket_number . ' completed.');
+        });
     }
 
     public function skip(Request $request, Ticket $ticket)
     {
-        $department = $this->getDepartmentFromRole();
+        return DB::transaction(function () use ($request, $ticket) {
+            $department = $this->getDepartmentFromRole();
 
-        // Special handling for registrar department
-        if ($department === 'registrar') {
-            if (!str_starts_with($ticket->department, 'registrar-')) {
+            // Special handling for registrar department
+            if ($department === 'registrar') {
+                if (!str_starts_with($ticket->department, 'registrar-')) {
+                    return redirect()->back()->with('error', 'You do not have permission to skip this ticket.');
+                }
+            } elseif ($ticket->department !== $department) {
                 return redirect()->back()->with('error', 'You do not have permission to skip this ticket.');
             }
-        } elseif ($ticket->department !== $department) {
-            return redirect()->back()->with('error', 'You do not have permission to skip this ticket.');
-        }
 
-        if ($ticket->status !== 'serving') {
-            return redirect()->back()->with('error', 'Only serving tickets can be skipped.');
-        }
+            $ticket = Ticket::lockForUpdate()->find($ticket->id);
 
-        $ticket->status = 'skipped';
-        $ticket->window_id = null;
-        $ticket->save();
+            if (!$ticket || $ticket->status !== 'serving') {
+                return redirect()->back()->with('error', 'Only serving tickets can be skipped.');
+            }
 
-        return redirect()->back()->with('success', 'Ticket #' . $ticket->ticket_number . ' skipped.');
+            $ticket->status = 'skipped';
+            $ticket->window_id = null;
+            $ticket->save();
+
+            return redirect()->back()->with('success', 'Ticket #' . $ticket->ticket_number . ' skipped.');
+        });
     }
 
     public function selectWindow(Request $request)
