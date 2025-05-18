@@ -97,6 +97,9 @@ const printTicket = () => {
                 <div class="text-center">
                     <div class="text-6xl font-bold mb-4">{{ ticket.ticket_number }}</div>
                     <div class="text-xl mb-2">Department: {{ departmentName }}</div>
+                    <div v-if="ticket.is_priority" class="mb-2 text-4xl font-bold">
+                        PRIORITY LANE
+                    </div>
                     <div class="text-lg text-gray-600">
                         Issued at: {{ new Date(ticket.issue_time).toLocaleTimeString() }}
                     </div>
