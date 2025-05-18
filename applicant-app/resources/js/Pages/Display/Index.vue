@@ -8,6 +8,7 @@ const props = defineProps({
         default: () => []
     }
 });
+console.log('Current tickets:', props.currentTickets);
 
 const tickets = ref(props.currentTickets)
 const currentTime = ref(new Date().toLocaleTimeString());
@@ -92,42 +93,53 @@ const registrarTickets = computed(() => {
 
             <!-- Group tickets by department -->
             <div class="space-y-6">
-                <!-- Cashier Windows -->
+                <!-- Accounting Windows -->
                 <div v-if="accountingTickets.length > 0">
                     <h2 class="text-2xl font-bold mb-2">Accounting</h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div
                             v-for="ticket in accountingTickets"
                             :key="ticket.id"
-                            class="bg-blue-700 rounded-lg p-4 text-center shadow-lg"
+                            class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative window-card"
                         >
                             <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
-                            <div class="text-6xl font-bold p-4" v-if="ticket.ticket">
+                            <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
                                 {{ ticket.ticket }}
                             </div>
-                            <div class="text-4xl italic p-6 text-gray-300" v-else>
+                            <Message v-if="ticket.is_priority" size="large" severity="error"
+                                     class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
+                            >
+                                <span class="font-bold tracking-wider">Priority</span>
+                            </Message>
+                            <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
                                 ---
                             </div>
                         </div>
                     </div>
                 </div>
 
+
                 <!-- Accounting and Registrar Windows Side by Side -->
                 <div class="grid grid-cols-2 gap-4">
-                    <!-- Accounting Windows -->
+                    <!-- Cashier Windows -->
                     <div v-if="cashierTickets.length > 0">
                         <h2 class="text-2xl font-bold mb-2">Cashier</h2>
                         <div class="grid grid-cols-1 gap-4">
                             <div
                                 v-for="ticket in cashierTickets"
                                 :key="ticket.id"
-                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg"
+                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative window-card"
                             >
                                 <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
-                                <div class="text-6xl font-bold p-4" v-if="ticket.ticket">
+                                <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
                                     {{ ticket.ticket }}
                                 </div>
-                                <div class="text-4xl italic p-6 text-gray-300" v-else>
+                                <Message v-if="ticket.is_priority" size="large" severity="error"
+                                         class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
+                                >
+                                    <span class="font-bold tracking-wider">Priority</span>
+                                </Message>
+                                <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
                                     ---
                                 </div>
                             </div>
@@ -141,13 +153,18 @@ const registrarTickets = computed(() => {
                             <div
                                 v-for="ticket in registrarTickets"
                                 :key="ticket.id"
-                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg"
+                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative window-card"
                             >
                                 <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
-                                <div class="text-6xl font-bold p-4" v-if="ticket.ticket">
+                                <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
                                     {{ ticket.ticket }}
                                 </div>
-                                <div class="text-4xl italic p-6 text-gray-300" v-else>
+                                <Message v-if="ticket.is_priority" size="large" severity="error"
+                                         class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
+                                >
+                                    <span class="font-bold tracking-wider">Priority</span>
+                                </Message>
+                                <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
                                     ---
                                 </div>
                             </div>
@@ -171,4 +188,36 @@ const registrarTickets = computed(() => {
     background-attachment: fixed; /* This makes the background fixed while scrolling */
 }
 
+.window-card {
+    height: 200px; /* Fixed height for all window cards */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ticket-number {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.blinking {
+    animation: blinker 2s ease 2s infinite normal forwards;
+}
+
+@keyframes blinker {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
 </style>

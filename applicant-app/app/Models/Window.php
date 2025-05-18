@@ -19,7 +19,7 @@ class Window extends Model
 
     public function currentTicket()
     {
-        return $this->hasOne(Ticket::class)->where('status', 'serving')->latestOfMany();
+        return $this->hasOne(Ticket::class)->where('status', 'serving');
     }
     public function userWindows()
     {

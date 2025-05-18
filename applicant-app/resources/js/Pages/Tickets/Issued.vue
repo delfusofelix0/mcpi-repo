@@ -7,6 +7,8 @@ const props = defineProps({
     token: String
 });
 
+console.table(props.ticket);
+
 const qrImageLoaded = ref(false);
 const qrImageSrc = '/images/qrcode-print.jpg';
 
@@ -95,6 +97,9 @@ const printTicket = () => {
                 <div class="text-center">
                     <div class="text-6xl font-bold mb-4">{{ ticket.ticket_number }}</div>
                     <div class="text-xl mb-2">Department: {{ departmentName }}</div>
+                    <div v-if="ticket.is_priority" class="mb-2 text-4xl font-bold">
+                        PRIORITY LANE
+                    </div>
                     <div class="text-lg text-gray-600">
                         Issued at: {{ new Date(ticket.issue_time).toLocaleTimeString() }}
                     </div>
@@ -115,6 +120,9 @@ const printTicket = () => {
     <div class="print-only p-4">
         <div class="text-center">
             <h1 class="text-xl font-bold mb-2">MCPI Queue</h1>
+            <div v-if="ticket.is_priority" class="mb-2 text-4xl font-bold">
+                PRIORITY LANE
+            </div>
             <div class="py-2">
                 <div class="text-5xl font-bold">{{ ticket.ticket_number }}</div>
                 <div class="text-lg font-semibold">{{ departmentName }} Queue</div>
