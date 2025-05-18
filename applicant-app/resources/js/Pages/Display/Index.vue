@@ -105,12 +105,12 @@ const registrarTickets = computed(() => {
                             <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
                             <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
                                 {{ ticket.ticket }}
-                                <Message v-if="ticket.is_priority" size="large" severity="error"
-                                         class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
-                                >
-                                    <span class="font-bold tracking-wider">Priority</span>
-                                </Message>
                             </div>
+                            <Message v-if="ticket.is_priority" size="large" severity="error"
+                                     class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
+                            >
+                                <span class="font-bold tracking-wider">Priority</span>
+                            </Message>
                             <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
                                 ---
                             </div>
@@ -133,12 +133,12 @@ const registrarTickets = computed(() => {
                                 <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
                                 <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
                                     {{ ticket.ticket }}
-                                    <Message v-if="ticket.is_priority" size="large" severity="error"
-                                             class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
-                                    >
-                                        <span class="font-bold tracking-wider">Priority</span>
-                                    </Message>
                                 </div>
+                                <Message v-if="ticket.is_priority" size="large" severity="error"
+                                         class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
+                                >
+                                    <span class="font-bold tracking-wider">Priority</span>
+                                </Message>
                                 <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
                                     ---
                                 </div>
@@ -158,12 +158,12 @@ const registrarTickets = computed(() => {
                                 <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
                                 <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
                                     {{ ticket.ticket }}
-                                    <Message v-if="ticket.is_priority" size="large" severity="error"
-                                             class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
-                                    >
-                                        <span class="font-bold tracking-wider">Priority</span>
-                                    </Message>
                                 </div>
+                                <Message v-if="ticket.is_priority" size="large" severity="error"
+                                         class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
+                                >
+                                    <span class="font-bold tracking-wider">Priority</span>
+                                </Message>
                                 <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
                                     ---
                                 </div>
