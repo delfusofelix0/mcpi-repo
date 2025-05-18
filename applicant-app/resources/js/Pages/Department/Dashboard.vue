@@ -23,13 +23,6 @@ onMounted(() => {
     loading.value = false;
 });
 
-const onPageChange = (event) => {
-    router.get(route('cashier.dashboard'), {page: (event.page / event.rows) + 1}, {
-        preserveState: true,
-        preserveScroll: true,
-    });
-};
-
 // Add this function to refresh the waiting list
 const refreshWaitingList = () => {
     loading.value = true;
@@ -147,12 +140,14 @@ const skipTicket = () => {
                                         icon="pi pi-check"
                                         severity="success"
                                         @click="completeTicket"
+                                        :disabled="completeForm.processing"
                                     />
                                     <Button
                                         label="Skip"
                                         icon="pi pi-times"
                                         severity="danger"
                                         @click="skipTicket"
+                                        :disabled="skipForm.processing"
                                     />
                                 </div>
                             </div>
@@ -165,7 +160,8 @@ const skipTicket = () => {
                                     severity="primary"
                                     size="large"
                                     @click="callNext"
-                                    :disabled="waitingCount === 0"
+                                    :disabled="waitingCount === 0 || callNextForm.processing"
+
                                 />
                                 <Button
                                     label="Call Priority Ticket"
@@ -173,7 +169,7 @@ const skipTicket = () => {
                                     severity="help"
                                     size="large"
                                     @click="callNextPriority"
-                                    :disabled="waitingCount === 0 || !hasPriorityTickets"
+                                    :disabled="waitingCount === 0 || !hasPriorityTickets || callNextPriorityForm.processing"
                                 />
                             </div>
                         </template>
@@ -202,7 +198,6 @@ const skipTicket = () => {
                                 :value="waitingTickets.data"
                                 paginator :rows="5"
                                 :totalRecords="waitingTickets.total"
-                                @page="onPageChange"
                                 :loading="loading"
                             >
                                 <template #empty> No tickets found.</template>
