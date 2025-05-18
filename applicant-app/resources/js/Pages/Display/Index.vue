@@ -100,16 +100,18 @@ const registrarTickets = computed(() => {
                         <div
                             v-for="ticket in accountingTickets"
                             :key="ticket.id"
-                            class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative"
+                            class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative window-card"
                         >
                             <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
-                            <div class="text-6xl font-bold p-4" v-if="ticket.ticket">
+                            <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
                                 {{ ticket.ticket }}
-                                <div v-if="ticket.is_priority" class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                    Priority
-                                </div>
+                                <Message v-if="ticket.is_priority" size="large" severity="error"
+                                         class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
+                                >
+                                    <span class="font-bold tracking-wider">Priority</span>
+                                </Message>
                             </div>
-                            <div class="text-4xl italic p-6 text-gray-300" v-else>
+                            <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
                                 ---
                             </div>
                         </div>
@@ -126,10 +128,10 @@ const registrarTickets = computed(() => {
                             <div
                                 v-for="ticket in cashierTickets"
                                 :key="ticket.id"
-                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative"
+                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative window-card"
                             >
                                 <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
-                                <div class="text-6xl font-bold p-4" v-if="ticket.ticket">
+                                <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
                                     {{ ticket.ticket }}
                                     <Message v-if="ticket.is_priority" size="large" severity="error"
                                              class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
@@ -137,7 +139,7 @@ const registrarTickets = computed(() => {
                                         <span class="font-bold tracking-wider">Priority</span>
                                     </Message>
                                 </div>
-                                <div class="text-4xl italic p-6 text-gray-300" v-else>
+                                <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
                                     ---
                                 </div>
                             </div>
@@ -151,16 +153,18 @@ const registrarTickets = computed(() => {
                             <div
                                 v-for="ticket in registrarTickets"
                                 :key="ticket.id"
-                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative"
+                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative window-card"
                             >
                                 <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
-                                <div class="text-6xl font-bold p-4" v-if="ticket.ticket">
+                                <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
                                     {{ ticket.ticket }}
-                                    <div v-if="ticket.is_priority" class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                        Priority
-                                    </div>
+                                    <Message v-if="ticket.is_priority" size="large" severity="error"
+                                             class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
+                                    >
+                                        <span class="font-bold tracking-wider">Priority</span>
+                                    </Message>
                                 </div>
-                                <div class="text-4xl italic p-6 text-gray-300" v-else>
+                                <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
                                     ---
                                 </div>
                             </div>
@@ -183,9 +187,26 @@ const registrarTickets = computed(() => {
     background-position: center;
     background-attachment: fixed; /* This makes the background fixed while scrolling */
 }
+
+.window-card {
+    height: 200px; /* Fixed height for all window cards */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ticket-number {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
 .blinking {
     animation: blinker 2s ease 2s infinite normal forwards;
 }
+
 @keyframes blinker {
     0% {
         opacity: 1;
