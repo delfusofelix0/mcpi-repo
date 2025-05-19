@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref} from 'vue';
+import {computed, onMounted, onUnmounted, ref} from 'vue';
 import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
@@ -16,11 +16,21 @@ const skipForm = useForm({});
 const loading = ref(false);
 
 const hasPriorityTickets = computed(() => props.waitingTickets.data.some(ticket => ticket.is_priority));
+const hasNormalTickets = computed(() => props.waitingTickets.data.some(ticket => !ticket.is_priority));
 
 const waitingCount = computed(() => props.waitingTickets.total);
 
 onMounted(() => {
     loading.value = false;
+
+    const intervalId = setInterval(() => {
+        console.log('Refreshing waiting list...');
+        refreshWaitingList();
+    }, 3000);
+
+    onUnmounted(() => {
+        clearInterval(intervalId);
+    });
 });
 
 // Add this function to refresh the waiting list
@@ -160,7 +170,7 @@ const skipTicket = () => {
                                     severity="primary"
                                     size="large"
                                     @click="callNext"
-                                    :disabled="waitingCount === 0 || callNextForm.processing"
+                                    :disabled="waitingCount === 0 || !hasNormalTickets || callNextForm.processing"
 
                                 />
                                 <Button

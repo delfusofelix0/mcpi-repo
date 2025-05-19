@@ -113,7 +113,7 @@ class DepartmentController extends Controller
                 return redirect()->back()->with('error', 'The selected window does not exist or has been deactivated.');
             }
 
-            $waitingTicketsQuery = Ticket::where('status', 'waiting');
+            $waitingTicketsQuery = Ticket::query()->where('status', 'waiting');
 
             if ($department === 'registrar') {
                 $windowName = strtolower($window->name);
@@ -265,10 +265,14 @@ class DepartmentController extends Controller
                     return redirect()->back()->with('error', 'Please complete or skip the current ticket first.');
                 }
 
-                $query = Ticket::where('status', 'waiting');
+                $query = Ticket::query()->where('status', 'waiting');
 
                 if ($priorityOnly) {
+
                     $query->where('is_priority', true);
+                } else {
+                    // Explicitly exclude priority tickets when calling regular tickets
+                    $query->where('is_priority', false);
                 }
 
                 // Department filtering
@@ -294,7 +298,7 @@ class DepartmentController extends Controller
                 $nextTicket = $query->orderBy('issue_time')->lockForUpdate()->first();
 
                 if (!$nextTicket) {
-                    $msg = $priorityOnly ? 'No priority tickets available.' : 'No tickets available.';
+                    $msg = $priorityOnly ? 'No priority tickets available.' : 'No regular tickets available.';
                     Log::info('No tickets available for call', [
                         'user_id' => $user->id,
                         'window_id' => $window->id,
