@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref} from 'vue';
+import {computed, onMounted, onUnmounted, ref} from 'vue';
 import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
@@ -23,10 +23,14 @@ const waitingCount = computed(() => props.waitingTickets.total);
 onMounted(() => {
     loading.value = false;
 
-    setInterval(() => {
+    const intervalId = setInterval(() => {
         console.log('Refreshing waiting list...');
         refreshWaitingList();
     }, 3000);
+
+    onUnmounted(() => {
+        clearInterval(intervalId);
+    });
 });
 
 // Add this function to refresh the waiting list
