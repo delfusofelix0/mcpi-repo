@@ -113,7 +113,7 @@ class DepartmentController extends Controller
                 return redirect()->back()->with('error', 'The selected window does not exist or has been deactivated.');
             }
 
-            $waitingTicketsQuery = Ticket::where('status', 'waiting');
+            $waitingTicketsQuery = Ticket::query()->where('status', 'waiting');
 
             if ($department === 'registrar') {
                 $windowName = strtolower($window->name);
@@ -265,7 +265,7 @@ class DepartmentController extends Controller
                     return redirect()->back()->with('error', 'Please complete or skip the current ticket first.');
                 }
 
-                $query = Ticket::where('status', 'waiting');
+                $query = Ticket::query()->where('status', 'waiting');
 
                 if ($priorityOnly) {
 

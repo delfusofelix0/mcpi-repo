@@ -48,7 +48,7 @@ class TicketController extends Controller
             };
 
             // Get the current count for today for this department
-            $count = Ticket::where('department', $department)
+            $count = Ticket::query()->where('department', $department)
                     ->whereDate('created_at', today())
                     ->count() + 1;
 
