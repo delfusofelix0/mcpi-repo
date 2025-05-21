@@ -66,7 +66,7 @@ const getInitials = (firstName, lastName) => {
         <div class="bg-white rounded-lg shadow-md p-6 mb-8 flex flex-col md:flex-row items-center md:items-start">
             <!-- Profile Image -->
             <div v-if="applicant.image_path" class="w-24 h-24 rounded-full flex items-center justify-center mb-4 md:mb-0 md:mr-6 shadow overflow-hidden">
-                <img :src="getImageUrl(applicant.image_path)" alt="Applicant Photo" class="w-full h-full object-cover" />
+                <Image :src="getImageUrl(applicant.image_path)" alt="Applicant Photo" class="object-cover" preview />
             </div>
             <div v-else class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-4 md:mb-0 md:mr-6 shadow">
                 <span class="text-3xl text-gray-500 font-semibold">{{ getInitials(applicant.first_name, applicant.last_name) }}</span>
