@@ -27,12 +27,6 @@ class Ticket extends Model
         'completion_time' => 'datetime',
     ];
 
-//    public static function where(string $string, string $string1)
-//    {
-//        // return xd ('status', 'waiting')
-//        return self::query()->where($string, $string1);
-//    }
-
     public function window(): BelongsTo
     {
         return $this->belongsTo(Window::class);
