@@ -14,6 +14,8 @@ const isFirstLoad = ref(true);
 const tickets = ref(props.currentTickets)
 const currentTime = ref(new Date().toLocaleTimeString());
 const currentDate = ref(new Date().toLocaleDateString());
+const waitingList = ref([]);
+const isLoading = ref(false);
 
 // Get the token from the URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -28,12 +30,15 @@ setInterval(() => {
 // This will be replaced with WebSockets in the future
 const refreshTickets = async () => {
     try {
+        isLoading.value = true;
         console.log('Refreshing tickets...');
         // Use the encrypted token directly from the URL
         const url = `${route('api.display-tickets')}?token=${encodeURIComponent(token)}`;
 
         const response = await axios.get(url);
         const newTickets = response.data.tickets || [];
+        // Add this for waiting list
+        waitingList.value = response.data.waitingList || [];
 
         // Store current tickets for comparison
         const previousTickets = [...tickets.value];
@@ -53,6 +58,8 @@ const refreshTickets = async () => {
         }
     } catch (error) {
         console.error('Error refreshing tickets:', error);
+    } finally {
+        isLoading.value = false;
     }
 };
 
@@ -166,153 +173,131 @@ const accountingTickets = computed(() => {
 const registrarTickets = computed(() => {
     return tickets.value.filter(ticket => ticket.window.toLowerCase().includes('registrar'));
 });
+
+// Helper to get the ticket for each cashier window
+function getCashierTicket(n) {
+  const label = `Cashier ${n}`;
+  const ticket = tickets.value.find(t => t.window && t.window.toLowerCase() === label.toLowerCase() && t.ticket);
+  return ticket ? ticket.ticket : '---';
+}
+// Helper to get queue tickets (not currently serving)
+function getQueueTickets() {
+  // Use the backend-provided waitingList for the cashier, limited to 7 tickets
+  return waitingList.value.slice(0, 7);
+}
+
+function getCashierTicketObj(n) {
+  const label = `Cashier ${n}`;
+  return tickets.value.find(t => t.window && t.window.toLowerCase() === label.toLowerCase() && t.ticket) || {};
+}
 </script>
 
 <template>
-    <div class="bg-blue-900 min-h-screen text-white">
-        <!-- Header -->
-        <div class="bg-blue-800 p-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <img src="images/mcpi-logo.png" alt="mcpi-logo" class="w-10 h-10 mr-2"/>
-                <div class="text-2xl font-bold">Maryknoll College of Panabo Inc.</div>
+  <div class="display-root">
+    <div class="display-content-flex">
+      <div class="main-content">
+        <!-- Left: Ticket Info -->
+        <div class="ticket-section improved-bg">
+          <!-- Cashier 1 -->
+          <div class="ticket-card card-cashier1">
+            <div class="accent-bar accent-purple"></div>
+            <div class="ticket-flex">
+              <div class="ticket-label-col">
+                <div v-if="getCashierTicketObj(1).is_priority" class="priority-label"><span class="star">★</span>Priority Number</div>
+                <div class="ticket-label">Cashier 1</div>
+              </div>
+              <div class="ticket-number-col">
+                <div :class="['ticket-number', { 'priority-number': getCashierTicketObj(1).is_priority }]">{{ getCashierTicket(1) }}</div>
+              </div>
             </div>
-            <div class="text-right">
-                <div class="text-xl">{{ currentTime }}</div>
-                <div>{{ currentDate }}</div>
+          </div>
+          <!-- Cashier 2 -->
+          <div class="ticket-card card-cashier2">
+            <div class="accent-bar accent-blue"></div>
+            <div class="ticket-flex">
+              <div class="ticket-label-col">
+                <div v-if="getCashierTicketObj(2).is_priority" class="priority-label"><span class="star">★</span>Priority Number</div>
+                <div class="ticket-label">Cashier 2</div>
+              </div>
+              <div class="ticket-number-col">
+                <div :class="['ticket-number', { 'priority-number': getCashierTicketObj(2).is_priority }]">{{ getCashierTicket(2) }}</div>
+              </div>
             </div>
-        </div>
-
-        <!-- Main display area -->
-        <div class="p-6">
-            <h1 class="text-4xl font-bold text-center">NOW SERVING</h1>
-
-            <!-- Group tickets by department -->
-            <div class="space-y-6">
-                <!-- Accounting Windows -->
-                <div v-if="accountingTickets.length > 0">
-                    <h2 class="text-2xl font-bold mb-2">Accounting</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div
-                            v-for="ticket in accountingTickets"
-                            :key="ticket.id"
-                            class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative window-card"
-                        >
-                            <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
-                            <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
-                                {{ ticket.ticket }}
-                            </div>
-                            <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
-                                ---
-                            </div>
-                            <Message v-if="ticket.is_priority" size="large" severity="error"
-                                     class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
-                            >
-                                <span class="font-bold tracking-wider">Priority</span>
-                            </Message>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- Accounting and Registrar Windows Side by Side -->
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Cashier Windows -->
-                    <div v-if="cashierTickets.length > 0">
-                        <h2 class="text-2xl font-bold mb-2">Cashier</h2>
-                        <div class="grid grid-cols-1 gap-4">
-                            <div
-                                v-for="ticket in cashierTickets"
-                                :key="ticket.id"
-                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative window-card"
-                            >
-                                <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
-                                <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
-                                    {{ ticket.ticket }}
-                                </div>
-                                <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
-                                    ---
-                                </div>
-                                <Message v-if="ticket.is_priority" size="large" severity="error"
-                                         class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
-                                >
-                                    <span class="font-bold tracking-wider">Priority</span>
-                                </Message>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Registrar Windows -->
-                    <div v-if="registrarTickets.length > 0">
-                        <h2 class="text-2xl font-bold mb-2">Registrar</h2>
-                        <div class="grid grid-cols-1 gap-4">
-                            <div
-                                v-for="ticket in registrarTickets"
-                                :key="ticket.id"
-                                class="bg-blue-700 rounded-lg p-4 text-center shadow-lg relative window-card"
-                            >
-                                <div class="text-2xl font-bold mb-2">{{ ticket.window }}</div>
-                                <div class="text-6xl font-bold p-4 ticket-number" v-if="ticket.ticket">
-                                    {{ ticket.ticket }}
-                                </div>
-                                <div class="text-4xl italic p-6 text-gray-300 ticket-number" v-else>
-                                    ---
-                                </div>
-                                <Message v-if="ticket.is_priority" size="large" severity="error"
-                                         class="absolute top-2 right-2 uppercase px-2 py-1 rounded-full blinking"
-                                >
-                                    <span class="font-bold tracking-wider">Priority</span>
-                                </Message>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          </div>
+          <!-- Cashier 3 (Priority) -->
+          <div class="ticket-card card-cashier3">
+            <div class="accent-bar accent-red"></div>
+            <div class="ticket-flex">
+              <div class="ticket-label-col">
+                <div v-if="getCashierTicketObj(3).is_priority" class="priority-label"><span class="star">★</span>Priority Number</div>
+                <div class="ticket-label">Cashier 3</div>
+              </div>
+              <div class="ticket-number-col">
+                <div :class="['ticket-number', { 'priority-number': getCashierTicketObj(3).is_priority }]">{{ getCashierTicket(3) }}</div>
+              </div>
             </div>
+          </div>
         </div>
-
-        <!-- Footer -->
-        <div class="bg-blue-800 p-4 fixed bottom-0 w-full">
-            <div class="text-2xl text-center">Thank you for your patience</div>
+        <!-- Right: Video Player -->
+        <div class="video-section improved-video">
+          <div class="video-bg animated-gradient">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/lFy4kaHp1lY?playlist=lFy4kaHp1lY,UZvSPbvP2uA,HFZH8N6orwc,huP3f3A3ooE,b6RQbgwKSvE&autoplay=1&loop=1&rel=0&controls=1&mute=1"
+              frameborder="0"
+              allow="autoplay; encrypted-media"
+              allowfullscreen
+              class="youtube-iframe"
+            ></iframe>
+          </div>
         </div>
+      </div>
+      <div class="queue-bar improved-queue">
+        <span :class="['queue-icon', { 'loading-effect': isLoading }]">⏳</span>
+        <span class="queue-label">Waiting List:</span>
+        <span v-for="ticket in getQueueTickets()" :key="ticket.ticket_number" class="queue-ticket">{{ ticket.ticket_number }}</span>
+      </div>
     </div>
+    <footer class="display-footer">
+      <div class="marquee">
+        <span>
+          Please wait for your turn at the cashier. Thank you for your patience. We're happy to serve you. For updates and announcements, visit us at https://mcpi.edu.ph or follow us on Facebook at https://www.facebook.com/MCPIcommunity.
+        </span>
+      </div>
+    </footer>
+  </div>
 </template>
+
 <style scoped>
-.form-background {
-    background-image: url('/images/bg.webp'); /* Light blue background */
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed; /* This makes the background fixed while scrolling */
+.display-footer {
+  width: 100vw;
+  background: #f8fafc;
+  color: #222;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 2rem 0 2.5rem 0;
+  letter-spacing: 0.02em;
+  box-shadow: 0 -2px 12px 0 rgba(30,58,138,0.04);
+  margin-top: 0;
+  overflow: hidden;
+  position: relative;
 }
-
-.window-card {
-    height: 200px; /* Fixed height for all window cards */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
 }
-
-.ticket-number {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+.marquee span {
+  display: inline-block;
+  padding-left: 100vw;
+  animation: marquee-scroll 18s linear infinite;
 }
-
-.blinking {
-    animation: blinker 2s ease 2s infinite normal forwards;
-}
-
-@keyframes blinker {
-    0% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.2;
-    }
-
-    100% {
-        opacity: 1;
-    }
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
 }
 </style>

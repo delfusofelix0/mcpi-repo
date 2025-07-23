@@ -7,6 +7,7 @@ use App\Models\Window;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use App\Models\Ticket;
 
 class DisplayController extends Controller
 {
@@ -45,13 +46,23 @@ class DisplayController extends Controller
                 ];
             }
 
+            // Add cashier waiting list
+            $waitingList = Ticket::query()
+                ->where('status', 'waiting')
+                ->where('department', 'cashier')
+                ->orderByDesc('is_priority')
+                ->orderBy('issue_time')
+                ->get(['ticket_number', 'is_priority', 'issue_time']);
+
             Log::info('Current tickets fetched successfully', [
                 'window_count' => count($windows),
-                'active_tickets' => count(array_filter($currentTickets, fn($t) => $t['ticket'] !== null))
+                'active_tickets' => count(array_filter($currentTickets, fn($t) => $t['ticket'] !== null)),
+                'waiting_list_count' => $waitingList->count(),
             ]);
 
             return response()->json([
-                'tickets' => $currentTickets
+                'tickets' => $currentTickets,
+                'waitingList' => $waitingList,
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching current tickets', [
