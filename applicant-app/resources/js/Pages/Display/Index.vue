@@ -256,7 +256,10 @@ function getCashierTicketObj(n) {
       <div class="queue-bar improved-queue">
         <span :class="['queue-icon', { 'loading-effect': isLoading }]">⏳</span>
         <span class="queue-label">Waiting List:</span>
-        <span v-for="ticket in getQueueTickets()" :key="ticket.ticket_number" class="queue-ticket">{{ ticket.ticket_number }}</span>
+        <span v-for="ticket in getQueueTickets()" :key="ticket.ticket_number"
+              :class="['queue-ticket', { 'priority-number': ticket.is_priority }]">
+          {{ ticket.ticket_number }}
+        </span>
       </div>
     </div>
     <footer class="display-footer">
@@ -299,5 +302,9 @@ function getCashierTicketObj(n) {
 @keyframes marquee-scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-100%); }
+}
+.queue-ticket.priority-number {
+  color: #e53935; /* Material Red 600 */
+  font-weight: bold;
 }
 </style>
