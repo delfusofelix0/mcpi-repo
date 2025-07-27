@@ -117,23 +117,25 @@ const printTicket = () => {
     </div>
 
     <!-- Print-only template -->
-    <div class="print-only p-4">
+    <div class="print-only p-1">
         <div class="text-center">
-            <h1 class="text-xl font-bold mb-2">MCPI Queue</h1>
-            <div v-if="ticket.is_priority" class="mb-2 text-4xl font-bold">
+          
+            <div v-if="ticket.is_priority" class="mb-0 text-xl font-bold">
                 PRIORITY LANE
             </div>
-            <div class="py-2">
-                <div class="text-5xl font-bold">{{ ticket.ticket_number }}</div>
-                <div class="text-lg font-semibold">{{ departmentName }} Queue</div>
+            <div class="py-0">
+                <div class="relative">
+                    <img src="/images/mcpi-logo.png" alt="MCPI Logo" class="w-8 h-8 absolute left-0 top-1/2 transform -translate-y-1/2">
+                    <div class="text-3xl font-bold text-center">{{ ticket.ticket_number }}</div>
+                </div>
+                <div class="text-sm font-semibold">{{ departmentName }} Queue</div>
             </div>
-            <p class="text-sm">{{ new Date(ticket.issue_time).toLocaleString() }}</p>
+            <p class="text-xs">{{ new Date(ticket.issue_time).toLocaleString() }}</p>
             <div class="flex justify-center">
-                <Image :src="qrImageSrc" alt="QR Code" width="110" class="print-image"/>
+               <!-- <Image :src="qrImageSrc" alt="QR Code" width="110" class="print-image"/> -->
             </div>
-            <p class="text-sm mt-2 italic">We'd love to hear your thoughts!</p>
-            <p class="text-sm">Please wait for your number to be called</p>
-            <p class="text-sm">**This ticket will be valid today.**</p>
+            <p class="text-xs mt-0 italic" style="font-size: 10px;">How was our service? Scan the QR code at the counter to share your feedback.</p>
+            <p class="text-xs">**This ticket will be valid today.**</p>
         </div>
     </div>
 </template>
@@ -170,6 +172,12 @@ const printTicket = () => {
     :deep(.p-image img) {
         display: block !important;
         visibility: visible !important;
+    }
+
+    /* Ensure line separator is visible */
+    .print-only .border {
+        border-color: black !important;
+        border-width: 1px !important;
     }
 }
 </style>
