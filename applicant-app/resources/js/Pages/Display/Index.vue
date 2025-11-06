@@ -294,7 +294,7 @@ function getCashierTicketObj(n) {
 .marquee span {
   display: inline-block;
   padding-left: 100vw;
-  animation: marquee-scroll 18s linear infinite;
+  animation: marquee-scroll 45s linear infinite;
 }
 @keyframes marquee-scroll {
   0% { transform: translateX(0); }
