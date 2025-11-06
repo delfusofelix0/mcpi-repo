@@ -244,7 +244,7 @@ function getCashierTicketObj(n) {
             <iframe
               width="100%"
               height="100%"
-              src="https://www.youtube.com/embed/lFy4kaHp1lY?playlist=lFy4kaHp1lY,UZvSPbvP2uA,HFZH8N6orwc,huP3f3A3ooE,b6RQbgwKSvE&autoplay=1&loop=1&rel=0&controls=1&mute=1"
+              src="https://www.youtube.com/embed/lFy4kaHp1lY?playlist=lFy4kaHp1lY,UZvSPbvP2uA,HFZH8N6orwc,huP3f3A3ooE,b6RQbgwKSvE,T9Igvml0SpI,eppi31c1MbI,A2EGZ3zRbn8,tIgMe7OFp1E&autoplay=1&loop=1&rel=0&controls=1&mute=1"
               frameborder="0"
               allow="autoplay; encrypted-media"
               allowfullscreen
