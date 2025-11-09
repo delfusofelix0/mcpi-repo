@@ -29,7 +29,7 @@
         "@primevue/themes": "^4.2.5",
         "esbuild": "^0.25.0",
         "primeicons": "^7.0.0",
-        "primevue": "^4.3.3",
+        "primevue": "^4.4.1",
         "tailwindcss-primeui": "^0.6.1",
         "vue-turnstile": "^1.0.11"
     },
