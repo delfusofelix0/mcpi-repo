@@ -134,6 +134,10 @@ const printTicket = () => {
             <div class="flex justify-center">
                <!-- <Image :src="qrImageSrc" alt="QR Code" width="110" class="print-image"/> -->
             </div>
+            <div class="text-center mt-2 mb-2">
+                <p class="text-xs mb-1">Name: _______________________________ </p>
+                <p class="text-xs">Amount: _____________________________ </p>
+            </div>
             <p class="text-xs mt-0 italic" style="font-size: 10px;">How was our service? Scan the QR code at the counter to share your feedback.</p>
             <p class="text-xs">**This ticket will be valid today.**</p>
         </div>
